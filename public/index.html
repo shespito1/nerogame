@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeroCoin - Farm CryptoGame</title>
+    <!-- Inclui Vue.js e Socket.io (Bibliotecas levíssimas pra criar nosso jogo) -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <style>
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .login-box, .game-box {
+            background-color: #34495e;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 600px;
+            margin: 0 auto;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            border: 3px solid #f1c40f;
+        }
+
+        button {
+            background-color: #f1c40f;
+            color: #2c3e50;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        button:hover { background-color: #f39c12; }
+        button:disabled { background-color: #7f8c8d; cursor: not-allowed; }
+
+        input {
+            width: 80%;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid white;
+            margin-bottom: 15px;
+        }
+
+        /* Estilo da Fazenda */
+        .farmer-card {
+            background-color: #27ae60;
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 2px solid #2ecc71;
+        }
+        
+        .farmer-info { text-align: left; }
+        .nero-coin { color: #f1c40f; font-weight: bold; font-size: 24px;}
+        .working { background-color: #e67e22; border-color: #d35400; }
+        .ready { background-color: #2980b9; border-color: #3498db; }
+    </style>
+</head>
+<body>
+
+<div id="game-app">
+    <!-- TELA 01: FANTASIA DE LOGIN WEB3 (Metamask) -->
+    <div v-if="!isLogged" class="login-box">
+        <h1>🌾 NeroCoin Farm 🌾</h1>
+        <p>Conecte sua carteira para entrar na sua fazenda e começar a colher tokens Reles.</p>
+        
+        <input type="text" v-model="walletInput" placeholder="Digite seu Endereço (Ex: 0x123...)">
+        <br>
+        <button @click="efetuarLogin">LOGIN WEB3 (Simulado)</button>
+    </div>
+
+    <!-- TELA 02: O JOGO EM SI -->
+    <div v-else class="game-box">
+        <h2>Fazenda de {{ playerData.game_username }}</h2>
+        <p>Endereço: <small>{{ playerData.wallet_address }}</small></p>
+        
+        <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+            <h3>Seu Saldo Total:</h3>
+            <div class="nero-coin">🪙 {{ playerData.nero_balance.toFixed(2) }} NERO</div>
+        </div>
+
+        <h3>Seus Trabalhadores:</h3>
+        
+        <!-- Lista de Bonecos do Jogador -->
+        <div v-for="(farmer, index) in farmers" :key="index" 
+             class="farmer-card" :class="{ 'working': farmer.is_working }">
+            
+            <div class="farmer-info">
+                <strong>👨‍🌾 {{ farmer.farmer_name }}</strong><br>
+                <span>Força: {{ farmer.farming_power }}x ⛏️</span><br>
+                
+                <span v-if="farmer.is_working" style="color: yellow; font-size: 13px;">
+                    ⏳ Colhendo soja no campo... (Aguarde alguns segundos)
+                </span>
+                <span v-else style="color: #fff; font-size: 13px;">
+                    💤 Descansando no rancho.
+                </span>
+            </div>
+
+            <div>
+                <!-- O botão decide a ação com base no banco de dados (que o pc enviou na inicialização) -->
+                <button v-if="!farmer.is_working" @click="mandarTrabalhar(farmer.farmer_id)">
+                    MANDAR PRO CAMPO
+                </button>
+                <button v-else class="ready" @click="coletarNero(farmer.farmer_id)">
+                    COLHER NERO 🪙
+                </button>
+            </div>
+            
+        </div>
+        
+    </div>
+</div>
+
+<script>
+    const socket = io("http://localhost:8000");
+
+    new Vue({
+        el: '#game-app',
+        data: {
+            walletInput: '',
+            isLogged: false,
+            playerData: {},
+            farmers: []
+        },
+        mounted() {
+            // Fica ouvindo os Gritos do seu Computador (Servidor) e atualiza a tela
+            socket.on("connect", () => {
+                console.log("Conectado ao servidor Cérebro!");
+            });
+
+            socket.on("error_msg", (data) => {
+                alert("🚨 ANTI-CHEAT: " + data.msg);
+            });
+
+            socket.on("farm_started", (data) => {
+                // Atualiza o visual do fazendeiro para "Trabalhando"
+                let f = this.farmers.find(x => x.farmer_id === data.farmer_id);
+                if(f) {
+                    f.is_working = 1;
+                    f.last_harvest_time = data.start_time;
+                }
+            });
+
+            socket.on("claim_success", (data) => {
+                alert(`Sucesso! O caminhão da colheita chegou rendendo +${data.amount_won} NERO na sua conta!`);
+                // Volta o fazendeiro pro descanso e sobe o saldo
+                let f = this.farmers.find(x => x.farmer_id === data.farmer_id);
+                if(f) {
+                    f.is_working = 0;
+                }
+                this.playerData.nero_balance = data.new_balance;
+            });
+        },
+        methods: {
+            efetuarLogin() {
+                if(this.walletInput.length < 5) return alert("Digite uma carteira válida!");
+                
+                // Manda um requisição REST(HTTP) pro PC validar/criar a conta
+                fetch(`http://localhost:8000/api/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ wallet_address: this.walletInput })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if(data.success) {
+                        this.playerData = data.player_data;
+                        this.farmers = data.farmers;
+                        this.isLogged = true;
+                    }
+                });
+            },
+            mandarTrabalhar(fid) {
+                // Ao invez de mudar na tela solto na sorte, Envia "O pedido" pro Servidor via WEBSOCKETS Rápido
+                socket.emit("start_farming", { 
+                    wallet: this.playerData.wallet_address, 
+                    farmer_id: fid 
+                });
+            },
+            coletarNero(fid) {
+                // Manda pra "verificar na blockchain local (banco)" se já rendeu tudo
+                socket.emit("claim_nero", { 
+                    wallet: this.playerData.wallet_address, 
+                    farmer_id: fid 
+                });
+            }
+        }
+    })
+</script>
+
+</body>
+</html>
