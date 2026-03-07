@@ -45,15 +45,13 @@ def main():
     
     # 2. Iniciar o Túnel (localhost.run)
     print("🌐 Abrindo túnel público seguro...")
-    if os.path.exists("tunnel.log"):
-        os.remove("tunnel.log")
-        
-    tunnel_proc = subprocess.Popen("ssh -o StrictHostKeyChecking=no -R 80:localhost:8000 nokey@localhost.run > tunnel.log 2>&1", shell=True)
+    log_name = f"tunnel_{int(time.time())}.log"
+    tunnel_proc = subprocess.Popen(f"ssh -o StrictHostKeyChecking=no -R 80:localhost:8000 nokey@localhost.run > {log_name} 2>&1", shell=True)
     
     url = None
     for _ in range(15):
-        if os.path.exists("tunnel.log"):
-            with open("tunnel.log", "r", encoding="utf-8", errors="ignore") as f:
+        if os.path.exists(log_name):
+            with open(log_name, "r", encoding="utf-8", errors="ignore") as f:
                 content = f.read()
                 match = re.search(r'(https://[a-zA-Z0-9-]+\.lhr\.life)', content)
                 if match:
