@@ -670,7 +670,7 @@ async def finalizar_partida(partida, jogador_vencedor):
         "premio_total": premio
     }, room=partida_id)
     
-    del partidas[partida_id]
+    partidas.pop(partida_id, None)
 @sio.on("forcarAutoPlay")
 async def force_autoplay(sid, data):
     partida_id = data.get("partidaId")

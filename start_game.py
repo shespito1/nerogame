@@ -5,12 +5,17 @@ import os
 import sys
 
 def run_command(command, shell=True, capture_output=True):
+    if isinstance(command, list) and shell:
+        command = subprocess.list2cmdline(command)
     print(f"Executando: {command}")
     stdout = subprocess.PIPE if capture_output else None
     stderr = subprocess.PIPE if capture_output else None
     return subprocess.Popen(command, shell=shell, stdout=stdout, stderr=stderr, text=True)
 
 def update_backend_url(new_url):
+    if not os.path.exists('index.html'):
+        print("❌ index.html não encontrado.")
+        return
     with open('index.html', 'r', encoding='utf-8') as f:
         content = f.read()
     
@@ -36,12 +41,10 @@ def main():
     print("🎮 Iniciando Sistema Automatizado NeroCoin...")
     
     # 1. Iniciar o Servidor Backend (FastAPI) em background
-    # Não capturamos o output aqui para evitar que o processo trave quando o buffer do pipe encher
     backend_proc = run_command([sys.executable, "main.py"], capture_output=False)
     
     # 2. Iniciar o Túnel (LocalTunnel)
     print("🌐 Abrindo túnel público...")
-    # npx localtunnel --port 8000
     tunnel_proc = subprocess.Popen("npx localtunnel --port 8000", shell=True, stdout=subprocess.PIPE, text=True)
     
     url = None
