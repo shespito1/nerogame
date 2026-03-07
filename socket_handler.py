@@ -201,7 +201,7 @@ async def bot_play_task(partida_id, bot_jogador):
     import random
     import asyncio
     while partida_id in partidas:
-        await asyncio.sleep(1)
+        await asyncio.sleep(3)  # Bot verifica o turno a cada 3 segundos
         if partida_id not in partidas: break
         partida = partidas[partida_id]
 
@@ -229,6 +229,7 @@ async def bot_play_task(partida_id, bot_jogador):
             if cartas_validas:
                 carta_index = cartas_validas[0]
                 cor_bot = random.choice(['Vermelho', 'Azul', 'Verde', 'Amarelo']) if mao[carta_index]['cor'] == 'Curinga' else None
+                await asyncio.sleep(2)  # Simula tempo de reflexão do bot
                 await processar_jogada(partida_id, bot_jogador["socketId"], carta_index, cor_bot)
             else:
                 if len(partida["baralho"]) == 0:
@@ -240,6 +241,7 @@ async def bot_play_task(partida_id, bot_jogador):
                     carta_index = len(bot_jogador["mao"]) - 1
                     await sio.emit("mensagem_jogo", {"msg": f"{bot_jogador['usuarioId']} comprou uma carta e a usou!"}, room=partida_id)
                     cor_bot_nova = random.choice(['Vermelho', 'Azul', 'Verde', 'Amarelo']) if nova_carta['cor'] == 'Curinga' else None
+                    await asyncio.sleep(1.5)  # Pequeno delay antes de jogar a carta comprada
                     await processar_jogada(partida_id, bot_jogador["socketId"], carta_index, cor_bot_nova)
                 else:
                     partida["turno_index"] = (partida["turno_index"] + partida["sentido_jogo"]) % len(partida["jogadores"])
