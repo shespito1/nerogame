@@ -2,3 +2,7 @@
 !index.html
 !.gitignore
 !start_game.py
+!main.py
+!routes.py
+!socket_handler.py
+!database.py
