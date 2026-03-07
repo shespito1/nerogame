@@ -56,20 +56,22 @@ def main():
     url_found = []
     
     def read_output(pipe):
-        for line in iter(pipe.readline, ''):
-            if not line:
-                break
-            print(line, end="")
-            match = re.search(r'(https://[a-zA-Z0-9-]+\.lhr\.life)', line)
+        for line in pipe:
+            line_str = str(line)
+            print(line_str, end="")
+            match = re.search(r'(https://[a-zA-Z0-9-]+\.lhr\.life)', line_str)
             if match and not url_found:
                 url_found.append(match.group(1))
 
-    t1 = threading.Thread(target=read_output, args=(tunnel_proc.stdout,))
-    t2 = threading.Thread(target=read_output, args=(tunnel_proc.stderr,))
-    t1.daemon = True
-    t2.daemon = True
-    t1.start()
-    t2.start()
+    if tunnel_proc.stdout:
+        t1 = threading.Thread(target=read_output, args=(tunnel_proc.stdout,))
+        t1.daemon = True
+        t1.start()
+        
+    if tunnel_proc.stderr:
+        t2 = threading.Thread(target=read_output, args=(tunnel_proc.stderr,))
+        t2.daemon = True
+        t2.start()
 
     # Espera até achar a URL (máx 30 seg)
     for _ in range(30):
