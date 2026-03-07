@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Rowdies:wght@400;700&display=swap" rel="stylesheet">
     
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Baloo+2&wght@500;700;800&family=Rowdies:wght@400;700&display=swap');
         @media (max-width: 600px) {
             .card, .card-menu, .login-card {
                 width: 100vw !important;
@@ -415,6 +416,27 @@
 </head>
 <body>
 <div id="app" class="container">
+    <div id="backend-message" style="margin-bottom: 24px; background: #222; color: #fbd38d; padding: 18px; border-radius: 12px; text-align: center; font-size: 1.5em;">
+        {{ backendMessage }}
+    </div>
+<script>
+new Vue({
+    el: '#app',
+    data: {
+        backendMessage: ''
+    },
+    mounted() {
+        fetch('https://soaplike-lavone-suicidally.ngrok-free.dev/')
+            .then(res => res.json())
+            .then(data => {
+                this.backendMessage = data.message;
+            })
+            .catch(() => {
+                this.backendMessage = 'Não foi possível conectar ao backend.';
+            });
+    }
+});
+</script>
 
     <!-- Top Right Profile -->
     <div style="position: absolute; top: 15px; right: 20px; z-index: 10000; text-align: right;">
@@ -760,8 +782,7 @@ new Vue({
         autoPlay: false,
         ultimosGanhadores: [],
         usuariosFakesDB: [],
-        ultimoUsoDB: {},
-        opcoesAposta: []
+        ultimoUsoDB: {}
     },
     created() {
         const periodo = Math.floor(Date.now() / (3 * 60 * 60 * 1000));
