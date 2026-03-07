@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Nero Game - Uno Betting</title>
     <script src='https://accounts.google.com/gsi/client' async defer></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
@@ -13,300 +14,77 @@
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Baloo+2&wght@500;700;800&family=Rowdies:wght@400;700&display=swap');
+        /* Novo Bloco Responsivo Consolidado */
         @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
 
             .card,
             .card-menu,
             .login-card {
-                width: 100vw !important;
-                max-width: 100vw !important;
-                min-width: 100vw !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                font-size: 40px !important;
-                border-radius: 0 !important;
+                width: 95vw !important;
+                max-width: 95vw !important;
+                margin: 10px auto !important;
+                padding: 20px 10px !important;
                 box-sizing: border-box !important;
             }
 
-            .card>*,
-            .card-menu>*,
-            .login-card>* {
-                font-size: 2em !important;
-            }
-
-            .card button,
-            .card-menu button,
-            .login-card button {
-                font-size: 2.5rem !important;
-                padding: 40px 0 !important;
-                width: 100vw !important;
-                margin: 0 !important;
-                display: block !important;
-            }
-
-            .card input,
-            .card-menu input,
-            .login-card input {
-                font-size: 2em !important;
-                height: 70px !important;
-                width: 90vw !important;
-                margin: 0 auto 32px auto !important;
-                display: block !important;
-            }
-
-            h1,
-            h2 {
-                font-size: 3.8rem !important;
-            }
-
-            .stats {
-                font-size: 2.5rem !important;
-                flex-direction: column;
-                gap: 20px;
-            }
-
-            .ticker-item {
-                font-size: 2rem !important;
-            }
-        }
-
-        @media (max-width: 600px) {
-
-            .card,
-            .card-menu,
-            .login-card {
-                width: 100vw !important;
-                max-width: 100vw !important;
-                min-width: 0 !important;
-                margin: 0 !important;
-                padding: 32px 0 32px 0 !important;
-                font-size: 30px !important;
-                border-radius: 0 !important;
-                box-sizing: border-box !important;
-            }
-
-            .card>*,
-            .card-menu>*,
-            .login-card>* {
-                font-size: 1.35em !important;
-            }
-
-            .card button,
-            .card-menu button,
-            .login-card button {
-                font-size: 1.7rem !important;
-                padding: 28px 0 !important;
-                width: 96vw !important;
-                margin: 0 auto !important;
-                display: block !important;
-            }
-
-            .card input,
-            .card-menu input,
-            .login-card input {
-                font-size: 1.3em !important;
-                height: 48px !important;
-            }
-
-            h1,
-            h2 {
+            h1 {
                 font-size: 2.5rem !important;
             }
 
-            .stats {
-                font-size: 1.5rem !important;
-                flex-direction: column;
-                gap: 12px;
-            }
-
-            .ticker-item {
-                font-size: 1.2rem !important;
-            }
-        }
-
-        @media (max-width: 600px) {
-            .card {
-                width: 100vw !important;
-                max-width: 100vw !important;
-                min-width: 0 !important;
-                margin: 0 !important;
-                padding: 24px 0 24px 0 !important;
-                font-size: 26px !important;
-                border-radius: 0 !important;
-                box-sizing: border-box !important;
-            }
-
-            .card>* {
-                font-size: 1.25em !important;
-            }
-
-            .card button {
-                font-size: 1.5rem !important;
-                padding: 26px 0 !important;
-                width: 96vw !important;
-                margin: 0 auto !important;
-                display: block !important;
-            }
-
-            .card .mult-desafio,
-            .card .multipl-desafio,
-            .card .multipl-desafio *,
-            .card .multipl-desafio span {
-                font-size: 1.4em !important;
-            }
-        }
-
-        @media (max-width: 600px) {
-            .card {
-                max-width: 99vw !important;
-                min-width: 0 !important;
-                width: 99vw !important;
-                margin: 12px auto 0 auto !important;
-                padding: 18px 2vw !important;
-                font-size: 24px !important;
-                box-sizing: border-box !important;
-            }
-
-            .card>* {
-                font-size: 1.2em !important;
-            }
-
-            .card button {
-                font-size: 1.4rem !important;
-                padding: 22px 0 !important;
-                width: 100% !important;
-                min-width: 0 !important;
-            }
-
-            .card .mult-desafio,
-            .card .multipl-desafio,
-            .card .multipl-desafio *,
-            .card .multipl-desafio span {
-                font-size: 1.3em !important;
-            }
-        }
-
-        @media (max-width: 600px) {
-            .card {
-                max-width: 98vw !important;
-                min-width: 0 !important;
-                width: 98vw !important;
-                margin: 16px auto 0 auto !important;
-                padding: 18px 4vw !important;
-                font-size: 22px !important;
-            }
-
-            .card-menu,
-            .login-card {
-                max-width: 98vw !important;
-                min-width: 0 !important;
-                width: 98vw !important;
-                margin: 16px auto 0 auto !important;
-                padding: 18px 4vw !important;
-                font-size: 22px !important;
-            }
-
-            h1,
             h2 {
-                font-size: 2.1rem !important;
+                font-size: 1.8rem !important;
             }
 
             .stats {
-                font-size: 1.2rem !important;
                 flex-direction: column;
-                gap: 8px;
+                font-size: 1.1rem !important;
+                padding: 10px;
+                gap: 5px;
+            }
+
+            .ticker-wrap {
+                height: 35px;
             }
 
             .ticker-item {
-                font-size: 1rem !important;
+                font-size: 0.9rem !important;
             }
 
-            .card button,
-            .card-menu button,
-            .login-card button {
-                font-size: 1.3rem !important;
-                padding: 18px 0 !important;
-                width: 100% !important;
-                min-width: 0 !important;
-            }
-        }
-
-        @media (max-width: 600px) {
             .carta {
-                width: 110px !important;
-                height: 170px !important;
-                font-size: 48px !important;
+                width: 70px !important;
+                height: 110px !important;
+                font-size: 24px !important;
             }
 
-            .carta .bottom-corner,
-            .carta::after {
-                font-size: 28px !important;
+            .carta .bottom-corner {
+                font-size: 14px !important;
             }
 
             .mao {
-                gap: 18px !important;
-            }
-
-            .carta-mesa {
-                transform: scale(1.6) !important;
-                margin: 36px !important;
+                gap: 5px !important;
+                padding: 10px 0;
             }
 
             button {
-                font-size: 22px !important;
-                padding: 18px 44px !important;
-            }
-        }
-
-        @media (max-width: 600px) {
-            .bot-modal input {
-                width: 90vw !important;
-                max-width: 95vw !important;
-                font-size: 20px !important;
-                height: 38px !important;
+                width: 100% !important;
+                font-size: 1.2rem !important;
+                padding: 15px !important;
             }
 
+            input {
+                width: 100% !important;
+                font-size: 1rem !important;
+                padding: 12px !important;
+                height: auto !important;
+            }
+
+            /* Ajustes para o modal de bots no mobile */
             .modal-no-scroll-x>div {
-                width: 98vw !important;
-                max-width: 98vw !important;
-                min-width: 0 !important;
-                padding: 8px !important;
-                font-size: 20px !important;
-            }
-
-            .modal-no-scroll-x {
-                width: 100vw !important;
-                min-width: 0 !important;
-            }
-
-            .bot-modal button,
-            .modal-no-scroll-x button {
-                font-size: 22px !important;
-                padding: 18px 44px !important;
-            }
-
-            .bot-modal label {
-                font-size: 20px !important;
-            }
-        }
-
-        @media (max-width: 600px) {
-            .bot-modal input {
-                width: 90vw !important;
-                max-width: 95vw !important;
-                font-size: 16px;
-            }
-
-            .modal-no-scroll-x>div {
-                width: 98vw !important;
-                max-width: 98vw !important;
-                min-width: 0 !important;
-                padding: 8px !important;
-            }
-
-            .modal-no-scroll-x {
-                width: 100vw !important;
-                min-width: 0 !important;
+                width: 95vw !important;
+                padding: 15px !important;
             }
         }
 
