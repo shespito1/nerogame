@@ -9,9 +9,11 @@ import socketio
 
 app = FastAPI(title="NeroCoin Farm Game - Server Autoritativo")
 
+from fastapi.responses import FileResponse
+
 @app.get("/")
 async def root():
-    return {"message": "NeroCoin Farm Game API Online"}
+    return FileResponse("index.html")
 
 # Permite que o Frontend se conecte ao Backend
 app.add_middleware(
