@@ -288,7 +288,7 @@ async def login_game(request: LoginRequest):
 
     # Retorna os dados removendo a senha por segurança
     player_data = dict(player)
-    del player_data['password']
+    player_data.pop('password', None)
 
     return {
         "success": True,
@@ -340,7 +340,7 @@ async def login_google(request: GoogleLoginRequest):
         conn.close()
 
         player_data = dict(player)
-        del player_data['password']
+        player_data.pop('password', None)
 
         return {
             "success": True,

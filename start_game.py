@@ -44,6 +44,7 @@ def main():
     # npx localtunnel --port 8000
     tunnel_proc = subprocess.Popen("npx localtunnel --port 8000", shell=True, stdout=subprocess.PIPE, text=True)
     
+    url = None
     if tunnel_proc.stdout:
         for line in tunnel_proc.stdout:
             print(line, end="")
