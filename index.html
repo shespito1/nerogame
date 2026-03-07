@@ -1596,17 +1596,17 @@
                     const val = carta.valor;
                     let cfg = null;
                     if (val === 'Pular') {
-                        cfg = { classe: 'effect-bloqueio', emoji: '🚫', titulo: 'BLOQUEADO!', subtitulo: `${jogador} bloqueou o próximo!`, particulas: ['🚫','❌','🛑','⛔','🚷'] };
+                        cfg = { classe: 'effect-bloqueio', emoji: '🚫', titulo: 'BLOQUEADO!', subtitulo: `${jogador} bloqueou o próximo!`, particulas: ['🚫', '❌', '🛑', '⛔', '🚷'] };
                     } else if (val === 'Inverter') {
-                        cfg = { classe: 'effect-inverter', emoji: '🔄', titulo: 'INVERTEU!', subtitulo: `${jogador} inverteu o sentido do jogo!`, particulas: ['🔄','↩️','🔃','🔁','⤴️'] };
+                        cfg = { classe: 'effect-inverter', emoji: '🔄', titulo: 'INVERTEU!', subtitulo: `${jogador} inverteu o sentido do jogo!`, particulas: ['🔄', '↩️', '🔃', '🔁', '⤴️'] };
                     } else if (val === '+2') {
-                        cfg = { classe: 'effect-mais2', emoji: '💥', titulo: '+2 CARTAS!', subtitulo: `${jogador} mandou o próximo comprar 2!`, particulas: ['🃏','🃏','💥','😱','💣'] };
+                        cfg = { classe: 'effect-mais2', emoji: '💥', titulo: '+2 CARTAS!', subtitulo: `${jogador} mandou o próximo comprar 2!`, particulas: ['🃏', '🃏', '💥', '😱', '💣'] };
                     } else if (val === '+4') {
-                        cfg = { classe: 'effect-mais4', emoji: '🌈💣', titulo: '+4 DEVASTADOR!', subtitulo: `${jogador} soltou o +4 mortal!`, particulas: ['🌈','💣','🔥','💀','😈','🃏','🃏','🃏','🃏'] };
+                        cfg = { classe: 'effect-mais4', emoji: '🌈💣', titulo: '+4 DEVASTADOR!', subtitulo: `${jogador} soltou o +4 mortal!`, particulas: ['🌈', '💣', '🔥', '💀', '😈', '🃏', '🃏', '🃏', '🃏'] };
                     } else if (carta.cor_escolhida || carta.cor_original === 'Curinga') {
-                        const cores = {'Vermelho':'🔴','Azul':'🔵','Verde':'🟢','Amarelo':'🟡'};
+                        const cores = { 'Vermelho': '🔴', 'Azul': '🔵', 'Verde': '🟢', 'Amarelo': '🟡' };
                         const corNome = carta.cor_escolhida || carta.cor;
-                        cfg = { classe: 'effect-cor', emoji: '🎨', titulo: `COR: ${corNome.toUpperCase()}!`, subtitulo: `${jogador} escolheu ${corNome}!`, particulas: [cores[corNome]||'🎨',cores[corNome]||'🎨','✨','🌟','💫'] };
+                        cfg = { classe: 'effect-cor', emoji: '🎨', titulo: `COR: ${corNome.toUpperCase()}!`, subtitulo: `${jogador} escolheu ${corNome}!`, particulas: [cores[corNome] || '🎨', cores[corNome] || '🎨', '✨', '🌟', '💫'] };
                     }
                     if (!cfg) return;
                     // Gerar partículas com posições aleatórias
@@ -1615,7 +1615,7 @@
                         const dist = 80 + Math.random() * 120;
                         const x = Math.cos(angle) * dist;
                         const y = Math.sin(angle) * dist;
-                        return { emoji, style: `transform: translate(${x}px, ${y}px) scale(0); animation: particleFly 1s ${i*0.05}s ease-out forwards;` };
+                        return { emoji, style: `transform: translate(${x}px, ${y}px) scale(0); animation: particleFly 1s ${i * 0.05}s ease-out forwards;` };
                     });
                     this.efeitoClasse = cfg.classe;
                     this.efeitoEmoji = cfg.emoji;
@@ -1684,7 +1684,9 @@
                     this.esperandoResposta = true; this.addLog("Enviando jogada...");
                     this.socket.emit('jogarCarta', { partidaId: this.partidaId, cartaIndex: index });
                     const c = this.mao[index]; this.mao.splice(index, 1); this.ultimaCartaTentada = { index, carta: c };
-                    setTimeout(() => { if (this.esperandoResposta) { this.esperandoResposta = false; this.addLog("⚠️ Timeout."); if (this.ultimaCartaTentada) { this.mao.splice(this.ultimaCartaTentada.index, 0, this.ultimaCartaTentada.carta); this.ultimaCartaTentada = nu                                 enviarCor(corEscolhida) {
+                    setTimeout(() => { if (this.esperandoResposta) { this.esperandoResposta = false; this.addLog("⚠️ Timeout."); if (this.ultimaCartaTentada) { this.mao.splice(this.ultimaCartaTentada.index, 0, this.ultimaCartaTentada.carta); this.ultimaCartaTentada = null; } } }, 5000);
+                },
+                enviarCor(corEscolhida) {
                     this.escolhendoCor = false; this.esperandoResposta = true; const index = this.cartaCuringaIndex;
                     this.addLog("Enviando jogada Curinga com cor " + corEscolhida + "...");
                     this.socket.emit('jogarCarta', { partidaId: this.partidaId, cartaIndex: index, corEscolhida: corEscolhida });
@@ -1706,7 +1708,7 @@
                         usuario_email: this.usuarioId,
                         nome: nomeStr,
                         saldo: parseFloat(this.botNovo.saldo) || 10,
-                        stop_loss: parseFloat(this.bot.st) || 5,
+                        stop_loss: parseFloat(this.botNovo.stop_loss) || 5,
                         stop_win: parseFloat(this.botNovo.stop_win) || 20,
                         valor_aposta: 1.00
                     };
