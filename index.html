@@ -562,6 +562,19 @@
             animation: emojiSpin 0.6s linear 2;
         }
 
+        /* +2 / +4 */
+        .efeito-mais2 .efeito-badge {
+            background: rgba(237, 137, 54, 0.9);
+            border: 2px solid #feebcb;
+            box-shadow: 0 0 15px rgba(237, 137, 54, 0.6);
+        }
+
+        .efeito-mais4 .efeito-badge {
+            background: linear-gradient(45deg, #f56565, #4299e1, #48bb78, #ecc94b);
+            border: 2px solid white;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+
         @keyframes emojiSpin {
             from {
                 transform: rotate(0deg);
@@ -981,8 +994,8 @@
                 <div class="oponentes">
                     <div v-for="op in getOponentes()" :key="op.id" :id="'oponente-' + op.id" class="oponente"
                         :class="{ 'oponente-ativo': op.id === turnoAtual, 'oponente-afetado': efeitosJogadores[op.id] }">
-                        <img :src="'https://api.dicebear.com/7.x/avataaars-neutral/svg?seed=' + encodeURIComponent(op.id)"
-                            style="width: 28px; height: 28px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); vertical-align: middle; margin-right: 5px; background: #4a5568;">
+                        <img :src="'https://api.dicebear.com/7.x/adventurer/svg?seed=' + encodeURIComponent(op.id)"
+                            style="width: 28px; height: 28px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); vertical-align: middle; margin-right: 5px; background: #2d3748;">
                         <span class="oponente-nome">{{ op.id }}</span>
                         <span class="oponente-cartas">🃏 {{ op.cartas }}</span>
                         <span v-if="op.id === turnoAtual"
@@ -1016,6 +1029,31 @@
                 <p v-else
                     style="color: #a0aec0; margin-bottom: 5px; font-size: 16px; text-transform: uppercase; font-weight: bold;">
                     Aguarde a sua vez...</p>
+
+                <div
+                    style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 15px; position: relative;">
+                    <!-- Avatar do Jogador Local -->
+                    <div style="position: relative;">
+                        <img :src="'https://api.dicebear.com/7.x/adventurer/svg?seed=' + avatarSeed"
+                            style="width: 60px; height: 60px; border-radius: 50%; border: 3px solid #48bb78; background: #2d3748; box-shadow: 0 4px 10px rgba(0,0,0,0.5);" />
+
+                        <!-- Efeito no Jogador Local -->
+                        <div v-if="efeitosJogadores[usuarioId]" class="efeito-jogador"
+                            :class="efeitosJogadores[usuarioId].classe" style="top: -55px;">
+                            <div class="efeito-badge">
+                                <span class="efeito-badge-emoji">{{ efeitosJogadores[usuarioId].emoji }}</span>
+                                <span class="efeito-badge-texto">{{ efeitosJogadores[usuarioId].texto }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="text-align: left;">
+                        <div style="color: white; font-weight: bold; font-size: 18px;">VOCÊ</div>
+                        <div style="color: #68d391; font-size: 14px; font-weight: bold;">💰 R$ {{ saldo.toFixed(2) }}
+                        </div>
+                    </div>
+                </div>
+
                 <button v-if="usuarioId === turnoAtual" @click="comprarCarta"
                     style="margin-bottom: 15px; background: #e53e3e; padding: 12px 25px; font-size: 16px; width: auto; display: inline-block;">🤷‍♂️
                     Nenhuma carta serve? Comprar e Passar Vez</button>
@@ -1493,23 +1531,28 @@
                 },
                 dispararEfeitoEspecial(carta, jogador) {
                     const val = carta.valor;
-                    if (val !== 'Pular' && val !== 'Inverter') return;
-
-                    // Determinar o alvo do efeito
                     let alvoId = null;
                     let cfg = null;
 
+                    // Lista de todos os jogadores (Oponentes + Eu) na ordem da partida
+                    const oponentesIds = this.oponentes.map(o => o.id);
+                    // O servidor costuma mandar os oponentes na ordem. Vamos assumir que eu estou na posição "virtual" 
+                    // que completa a roda. Como o backend tem a lista completa, o ideal é que ele informe o alvo.
+                    // Mas podemos tentar inferir quem é o "proximo" com base no proximoTurno recebido no socket.
+
                     if (val === 'Pular') {
-                        // O bloqueado é o jogador que deveria jogar depois de quem jogou
-                        const ids = this.oponentes.map(o => o.id);
-                        const jogadorIdx = ids.indexOf(jogador);
-                        if (jogadorIdx !== -1) {
-                            alvoId = ids[(jogadorIdx + 1) % ids.length];
-                        }
+                        // O bloqueado é o proximoTurno (já que o pular salta um turno)
+                        alvoId = this.turnoAtual; // Quando jogadaAceita chega, turnoAtual já é o próximo (ou o saltado)
                         cfg = { classe: 'efeito-bloqueio', emoji: '🚫', texto: 'BLOQUEADO!' };
                     } else if (val === 'Inverter') {
                         alvoId = jogador;
                         cfg = { classe: 'efeito-inverter', emoji: '🔄', texto: 'INVERTEU!' };
+                    } else if (val === '+2') {
+                        alvoId = this.turnoAtual;
+                        cfg = { classe: 'efeito-mais2', emoji: '💥+2', texto: 'TOMOU!' };
+                    } else if (val === '+4') {
+                        alvoId = this.turnoAtual;
+                        cfg = { classe: 'efeito-mais4', emoji: '🌈💣+4', texto: 'FALECERAS!' };
                     }
 
                     if (!alvoId || !cfg) return;
@@ -1517,7 +1560,7 @@
                     this.$set(this.efeitosJogadores, alvoId, cfg);
                     setTimeout(() => {
                         this.$delete(this.efeitosJogadores, alvoId);
-                    }, 2000);
+                    }, 2200);
                 },
                 conectarSocket(callback) {
                     if (!this.socket) {
