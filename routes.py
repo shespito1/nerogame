@@ -140,6 +140,7 @@ class BotCreateRequest(BaseModel):
 
 @router.post("/api/bots/criar")
 async def criar_bot(request: BotCreateRequest):
+    print(f"POST /api/bots/criar hit for user: {request.usuario_email}, bot: {request.nome}")
     try:
         conn = get_db()
         cursor = conn.cursor()

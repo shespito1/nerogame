@@ -1385,12 +1385,17 @@
                     setTimeout(() => { if (this.esperandoResposta) { this.esperandoResposta = false; this.addLog("⚠️ Timeout."); } }, 5000);
                 },
                 criarBot() {
+                    const nomeStr = this.botNovo.nome ? this.botNovo.nome.trim() : '';
+                    if (!nomeStr) {
+                        alert("⚠️ Dê um nome ao seu bot!");
+                        return;
+                    }
                     const novoBot = {
                         usuario_email: this.usuarioId,
-                        nome: this.botNovo.nome,
-                        saldo: parseFloat(this.botNovo.saldo),
-                        stop_loss: parseFloat(this.botNovo.stop_loss),
-                        stop_win: parseFloat(this.botNovo.stop_win),
+                        nome: nomeStr,
+                        saldo: parseFloat(this.botNovo.saldo) || 10,
+                        stop_loss: parseFloat(this.botNovo.stop_loss) || 5,
+                        stop_win: parseFloat(this.botNovo.stop_win) || 20,
                         valor_aposta: 1.00
                     };
                     let baseUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
@@ -1401,11 +1406,15 @@
                     }).then(async res => {
                         const data = await res.json();
                         if (data.success) {
+                            alert("✅ Bot '" + nomeStr + "' criado com sucesso!");
                             this.carregarBots();
                             this.botNovo.nome = '';
                         } else {
                             alert(typeof data.detail === "object" ? JSON.stringify(data.detail) : data.detail || 'Erro ao criar bot.');
                         }
+                    }).catch(err => {
+                        console.error("Erro ao criar bot:", err);
+                        alert("🚨 Erro de conexão ao criar bot. Verifique se o servidor está online.");
                     });
                 },
                 carregarBots() {
