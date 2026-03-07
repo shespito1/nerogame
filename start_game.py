@@ -4,9 +4,11 @@ import re
 import os
 import sys
 
-def run_command(command, shell=True):
+def run_command(command, shell=True, capture_output=True):
     print(f"Executando: {command}")
-    return subprocess.Popen(command, shell=shell, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    stdout = subprocess.PIPE if capture_output else None
+    stderr = subprocess.PIPE if capture_output else None
+    return subprocess.Popen(command, shell=shell, stdout=stdout, stderr=stderr, text=True)
 
 def update_backend_url(new_url):
     with open('index.html', 'r', encoding='utf-8') as f:
@@ -34,8 +36,8 @@ def main():
     print("🎮 Iniciando Sistema Automatizado NeroCoin...")
     
     # 1. Iniciar o Servidor Backend (FastAPI) em background
-    # Usamos sys.executable para garantir que usamos o python correto (do venv se estiver ativo)
-    backend_proc = run_command([sys.executable, "main.py"])
+    # Não capturamos o output aqui para evitar que o processo trave quando o buffer do pipe encher
+    backend_proc = run_command([sys.executable, "main.py"], capture_output=False)
     
     # 2. Iniciar o Túnel (LocalTunnel)
     print("🌐 Abrindo túnel público...")

@@ -868,6 +868,12 @@
                 continuar ganhando.</p>
             <p style="color: #a0aec0; margin-bottom: 30px; font-size: 16px;" v-else>Cadastre-se rapidamente.</p>
 
+            <!-- Área de Status para Feedback Visual -->
+            <div v-if="statusMsg"
+                :style="{ backgroundColor: statusColor + '22', border: '1px solid ' + statusColor, color: statusColor, padding: '10px', borderRadius: '8px', marginBottom: '20px', textAlign: 'center', transition: '0.3s' }">
+                {{ statusMsg }}
+            </div>
+
             <div style="text-align: left; margin-bottom: 20px;" v-if="loginMode === 'register'">
                 <label style="color: #e2e8f0; font-weight: bold; margin-bottom: 8px; display: block;">Nome de Usuário no
                     Jogo</label>
@@ -1148,6 +1154,8 @@
                 cartaMesa: null,
                 mao: [],
                 oponentes: [],
+                statusMsg: '', // Adicionado para feedback visual direto na tela
+                statusColor: '#ecc94b',
                 turnoAtual: "",
                 logs: [],
                 vencedor: "",
@@ -1360,8 +1368,15 @@
                     }
                 },
                 efetuarRegistro() {
+                    if (!this.loginEmail || !this.loginSenha || (this.loginMode === 'register' && !this.loginNome)) {
+                        this.statusMsg = "⚠️ Preencha todos os campos!";
+                        this.statusColor = "#f56565";
+                        return;
+                    }
+
                     let baseUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
-                    console.log("Tentando registrar em:", baseUrl + '/api/register');
+                    this.statusMsg = "⏳ Processando cadastro...";
+                    this.statusColor = "#ecc94b";
 
                     fetch(baseUrl + '/api/register', {
                         method: 'POST',
@@ -1369,18 +1384,23 @@
                         body: JSON.stringify({ email: this.loginEmail, password: this.loginSenha, username: this.loginNome })
                     }).then(async r => {
                         const res = await r.json();
-                        console.log("Resposta do servidor:", res);
                         if (r.ok && res.success) {
-                            alert("✅ Conta criada com sucesso! Agora você já pode fazer login.");
+                            this.statusMsg = "✅ Conta criada! Agora faça seu login.";
+                            this.statusColor = "#48bb78";
+                            alert("Conta criada com sucesso! Faça login para entrar.");
                             this.loginMode = 'login';
                         } else if (res.detail) {
-                            alert("❌ " + res.detail);
+                            this.statusMsg = "❌ " + res.detail;
+                            this.statusColor = "#f56565";
+                            alert(res.detail);
                         } else {
-                            alert("❌ Erro ao efetuar cadastro. Verifique os campos.");
+                            this.statusMsg = "❌ Erro ao cadastrar.";
+                            this.statusColor = "#f56565";
                         }
                     }).catch(e => {
-                        console.error("Erro no fetch /api/register:", e);
-                        alert("🚨 Erro de conexão! O servidor pode estar offline ou o túnel expirou.");
+                        console.error(e);
+                        this.statusMsg = "🚨 Erro de conexão com o servidor.";
+                        this.statusColor = "#f56565";
                     });
                 },
                 efetuarLogin() {
