@@ -1348,7 +1348,7 @@
                     if (!this.socket) {
                         this.addLog("Conectando ao servidor...");
                         let serverUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
-                        this.socket = io(serverUrl);
+                        this.socket = io(serverUrl, { extraHeaders: { "Bypass-Tunnel-Reminder": "true" } });
                         this.socket.on("connect", () => { this.addLog("✅ Conectado com sucesso!"); if (callback) callback(); });
                         this.socket.on("partidaIniciada", (data) => {
                             this.addLog("🔥 A PARTIDA COMEÇOU!"); this.estado = "JOGO"; this.partidaId = data.partidaId;
