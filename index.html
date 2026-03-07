@@ -981,7 +981,9 @@
                 <div class="oponentes">
                     <div v-for="op in getOponentes()" :key="op.id" :id="'oponente-' + op.id" class="oponente"
                         :class="{ 'oponente-ativo': op.id === turnoAtual, 'oponente-afetado': efeitosJogadores[op.id] }">
-                        <span class="oponente-nome">👤 {{ op.id }}</span>
+                        <img :src="'https://api.dicebear.com/7.x/avataaars-neutral/svg?seed=' + encodeURIComponent(op.id)"
+                            style="width: 28px; height: 28px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); vertical-align: middle; margin-right: 5px; background: #4a5568;">
+                        <span class="oponente-nome">{{ op.id }}</span>
                         <span class="oponente-cartas">🃏 {{ op.cartas }}</span>
                         <span v-if="op.id === turnoAtual"
                             style="position:absolute; right: -20px; top: -10px; font-size: 24px; ">👈</span>
