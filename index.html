@@ -456,6 +456,235 @@
             animation: drawCard 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
+        /* === ANIMAÇÕES DE CARTAS ESPECIAIS === */
+        .game-effect-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 99999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none;
+            animation: effectFadeIn 0.15s ease-out;
+        }
+
+        .game-effect-overlay.fade-out {
+            animation: effectFadeOut 0.4s ease-in forwards;
+        }
+
+        @keyframes effectFadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes effectFadeOut {
+            from {
+                opacity: 1;
+            }
+
+            to {
+                opacity: 0;
+            }
+        }
+
+        .effect-box {
+            text-align: center;
+            padding: 30px 50px;
+            border-radius: 24px;
+            animation: effectPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes effectPop {
+            0% {
+                transform: scale(0.3) rotate(-10deg);
+                opacity: 0;
+            }
+
+            60% {
+                transform: scale(1.15) rotate(3deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        .effect-emoji {
+            font-size: 80px;
+            animation: emojiPulse 0.6s ease-in-out infinite alternate;
+            filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.5));
+        }
+
+        @keyframes emojiPulse {
+            from {
+                transform: scale(1);
+            }
+
+            to {
+                transform: scale(1.2);
+            }
+        }
+
+        .effect-title {
+            font-family: 'Rowdies', cursive;
+            font-size: 32px;
+            color: white;
+            text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.5), 0 0 30px currentColor;
+            margin-top: 10px;
+            letter-spacing: 2px;
+        }
+
+        .effect-subtitle {
+            font-family: 'Baloo 2', cursive;
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.85);
+            margin-top: 5px;
+        }
+
+        /* Bloqueio */
+        .effect-bloqueio .effect-box {
+            background: radial-gradient(circle, rgba(229, 62, 62, 0.95) 0%, rgba(155, 44, 44, 0.95) 100%);
+            border: 4px solid #fbd38d;
+            box-shadow: 0 0 60px rgba(229, 62, 62, 0.6), inset 0 0 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .effect-bloqueio .effect-title {
+            color: #fbd38d;
+        }
+
+        /* Inverter */
+        .effect-inverter .effect-box {
+            background: radial-gradient(circle, rgba(66, 153, 225, 0.95) 0%, rgba(43, 108, 176, 0.95) 100%);
+            border: 4px solid #bee3f8;
+            box-shadow: 0 0 60px rgba(66, 153, 225, 0.6), inset 0 0 30px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes spinReverse {
+            0% {
+                transform: rotate(0deg) scale(1);
+            }
+
+            50% {
+                transform: rotate(180deg) scale(1.3);
+            }
+
+            100% {
+                transform: rotate(360deg) scale(1);
+            }
+        }
+
+        .effect-inverter .effect-emoji {
+            animation: spinReverse 0.8s ease-in-out infinite;
+        }
+
+        /* +2 */
+        .effect-mais2 .effect-box {
+            background: radial-gradient(circle, rgba(237, 137, 54, 0.95) 0%, rgba(192, 86, 33, 0.95) 100%);
+            border: 4px solid #fefcbf;
+            box-shadow: 0 0 60px rgba(237, 137, 54, 0.6), inset 0 0 30px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes shakeEffect {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            20% {
+                transform: translateX(-8px) rotate(-3deg);
+            }
+
+            40% {
+                transform: translateX(8px) rotate(3deg);
+            }
+
+            60% {
+                transform: translateX(-5px) rotate(-2deg);
+            }
+
+            80% {
+                transform: translateX(5px) rotate(2deg);
+            }
+        }
+
+        .effect-mais2 .effect-emoji {
+            animation: shakeEffect 0.5s ease-in-out infinite;
+        }
+
+        /* +4 */
+        .effect-mais4 .effect-box {
+            background: conic-gradient(from 0deg, rgba(229, 62, 62, 0.9), rgba(66, 153, 225, 0.9), rgba(72, 187, 120, 0.9), rgba(237, 201, 54, 0.9), rgba(229, 62, 62, 0.9));
+            border: 4px solid white;
+            box-shadow: 0 0 80px rgba(255, 255, 255, 0.4), inset 0 0 40px rgba(0, 0, 0, 0.4);
+        }
+
+        @keyframes rainbowShake {
+
+            0%,
+            100% {
+                transform: scale(1) rotate(0deg);
+            }
+
+            25% {
+                transform: scale(1.2) rotate(-10deg);
+            }
+
+            50% {
+                transform: scale(0.9) rotate(10deg);
+            }
+
+            75% {
+                transform: scale(1.15) rotate(-5deg);
+            }
+        }
+
+        .effect-mais4 .effect-emoji {
+            animation: rainbowShake 0.6s ease-in-out infinite;
+        }
+
+        /* Cor Escolhida */
+        .effect-cor .effect-box {
+            background: radial-gradient(circle, rgba(128, 90, 213, 0.95) 0%, rgba(85, 60, 154, 0.95) 100%);
+            border: 4px solid #d6bcfa;
+            box-shadow: 0 0 60px rgba(128, 90, 213, 0.6), inset 0 0 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .effect-particles {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+        }
+
+        .effect-particles span {
+            position: absolute;
+            font-size: 28px;
+            animation: particleFly 1s ease-out forwards;
+        }
+
+        @keyframes particleFly {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+
         .ticker-wrap {
             width: 100%;
             overflow: hidden;
@@ -915,6 +1144,18 @@
             </div>
         </div>
 
+        <!-- OVERLAY DE ANIMAÇÕES DE CARTAS ESPECIAIS -->
+        <div v-if="efeitoAtivo" class="game-effect-overlay" :class="[efeitoClasse, efeitoFading ? 'fade-out' : '']">
+            <div class="effect-box">
+                <div class="effect-emoji">{{ efeitoEmoji }}</div>
+                <div class="effect-title">{{ efeitoTitulo }}</div>
+                <div class="effect-subtitle">{{ efeitoSubtitulo }}</div>
+            </div>
+            <div class="effect-particles">
+                <span v-for="(p, i) in efeitoParticulas" :key="i" :style="p.style">{{ p.emoji }}</span>
+            </div>
+        </div>
+
         <div class="card-menu" v-if="estado === 'FIM'">
             <h2 style="color: #f1c40f; font-size: 36px;">🏆 Fim de Jogo!</h2>
             <h1 style="color: #48bb78; font-size: 40px; margin: 10px 0;">Vencedor: {{ vencedor }}</h1>
@@ -948,6 +1189,13 @@
                     return localStorage.getItem('saldo_uno') !== null ? parseFloat(localStorage.getItem('saldo_uno')) : 10.00;
                 })(),
                 estado: userIdUrl ? 'MENU' : 'LOGIN',
+                efeitoAtivo: false,
+                efeitoClasse: '',
+                efeitoEmoji: '',
+                efeitoTitulo: '',
+                efeitoSubtitulo: '',
+                efeitoFading: false,
+                efeitoParticulas: [],
                 menuPerfilAberto: false,
                 abaPerfilAtiva: null,
                 bots: [],
@@ -1344,6 +1592,40 @@
                     this.logs.push(`[${time}] ${msg}`);
                     this.$nextTick(() => { if (this.$refs.logContainer) this.$refs.logContainer.scrollTop = this.$refs.logContainer.scrollHeight; });
                 },
+                dispararEfeitoEspecial(carta, jogador) {
+                    const val = carta.valor;
+                    let cfg = null;
+                    if (val === 'Pular') {
+                        cfg = { classe: 'effect-bloqueio', emoji: '🚫', titulo: 'BLOQUEADO!', subtitulo: `${jogador} bloqueou o próximo!`, particulas: ['🚫','❌','🛑','⛔','🚷'] };
+                    } else if (val === 'Inverter') {
+                        cfg = { classe: 'effect-inverter', emoji: '🔄', titulo: 'INVERTEU!', subtitulo: `${jogador} inverteu o sentido do jogo!`, particulas: ['🔄','↩️','🔃','🔁','⤴️'] };
+                    } else if (val === '+2') {
+                        cfg = { classe: 'effect-mais2', emoji: '💥', titulo: '+2 CARTAS!', subtitulo: `${jogador} mandou o próximo comprar 2!`, particulas: ['🃏','🃏','💥','😱','💣'] };
+                    } else if (val === '+4') {
+                        cfg = { classe: 'effect-mais4', emoji: '🌈💣', titulo: '+4 DEVASTADOR!', subtitulo: `${jogador} soltou o +4 mortal!`, particulas: ['🌈','💣','🔥','💀','😈','🃏','🃏','🃏','🃏'] };
+                    } else if (carta.cor_escolhida || carta.cor_original === 'Curinga') {
+                        const cores = {'Vermelho':'🔴','Azul':'🔵','Verde':'🟢','Amarelo':'🟡'};
+                        const corNome = carta.cor_escolhida || carta.cor;
+                        cfg = { classe: 'effect-cor', emoji: '🎨', titulo: `COR: ${corNome.toUpperCase()}!`, subtitulo: `${jogador} escolheu ${corNome}!`, particulas: [cores[corNome]||'🎨',cores[corNome]||'🎨','✨','🌟','💫'] };
+                    }
+                    if (!cfg) return;
+                    // Gerar partículas com posições aleatórias
+                    this.efeitoParticulas = cfg.particulas.map((emoji, i) => {
+                        const angle = (Math.PI * 2 / cfg.particulas.length) * i + Math.random() * 0.5;
+                        const dist = 80 + Math.random() * 120;
+                        const x = Math.cos(angle) * dist;
+                        const y = Math.sin(angle) * dist;
+                        return { emoji, style: `transform: translate(${x}px, ${y}px) scale(0); animation: particleFly 1s ${i*0.05}s ease-out forwards;` };
+                    });
+                    this.efeitoClasse = cfg.classe;
+                    this.efeitoEmoji = cfg.emoji;
+                    this.efeitoTitulo = cfg.titulo;
+                    this.efeitoSubtitulo = cfg.subtitulo;
+                    this.efeitoFading = false;
+                    this.efeitoAtivo = true;
+                    setTimeout(() => { this.efeitoFading = true; }, 1600);
+                    setTimeout(() => { this.efeitoAtivo = false; this.efeitoFading = false; }, 2000);
+                },
                 conectarSocket(callback) {
                     if (!this.socket) {
                         this.addLog("Conectando ao servidor...");
@@ -1358,6 +1640,8 @@
                         this.socket.on("jogadaAceita", (data) => {
                             this.esperandoResposta = false; this.addLog(`⭐ ${data.jogador} jogou: ${data.carta.valor}`);
                             this.cartaMesa = data.carta; this.turnoAtual = data.proximoTurno; this.oponentes = data.oponentes || this.oponentes;
+                            // Disparar animação de carta especial
+                            this.dispararEfeitoEspecial(data.carta, data.jogador);
                         });
                         this.socket.on("jogadaInvalida", (data) => {
                             this.esperandoResposta = false; alert("Atenção: " + data.mensagem); this.addLog("❌ Jogada Inválida: " + data.mensagem);
@@ -1400,9 +1684,7 @@
                     this.esperandoResposta = true; this.addLog("Enviando jogada...");
                     this.socket.emit('jogarCarta', { partidaId: this.partidaId, cartaIndex: index });
                     const c = this.mao[index]; this.mao.splice(index, 1); this.ultimaCartaTentada = { index, carta: c };
-                    setTimeout(() => { if (this.esperandoResposta) { this.esperandoResposta = false; this.addLog("⚠️ Timeout."); if (this.ultimaCartaTentada) { this.mao.splice(this.ultimaCartaTentada.index, 0, this.ultimaCartaTentada.carta); this.ultimaCartaTentada = null; } } }, 5000);
-                },
-                enviarCor(corEscolhida) {
+                    setTimeout(() => { if (this.esperandoResposta) { this.esperandoResposta = false; this.addLog("⚠️ Timeout."); if (this.ultimaCartaTentada) { this.mao.splice(this.ultimaCartaTentada.index, 0, this.ultimaCartaTentada.carta); this.ultimaCartaTentada = nu                                 enviarCor(corEscolhida) {
                     this.escolhendoCor = false; this.esperandoResposta = true; const index = this.cartaCuringaIndex;
                     this.addLog("Enviando jogada Curinga com cor " + corEscolhida + "...");
                     this.socket.emit('jogarCarta', { partidaId: this.partidaId, cartaIndex: index, corEscolhida: corEscolhida });
@@ -1424,7 +1706,7 @@
                         usuario_email: this.usuarioId,
                         nome: nomeStr,
                         saldo: parseFloat(this.botNovo.saldo) || 10,
-                        stop_loss: parseFloat(this.botNovo.stop_loss) || 5,
+                        stop_loss: parseFloat(this.bot.st) || 5,
                         stop_win: parseFloat(this.botNovo.stop_win) || 20,
                         valor_aposta: 1.00
                     };
