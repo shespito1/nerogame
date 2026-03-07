@@ -3,7 +3,6 @@ import time
 import re
 import os
 import sys
-import threading
 
 def run_command(command, shell=True, capture_output=True):
     if isinstance(command, list) and shell:
@@ -44,43 +43,24 @@ def main():
     # 1. Iniciar o Servidor Backend (FastAPI) em background
     backend_proc = run_command([sys.executable, "main.py"], capture_output=False)
     
-    # 2. Iniciar o Túnel Sem Tela de Bloqueio (localhost.run)
-    print("🌐 Abrindo túnel público seguro (localhost.run)...")
-    tunnel_proc = subprocess.Popen(
-        ["ssh", "-o", "StrictHostKeyChecking=no", "-R", "80:localhost:8000", "nokey@localhost.run"],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True
-    )
-    
-    url_found = []
-    
-    def read_output(pipe):
-        for line in pipe:
-            line_str = str(line)
-            print(line_str, end="")
-            match = re.search(r'(https://[a-zA-Z0-9-]+\.lhr\.life)', line_str)
-            if match and not url_found:
-                url_found.append(match.group(1))
-
-    if tunnel_proc.stdout:
-        t1 = threading.Thread(target=read_output, args=(tunnel_proc.stdout,))
-        t1.daemon = True
-        t1.start()
+    # 2. Iniciar o Túnel (localhost.run)
+    print("🌐 Abrindo túnel público seguro...")
+    if os.path.exists("tunnel.log"):
+        os.remove("tunnel.log")
         
-    if tunnel_proc.stderr:
-        t2 = threading.Thread(target=read_output, args=(tunnel_proc.stderr,))
-        t2.daemon = True
-        t2.start()
-
-    # Espera até achar a URL (máx 30 seg)
-    for _ in range(30):
-        if url_found:
-            break
+    tunnel_proc = subprocess.Popen("ssh -o StrictHostKeyChecking=no -R 80:localhost:8000 nokey@localhost.run > tunnel.log 2>&1", shell=True)
+    
+    url = None
+    for _ in range(15):
+        if os.path.exists("tunnel.log"):
+            with open("tunnel.log", "r", encoding="utf-8", errors="ignore") as f:
+                content = f.read()
+                match = re.search(r'(https://[a-zA-Z0-9-]+\.lhr\.life)', content)
+                if match:
+                    url = match.group(1)
+                    break
         time.sleep(1)
-
-    url = url_found[0] if url_found else None
-
+            
     if not url:
         print("❌ Erro ao obter URL do túnel.")
         backend_proc.terminate()

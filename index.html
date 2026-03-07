@@ -925,13 +925,7 @@
 
     <script>
         // CONFIGURAÇÃO DO BACKEND (Será atualizado automaticamente pelo script de túnel)
-        const BACKEND_URL = 'https://pretty-cases-boil.loca.lt';
-
-        // Se acessado pelo Github Pages, redireciona o jogador para o túnel Localtunnel
-        // Isso resolve o erro de CORS porque força o jogador a carregar o jogo DENTRO do Localtunnel!
-        if (window.location.hostname === "shespito1.github.io") {
-            window.location.replace(BACKEND_URL + window.location.search);
-        }
+        const BACKEND_URL = 'https://swift-spoons-invent.loca.lt';
 
         const params = new URLSearchParams(window.location.search);
         const userIdUrl = params.get('user') || localStorage.getItem('usuario_id') || '';
