@@ -1438,11 +1438,11 @@
                     return val;
                 },
                 abrirAbaPerfil(aba) {
-                    if (aba === 'bots') {
-                        alert('Clique em Bots detectado!');
-                    }
                     this.abaPerfilAtiva = aba;
                     this.menuPerfilAberto = false;
+                    if (aba === 'bots') {
+                        this.carregarBots();
+                    }
                 },
                 minimizarPartida() {
                     this.estado = 'MENU';
@@ -1621,16 +1621,46 @@
                     }).then(async res => {
                         const data = await res.json();
                         if (data.success) {
-                            this.bots.push({
-                                id: this.bots.length + 1,
-                                saldo: novoBot.saldo,
-                                stopLoss: novoBot.stop_loss,
-                                stopWin: novoBot.stop_win,
-                                valorAposta: novoBot.valor_aposta,
-                                status: 'Parado'
-                            });
+                            this.carregarBots();
+                            this.botNovo.nome = '';
                         } else {
                             alert(typeof data.detail === "object" ? JSON.stringify(data.detail) : data.detail || 'Erro ao criar bot.');
+                        }
+                    });
+                },
+                carregarBots() {
+                    let baseUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
+                    fetch(baseUrl + '/api/bots/listar?usuario_email=' + this.usuarioId)
+                        .then(r => r.json())
+                        .then(res => {
+                            if (res.success) {
+                                this.bots = res.bots;
+                            }
+                        });
+                },
+                playBot(bot) {
+                    let baseUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
+                    fetch(baseUrl + '/api/bots/ativar', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ usuario_email: this.usuarioId, bot_id: bot.id })
+                    }).then(r => r.json()).then(res => {
+                        if (res.success) {
+                            bot.status = res.novo_status;
+                            this.carregarBots();
+                        }
+                    });
+                },
+                excluirBot(bot) {
+                    if (!confirm("Deseja realmente excluir este bot?")) return;
+                    let baseUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
+                    fetch(baseUrl + '/api/bots/deletar', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ usuario_email: this.usuarioId, bot_id: bot.id })
+                    }).then(r => r.json()).then(res => {
+                        if (res.success) {
+                            this.carregarBots();
                         }
                     });
                 }
