@@ -9,117 +9,46 @@
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Rowdies:wght@400;700&display=swap" rel="stylesheet">
     
     <style>
-        @media (max-width: 900px) {
-            html, body {
-                font-size: 60px !important;
-                zoom: 1.2 !important;
-            }
-            .card-menu.login-card, .card-menu, .login-card {
-                max-width: 100vw !important;
-                min-width: 0 !important;
+        @media (max-width: 600px) {
+            .card, .card-menu, .login-card {
                 width: 100vw !important;
+                max-width: 100vw !important;
+                min-width: 100vw !important;
                 margin: 0 !important;
                 padding: 0 !important;
+                font-size: 40px !important;
+                border-radius: 0 !important;
                 box-sizing: border-box !important;
             }
-            .card-menu.login-card input, .card-menu input, .login-card input {
-                font-size: 2.5em !important;
-                padding: 1.5em !important;
-                border-radius: 1.2em !important;
-                height: 3em !important;
-            }
-            .card-menu.login-card label, .card-menu label, .login-card label {
+            .card > *, .card-menu > *, .login-card > * {
                 font-size: 2em !important;
-                margin-bottom: 1em !important;
             }
-            .card-menu.login-card button, .card-menu button, .login-card button {
-                font-size: 2.5em !important;
-                padding: 1.5em !important;
-                border-radius: 1.2em !important;
-                margin-top: 1.5em !important;
+            .card button, .card-menu button, .login-card button {
+                font-size: 2.5rem !important;
+                padding: 40px 0 !important;
+                width: 100vw !important;
+                margin: 0 !important;
+                display: block !important;
             }
-            .card-menu.login-card div[style*="text-decoration: underline"],
-            .card-menu div[style*="text-decoration: underline"],
-            .login-card div[style*="text-decoration: underline"] {
+            .card input, .card-menu input, .login-card input {
                 font-size: 2em !important;
-                margin-top: 1.5em !important;
+                height: 70px !important;
+                width: 90vw !important;
+                margin: 0 auto 32px auto !important;
+                display: block !important;
+            }
+            h1, h2 {
+                font-size: 3.8rem !important;
+            }
+            .stats {
+                font-size: 2.5rem !important;
+                flex-direction: column;
+                gap: 20px;
+            }
+            .ticker-item {
+                font-size: 2rem !important;
             }
         }
-                                                                                @media (max-width: 700px) {
-                                                                                    body, html {
-                                                                                        font-size: 38px !important;
-                                                                                    }
-                                                                                    .card-menu.login-card, .card-menu, .login-card {
-                                                                                        max-width: 100vw !important;
-                                                                                        min-width: 0 !important;
-                                                                                        width: 100vw !important;
-                                                                                        margin: 0 !important;
-                                                                                        padding: 0 0 0 0 !important;
-                                                                                        box-sizing: border-box !important;
-                                                                                    }
-                                                                                    .card-menu.login-card input, .card-menu input, .login-card input {
-                                                                                        font-size: 2em !important;
-                                                                                        padding: 1.2em !important;
-                                                                                        border-radius: 1em !important;
-                                                                                        height: 2.5em !important;
-                                                                                    }
-                                                                                    .card-menu.login-card label, .card-menu label, .login-card label {
-                                                                                        font-size: 1.3em !important;
-                                                                                        margin-bottom: 0.7em !important;
-                                                                                    }
-                                                                                    .card-menu.login-card button, .card-menu button, .login-card button {
-                                                                                        font-size: 2em !important;
-                                                                                        padding: 1.2em !important;
-                                                                                        border-radius: 1em !important;
-                                                                                        margin-top: 1.2em !important;
-                                                                                    }
-                                                                                    .card-menu.login-card div[style*="text-decoration: underline"],
-                                                                                    .card-menu div[style*="text-decoration: underline"],
-                                                                                    .login-card div[style*="text-decoration: underline"] {
-                                                                                        font-size: 1.3em !important;
-                                                                                        margin-top: 1.2em !important;
-                                                                                    }
-                                                                                }
-                                                                                @media (max-width: 600px) {
-                                                                                    .card, .card-menu, .login-card {
-                                                                                        width: 100vw !important;
-                                                                                        max-width: 100vw !important;
-                                                                                        min-width: 100vw !important;
-                                                                                        margin: 0 !important;
-                                                                                        padding: 0 !important;
-                                                                                        font-size: 36px !important;
-                                                                                        border-radius: 0 !important;
-                                                                                        box-sizing: border-box !important;
-                                                                                    }
-                                                                                    .card > *, .card-menu > *, .login-card > * {
-                                                                                        font-size: 1.5em !important;
-                                                                                    }
-                                                                                    .card button, .card-menu button, .login-card button {
-                                                                                        font-size: 2rem !important;
-                                                                                        padding: 36px 0 !important;
-                                                                                        width: 100vw !important;
-                                                                                        margin: 0 !important;
-                                                                                        display: block !important;
-                                                                                    }
-                                                                                    .card input, .card-menu input, .login-card input {
-                                                                                        font-size: 1.5em !important;
-                                                                                        height: 60px !important;
-                                                                                        width: 90vw !important;
-                                                                                        margin: 0 auto 24px auto !important;
-                                                                                        display: block !important;
-                                                                                    }
-                                                                                    h1, h2 {
-                                                                                        font-size: 3rem !important;
-                                                                                    }
-                                                                                    .stats {
-                                                                                        font-size: 2rem !important;
-                                                                                        flex-direction: column;
-                                                                                        gap: 16px;
-                                                                                    }
-                                                                                    .ticker-item {
-                                                                                        font-size: 1.5rem !important;
-                                                                                    }
-                                                                                }
                                                                         @media (max-width: 600px) {
                                                                             .card, .card-menu, .login-card {
                                                                                 width: 100vw !important;
@@ -585,42 +514,42 @@
         </div>
     </div>
 
-    <h1>🎮 Nero Games</h1>
     <div class="stats" v-if="estado !== 'LOGIN'">
         <div>👤 Olá, {{ usuarioId }}</div>
         <div>💰 Saldo: R$ {{ saldo.toFixed(2) }}</div>
     </div>
     
     <div class="card-menu login-card" v-if="estado === 'LOGIN'" style="max-width: 400px; margin: 40px auto; padding: 40px 20px;">
-        <h2 style="color: #fbd38d; margin-bottom: 20px;" v-if="loginMode === 'login'">🔐 Acessar Conta</h2>
+        <h1 style="font-size: 3.5em; margin-top: 0; margin-bottom: 0.7em; text-align: center; letter-spacing: 2px; font-weight: 900; color: #f1c40f; text-shadow: 2px 2px 0 #000;">Nero Games</h1>
+        <h2 style="color: #fdd48e; margin-bottom: 20px;" v-if="loginMode === 'login'">🔐 Acessar Conta</h2>
         <h2 style="color: #fbd38d; margin-bottom: 20px;" v-else>📝 Criar Conta</h2>
         
         <p style="color: #a0aec0; margin-bottom: 30px; font-size: 16px;" v-if="loginMode === 'login'">Entre para continuar ganhando.</p>
         <p style="color: #a0aec0; margin-bottom: 30px; font-size: 16px;" v-else>Cadastre-se rapidamente.</p>
 
-        <div style="text-align: left; margin-bottom: 36px;" v-if="loginMode === 'register'">
-            <label style="color: #e2e8f0; font-weight: bold; margin-bottom: 18px; display: block; font-size: 2em;">Nome de Usuário no Jogo</label>
-            <input type="text" v-model="loginNome" placeholder="Seu apelido..." style="width: 100%; padding: 32px; border-radius: 22px; border: 2px solid #4a5568; background: rgba(0,0,0,0.5); color: white; font-size: 38px; box-sizing: border-box; outline: none; transition: 0.3s;" onfocus="this.style.borderColor='#fbd38d'" onblur="this.style.borderColor='#4a5568'">
+        <div style="text-align: left; margin-bottom: 20px;" v-if="loginMode === 'register'">
+            <label style="color: #e2e8f0; font-weight: bold; margin-bottom: 8px; display: block;">Nome de Usuário no Jogo</label>
+            <input type="text" v-model="loginNome" placeholder="Seu apelido..." style="width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #4a5568; background: rgba(0,0,0,0.5); color: white; font-size: 18px; box-sizing: border-box; outline: none; transition: 0.3s;" onfocus="this.style.borderColor='#fbd38d'" onblur="this.style.borderColor='#4a5568'">
         </div>
-        <div style="text-align: left; margin-bottom: 36px;">
-            <label style="color: #e2e8f0; font-weight: bold; margin-bottom: 18px; display: block; font-size: 2em;">E-mail</label>
-            <input type="email" v-model="loginEmail" placeholder="Digite seu e-mail..." style="width: 100%; padding: 32px; border-radius: 22px; border: 2px solid #4a5568; background: rgba(0,0,0,0.5); color: white; font-size: 38px; box-sizing: border-box; outline: none; transition: 0.3s;" onfocus="this.style.borderColor='#fbd38d'" onblur="this.style.borderColor='#4a5568'">
+        <div style="text-align: left; margin-bottom: 20px;">
+            <label style="color: #e2e8f0; font-weight: bold; margin-bottom: 8px; display: block;">E-mail</label>
+            <input type="email" v-model="loginEmail" placeholder="Digite seu e-mail..." style="width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #4a5568; background: rgba(0,0,0,0.5); color: white; font-size: 18px; box-sizing: border-box; outline: none; transition: 0.3s;" onfocus="this.style.borderColor='#fbd38d'" onblur="this.style.borderColor='#4a5568'">
         </div>
-        <div style="text-align: left; margin-bottom: 48px;">
-            <label style="color: #e2e8f0; font-weight: bold; margin-bottom: 18px; display: block; font-size: 2em;">Senha</label>
-            <input type="password" v-model="loginSenha" placeholder="Sua senha secreta..." style="width: 100%; padding: 32px; border-radius: 22px; border: 2px solid #4a5568; background: rgba(0,0,0,0.5); color: white; font-size: 38px; box-sizing: border-box; outline: none; transition: 0.3s;" onfocus="this.style.borderColor='#fbd38d'" onblur="this.style.borderColor='#4a5568'">
+        <div style="text-align: left; margin-bottom: 30px;">
+            <label style="color: #e2e8f0; font-weight: bold; margin-bottom: 8px; display: block;">Senha</label>
+            <input type="password" v-model="loginSenha" placeholder="Sua senha secreta..." style="width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #4a5568; background: rgba(0,0,0,0.5); color: white; font-size: 18px; box-sizing: border-box; outline: none; transition: 0.3s;" onfocus="this.style.borderColor='#fbd38d'" onblur="this.style.borderColor='#4a5568'">
         </div>
         
-        <button v-if="loginMode === 'login'" @click="efetuarLogin" style="width: 100%; padding: 38px; border-radius: 22px; font-size: 44px;">Entrar</button>
-        <button v-else @click="efetuarRegistro" style="width: 100%; padding: 38px; border-radius: 22px; font-size: 44px; background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%); color: white;">Cadastrar</button>
+        <button v-if="loginMode === 'login'" @click="efetuarLogin" style="width: 100%; padding: 18px; border-radius: 12px; font-size: 22px;">Entrar</button>
+        <button v-else @click="efetuarRegistro" style="width: 100%; padding: 18px; border-radius: 12px; font-size: 22px; background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%); color: white;">Cadastrar</button>
 
-        <div style="margin-top: 38px; cursor: pointer; color: #63b3ed; font-size: 32px; text-decoration: underline;" @click="loginMode = loginMode === 'login' ? 'register' : 'login'">
+        <div style="margin-top: 20px; cursor: pointer; color: #63b3ed; font-size: 16px; text-decoration: underline;" @click="loginMode = loginMode === 'login' ? 'register' : 'login'">
             {{ loginMode === 'login' ? 'Não tem conta? Crie uma aqui' : 'Já tem conta? Faça login aqui' }}
         </div>
 
         <hr style="border-color: #4a5568; margin: 25px 0;">
 
-        <button @click="logarComGoogle" style="width: 100%; padding: 32px; border-radius: 22px; font-size: 38px; background: white; color: #4a5568; margin-top: 0; box-shadow: none; display: flex; align-items: center; justify-content: center; gap: 22px;">
+        <button @click="logarComGoogle" style="width: 100%; padding: 15px; border-radius: 12px; font-size: 18px; background: white; color: #4a5568; margin-top: 0; box-shadow: none; display: flex; align-items: center; justify-content: center; gap: 10px;">
             <img src="https://www.svgrepo.com/show/475656/google-color.svg" width="24" height="24">
             Entrar com Google
         </button>
