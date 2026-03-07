@@ -765,7 +765,8 @@
                             style="background:rgba(255,255,255,0.13); border-radius:24px; padding:28px 24px; box-shadow: 0 8px 32px rgba(0,0,0,0.18); display:flex; flex-direction:column; align-items:center; min-width:240px; max-width:320px; margin-bottom:10px; border: 2px solid #63b3ed33; backdrop-filter: blur(8px);">
                             <div
                                 style="font-size:48px; color:#63b3ed; margin-bottom:12px; filter: drop-shadow(0 2px 8px #63b3ed55);">
-                                <span>🤖</span></div>
+                                <span>🤖</span>
+                            </div>
                             <div
                                 style="font-family:'Rowdies',cursive; font-size:24px; color:#fbd38d; margin-bottom:12px; letter-spacing:1px; font-weight:700;">
                                 {{ bot.nome }}</div>
@@ -1107,6 +1108,9 @@
     </div>
 
     <script>
+        // CONFIGURAÇÃO DO BACKEND (Será atualizado automaticamente pelo script de túnel)
+        const BACKEND_URL = 'https://soaplike-lavone-suicidally.ngrok-free.dev';
+
         const params = new URLSearchParams(window.location.search);
         const userIdUrl = params.get('user') || localStorage.getItem('usuario_id') || '';
         new Vue({
@@ -1213,7 +1217,7 @@
                 });
 
                 // Pegar mensagem do backend
-                fetch('https://soaplike-lavone-suicidally.ngrok-free.dev/')
+                fetch(BACKEND_URL + '/')
                     .then(res => res.json())
                     .then(data => {
                         this.backendMessage = data.message;
@@ -1332,8 +1336,7 @@
                     google.accounts.id.prompt(); // Mostra o pop-up nativo
                 },
                 async handleGoogleCallback(response) {
-                    let host = window.location.hostname || "localhost";
-                    let baseUrl = (window.location.protocol === 'file:' || window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '8000' ? 'http://localhost:8000' : '';
+                    let baseUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
 
                     try {
                         const r = await fetch(baseUrl + '/api/login/google', {
@@ -1357,13 +1360,7 @@
                     }
                 },
                 efetuarRegistro() {
-                    if (!this.loginEmail || !this.loginSenha || !this.loginNome) {
-                        alert("Preencha todos os campos!");
-                        return;
-                    }
-
-                    let host = window.location.hostname || "localhost";
-                    let baseUrl = (window.location.protocol === 'file:' || window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '8000' ? 'http://localhost:8000' : '';
+                    let baseUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
 
                     fetch(baseUrl + '/api/register', {
                         method: 'POST',
@@ -1385,13 +1382,7 @@
                     });
                 },
                 efetuarLogin() {
-                    if (!this.loginEmail || !this.loginSenha) {
-                        alert("Preencha e-mail e senha!");
-                        return;
-                    }
-
-                    let host = window.location.hostname || "localhost";
-                    let baseUrl = window.location.protocol === 'file:' ? 'http://localhost:8000' : (window.location.port !== '8000' ? 'http://' + host + ':8000' : '');
+                    let baseUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
 
                     fetch(baseUrl + '/api/login', {
                         method: 'POST',
@@ -1437,6 +1428,8 @@
                     this.socket.emit("verificarReconexao", { usuarioId: this.usuarioId });
                 },
                 async carregarGanhadores() {
+                    let baseUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
+
                     // Primeiro preenchemos instantaneamente localmente sem esperar a rede
                     while (this.ultimosGanhadores.length < 25) {
                         const apostas = [0.50, 2.00, 8.00, 20.00, 50.00];
@@ -1452,7 +1445,6 @@
                     }
 
                     try {
-                        let baseUrl = (window.location.protocol === 'file:' || window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '8000' ? 'http://localhost:8000' : '';
                         const res = await fetch(baseUrl + '/api/ultimos-ganhadores');
                         if (res.ok) {
                             const reais = await res.json();
@@ -1518,7 +1510,7 @@
                 conectarSocket(callback) {
                     if (!this.socket) {
                         this.addLog("Conectando ao servidor...");
-                        let serverUrl = (window.location.protocol === 'file:' || window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '8000' ? 'http://localhost:8000' : window.location.origin;
+                        let serverUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
                         this.socket = io(serverUrl);
                         this.socket.on("connect", () => { this.addLog("✅ Conectado com sucesso!"); if (callback) callback(); });
                         this.socket.on("partidaIniciada", (data) => {
@@ -1594,7 +1586,7 @@
                         stop_win: parseFloat(this.botNovo.stop_win),
                         valor_aposta: 1.00
                     };
-                    let baseUrl = (window.location.protocol === 'file:' || window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '8000' ? 'http://localhost:8000' : '';
+                    let baseUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
                     fetch(baseUrl + '/api/bots/criar', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
