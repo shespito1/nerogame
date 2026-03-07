@@ -1,17 +1,23 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8">
     <title>Nero Game - Uno Betting</title>
     <script src='https://accounts.google.com/gsi/client' async defer></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Rowdies:wght@400;700&display=swap" rel="stylesheet">
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Rowdies:wght@400;700&display=swap"
+        rel="stylesheet">
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Baloo+2&wght@500;700;800&family=Rowdies:wght@400;700&display=swap');
         @media (max-width: 600px) {
-            .card, .card-menu, .login-card {
+
+            .card,
+            .card-menu,
+            .login-card {
                 width: 100vw !important;
                 max-width: 100vw !important;
                 min-width: 100vw !important;
@@ -21,229 +27,300 @@
                 border-radius: 0 !important;
                 box-sizing: border-box !important;
             }
-            .card > *, .card-menu > *, .login-card > * {
+
+            .card>*,
+            .card-menu>*,
+            .login-card>* {
                 font-size: 2em !important;
             }
-            .card button, .card-menu button, .login-card button {
+
+            .card button,
+            .card-menu button,
+            .login-card button {
                 font-size: 2.5rem !important;
                 padding: 40px 0 !important;
                 width: 100vw !important;
                 margin: 0 !important;
                 display: block !important;
             }
-            .card input, .card-menu input, .login-card input {
+
+            .card input,
+            .card-menu input,
+            .login-card input {
                 font-size: 2em !important;
                 height: 70px !important;
                 width: 90vw !important;
                 margin: 0 auto 32px auto !important;
                 display: block !important;
             }
-            h1, h2 {
+
+            h1,
+            h2 {
                 font-size: 3.8rem !important;
             }
+
             .stats {
                 font-size: 2.5rem !important;
                 flex-direction: column;
                 gap: 20px;
             }
+
             .ticker-item {
                 font-size: 2rem !important;
             }
         }
-                                                                        @media (max-width: 600px) {
-                                                                            .card, .card-menu, .login-card {
-                                                                                width: 100vw !important;
-                                                                                max-width: 100vw !important;
-                                                                                min-width: 0 !important;
-                                                                                margin: 0 !important;
-                                                                                padding: 32px 0 32px 0 !important;
-                                                                                font-size: 30px !important;
-                                                                                border-radius: 0 !important;
-                                                                                box-sizing: border-box !important;
-                                                                            }
-                                                                            .card > *, .card-menu > *, .login-card > * {
-                                                                                font-size: 1.35em !important;
-                                                                            }
-                                                                            .card button, .card-menu button, .login-card button {
-                                                                                font-size: 1.7rem !important;
-                                                                                padding: 28px 0 !important;
-                                                                                width: 96vw !important;
-                                                                                margin: 0 auto !important;
-                                                                                display: block !important;
-                                                                            }
-                                                                            .card input, .card-menu input, .login-card input {
-                                                                                font-size: 1.3em !important;
-                                                                                height: 48px !important;
-                                                                            }
-                                                                            h1, h2 {
-                                                                                font-size: 2.5rem !important;
-                                                                            }
-                                                                            .stats {
-                                                                                font-size: 1.5rem !important;
-                                                                                flex-direction: column;
-                                                                                gap: 12px;
-                                                                            }
-                                                                            .ticker-item {
-                                                                                font-size: 1.2rem !important;
-                                                                            }
-                                                                        }
-                                                                @media (max-width: 600px) {
-                                                                    .card {
-                                                                        width: 100vw !important;
-                                                                        max-width: 100vw !important;
-                                                                        min-width: 0 !important;
-                                                                        margin: 0 !important;
-                                                                        padding: 24px 0 24px 0 !important;
-                                                                        font-size: 26px !important;
-                                                                        border-radius: 0 !important;
-                                                                        box-sizing: border-box !important;
-                                                                    }
-                                                                    .card > * {
-                                                                        font-size: 1.25em !important;
-                                                                    }
-                                                                    .card button {
-                                                                        font-size: 1.5rem !important;
-                                                                        padding: 26px 0 !important;
-                                                                        width: 96vw !important;
-                                                                        margin: 0 auto !important;
-                                                                        display: block !important;
-                                                                    }
-                                                                    .card .mult-desafio, .card .multipl-desafio, .card .multipl-desafio *, .card .multipl-desafio span {
-                                                                        font-size: 1.4em !important;
-                                                                    }
-                                                                }
-                                                        @media (max-width: 600px) {
-                                                            .card {
-                                                                max-width: 99vw !important;
-                                                                min-width: 0 !important;
-                                                                width: 99vw !important;
-                                                                margin: 12px auto 0 auto !important;
-                                                                padding: 18px 2vw !important;
-                                                                font-size: 24px !important;
-                                                                box-sizing: border-box !important;
-                                                            }
-                                                            .card > * {
-                                                                font-size: 1.2em !important;
-                                                            }
-                                                            .card button {
-                                                                font-size: 1.4rem !important;
-                                                                padding: 22px 0 !important;
-                                                                width: 100% !important;
-                                                                min-width: 0 !important;
-                                                            }
-                                                            .card .mult-desafio, .card .multipl-desafio, .card .multipl-desafio *, .card .multipl-desafio span {
-                                                                font-size: 1.3em !important;
-                                                            }
-                                                        }
-                                                @media (max-width: 600px) {
-                                                    .card {
-                                                        max-width: 98vw !important;
-                                                        min-width: 0 !important;
-                                                        width: 98vw !important;
-                                                        margin: 16px auto 0 auto !important;
-                                                        padding: 18px 4vw !important;
-                                                        font-size: 22px !important;
-                                                    }
-                                                    .card-menu, .login-card {
-                                                        max-width: 98vw !important;
-                                                        min-width: 0 !important;
-                                                        width: 98vw !important;
-                                                        margin: 16px auto 0 auto !important;
-                                                        padding: 18px 4vw !important;
-                                                        font-size: 22px !important;
-                                                    }
-                                                    h1, h2 {
-                                                        font-size: 2.1rem !important;
-                                                    }
-                                                    .stats {
-                                                        font-size: 1.2rem !important;
-                                                        flex-direction: column;
-                                                        gap: 8px;
-                                                    }
-                                                    .ticker-item {
-                                                        font-size: 1rem !important;
-                                                    }
-                                                    .card button, .card-menu button, .login-card button {
-                                                        font-size: 1.3rem !important;
-                                                        padding: 18px 0 !important;
-                                                        width: 100% !important;
-                                                        min-width: 0 !important;
-                                                    }
-                                                }
-                                        @media (max-width: 600px) {
-                                            .carta {
-                                                width: 110px !important;
-                                                height: 170px !important;
-                                                font-size: 48px !important;
-                                            }
-                                            .carta .bottom-corner,
-                                            .carta::after {
-                                                font-size: 28px !important;
-                                            }
-                                            .mao {
-                                                gap: 18px !important;
-                                            }
-                                            .carta-mesa {
-                                                transform: scale(1.6) !important;
-                                                margin: 36px !important;
-                                            }
-                                            button {
-                                                font-size: 22px !important;
-                                                padding: 18px 44px !important;
-                                            }
-                                        }
-                                @media (max-width: 600px) {
-                                    .bot-modal input {
-                                        width: 90vw !important;
-                                        max-width: 95vw !important;
-                                        font-size: 20px !important;
-                                        height: 38px !important;
-                                    }
-                                    .modal-no-scroll-x > div {
-                                        width: 98vw !important;
-                                        max-width: 98vw !important;
-                                        min-width: 0 !important;
-                                        padding: 8px !important;
-                                        font-size: 20px !important;
-                                    }
-                                    .modal-no-scroll-x {
-                                        width: 100vw !important;
-                                        min-width: 0 !important;
-                                    }
-                                    .bot-modal button, .modal-no-scroll-x button {
-                                        font-size: 22px !important;
-                                        padding: 18px 44px !important;
-                                    }
-                                    .bot-modal label {
-                                        font-size: 20px !important;
-                                    }
-                                }
-                        @media (max-width: 600px) {
-                            .bot-modal input {
-                                width: 90vw !important;
-                                max-width: 95vw !important;
-                                font-size: 16px;
-                            }
-                            .modal-no-scroll-x > div {
-                                width: 98vw !important;
-                                max-width: 98vw !important;
-                                min-width: 0 !important;
-                                padding: 8px !important;
-                            }
-                            .modal-no-scroll-x {
-                                width: 100vw !important;
-                                min-width: 0 !important;
-                            }
-                        }
-                /* Ocultar scrollbars brancas do modal */
-                .modal-scroll-hide::-webkit-scrollbar {
-                    width: 0px;
-                    background: transparent;
-                }
-                .modal-scroll-hide {
-                    scrollbar-width: none;
-                    -ms-overflow-style: none;
-                }
+
+        @media (max-width: 600px) {
+
+            .card,
+            .card-menu,
+            .login-card {
+                width: 100vw !important;
+                max-width: 100vw !important;
+                min-width: 0 !important;
+                margin: 0 !important;
+                padding: 32px 0 32px 0 !important;
+                font-size: 30px !important;
+                border-radius: 0 !important;
+                box-sizing: border-box !important;
+            }
+
+            .card>*,
+            .card-menu>*,
+            .login-card>* {
+                font-size: 1.35em !important;
+            }
+
+            .card button,
+            .card-menu button,
+            .login-card button {
+                font-size: 1.7rem !important;
+                padding: 28px 0 !important;
+                width: 96vw !important;
+                margin: 0 auto !important;
+                display: block !important;
+            }
+
+            .card input,
+            .card-menu input,
+            .login-card input {
+                font-size: 1.3em !important;
+                height: 48px !important;
+            }
+
+            h1,
+            h2 {
+                font-size: 2.5rem !important;
+            }
+
+            .stats {
+                font-size: 1.5rem !important;
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .ticker-item {
+                font-size: 1.2rem !important;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .card {
+                width: 100vw !important;
+                max-width: 100vw !important;
+                min-width: 0 !important;
+                margin: 0 !important;
+                padding: 24px 0 24px 0 !important;
+                font-size: 26px !important;
+                border-radius: 0 !important;
+                box-sizing: border-box !important;
+            }
+
+            .card>* {
+                font-size: 1.25em !important;
+            }
+
+            .card button {
+                font-size: 1.5rem !important;
+                padding: 26px 0 !important;
+                width: 96vw !important;
+                margin: 0 auto !important;
+                display: block !important;
+            }
+
+            .card .mult-desafio,
+            .card .multipl-desafio,
+            .card .multipl-desafio *,
+            .card .multipl-desafio span {
+                font-size: 1.4em !important;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .card {
+                max-width: 99vw !important;
+                min-width: 0 !important;
+                width: 99vw !important;
+                margin: 12px auto 0 auto !important;
+                padding: 18px 2vw !important;
+                font-size: 24px !important;
+                box-sizing: border-box !important;
+            }
+
+            .card>* {
+                font-size: 1.2em !important;
+            }
+
+            .card button {
+                font-size: 1.4rem !important;
+                padding: 22px 0 !important;
+                width: 100% !important;
+                min-width: 0 !important;
+            }
+
+            .card .mult-desafio,
+            .card .multipl-desafio,
+            .card .multipl-desafio *,
+            .card .multipl-desafio span {
+                font-size: 1.3em !important;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .card {
+                max-width: 98vw !important;
+                min-width: 0 !important;
+                width: 98vw !important;
+                margin: 16px auto 0 auto !important;
+                padding: 18px 4vw !important;
+                font-size: 22px !important;
+            }
+
+            .card-menu,
+            .login-card {
+                max-width: 98vw !important;
+                min-width: 0 !important;
+                width: 98vw !important;
+                margin: 16px auto 0 auto !important;
+                padding: 18px 4vw !important;
+                font-size: 22px !important;
+            }
+
+            h1,
+            h2 {
+                font-size: 2.1rem !important;
+            }
+
+            .stats {
+                font-size: 1.2rem !important;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .ticker-item {
+                font-size: 1rem !important;
+            }
+
+            .card button,
+            .card-menu button,
+            .login-card button {
+                font-size: 1.3rem !important;
+                padding: 18px 0 !important;
+                width: 100% !important;
+                min-width: 0 !important;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .carta {
+                width: 110px !important;
+                height: 170px !important;
+                font-size: 48px !important;
+            }
+
+            .carta .bottom-corner,
+            .carta::after {
+                font-size: 28px !important;
+            }
+
+            .mao {
+                gap: 18px !important;
+            }
+
+            .carta-mesa {
+                transform: scale(1.6) !important;
+                margin: 36px !important;
+            }
+
+            button {
+                font-size: 22px !important;
+                padding: 18px 44px !important;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .bot-modal input {
+                width: 90vw !important;
+                max-width: 95vw !important;
+                font-size: 20px !important;
+                height: 38px !important;
+            }
+
+            .modal-no-scroll-x>div {
+                width: 98vw !important;
+                max-width: 98vw !important;
+                min-width: 0 !important;
+                padding: 8px !important;
+                font-size: 20px !important;
+            }
+
+            .modal-no-scroll-x {
+                width: 100vw !important;
+                min-width: 0 !important;
+            }
+
+            .bot-modal button,
+            .modal-no-scroll-x button {
+                font-size: 22px !important;
+                padding: 18px 44px !important;
+            }
+
+            .bot-modal label {
+                font-size: 20px !important;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .bot-modal input {
+                width: 90vw !important;
+                max-width: 95vw !important;
+                font-size: 16px;
+            }
+
+            .modal-no-scroll-x>div {
+                width: 98vw !important;
+                max-width: 98vw !important;
+                min-width: 0 !important;
+                padding: 8px !important;
+            }
+
+            .modal-no-scroll-x {
+                width: 100vw !important;
+                min-width: 0 !important;
+            }
+        }
+
+        /* Ocultar scrollbars brancas do modal */
+        .modal-scroll-hide::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+
+        .modal-scroll-hide {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
         @import url('https://fonts.googleapis.com/css2?family=Baloo+2&wght@500;700;800&family=Rowdies:wght@400;700&display=swap');
 
         /* Remove horizontal scrollbar from modal */
@@ -253,980 +330,1294 @@
             width: 100vw !important;
             min-width: 0 !important;
         }
+
         .modal-no-scroll-x::-webkit-scrollbar {
             display: none;
         }
-        .modal-no-scroll-x > div {
+
+        .modal-no-scroll-x>div {
             max-width: 100vw !important;
             min-width: 0 !important;
             overflow-x: hidden !important;
         }
 
-        body { 
-            font-family: 'Baloo 2', display, sans-serif; 
-            background: radial-gradient(circle at center, #1b533a 0%, #0d2e1c 100%); 
-            color: white; 
-            margin: 0; 
-            padding: 0; 
+        body {
+            font-family: 'Baloo 2', display, sans-serif;
+            background: radial-gradient(circle at center, #1b533a 0%, #0d2e1c 100%);
+            color: white;
+            margin: 0;
+            padding: 0;
             min-height: 100vh;
         }
-        .container { max-width: 1100px; margin: 0 auto; padding: 20px; }
 
-        h1 { 
-            text-align: center; color: #f1c40f; font-family: 'Rowdies', cursive; 
-            text-shadow: 2px 2px 0 #000; margin-bottom: 20px;
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px;
         }
 
-        .stats { 
-            display: flex; justify-content: space-around; font-size: 20px; font-weight: bold; 
-            color: #63b3ed; margin-bottom: 20px; text-transform: uppercase;
-            background: rgba(0,0,0,0.35); padding: 15px 25px; border-radius: 12px; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-            border: 1px solid rgba(255,255,255,0.05);
+        h1 {
+            text-align: center;
+            color: #f1c40f;
+            font-family: 'Rowdies', cursive;
+            text-shadow: 2px 2px 0 #000;
+            margin-bottom: 20px;
         }
 
-        .log { 
-            background: rgba(0,0,0,0.5); padding: 15px; height: 120px; overflow-y: scroll; 
-            border-radius: 8px; font-family: 'Consolas', monospace; font-size: 13px; color: #4ade80; 
-            border: 1px solid rgba(255,255,255,0.05);
-            box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            font-size: 20px;
+            font-weight: bold;
+            color: #63b3ed;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            background: rgba(0, 0, 0, 0.35);
+            padding: 15px 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
-        
-        .card { 
-            background: rgba(20, 30, 25, 0.6); padding: 30px; border-radius: 16px; 
-            text-align: center; margin-bottom: 20px; 
-            box-shadow: 0 8px 32px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05);
+
+        .log {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            height: 120px;
+            overflow-y: scroll;
+            border-radius: 8px;
+            font-family: 'Consolas', monospace;
+            font-size: 13px;
+            color: #4ade80;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .card {
+            background: rgba(20, 30, 25, 0.6);
+            padding: 30px;
+            border-radius: 16px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(8px);
         }
 
-        button { 
-            background: linear-gradient(135deg, #f6d365 0%, #ffb347 100%); 
-            color: #744210; border: none; padding: 15px 35px; font-size: 20px; border-radius: 50px; 
-            cursor: pointer; font-weight: 800; font-family: 'Baloo 2', cursive;
-            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2); text-transform: uppercase; margin-top: 15px;
+        button {
+            background: linear-gradient(135deg, #f6d365 0%, #ffb347 100%);
+            color: #744210;
+            border: none;
+            padding: 15px 35px;
+            font-size: 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 800;
+            font-family: 'Baloo 2', cursive;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            text-transform: uppercase;
+            margin-top: 15px;
         }
-        button:hover { transform: scale(1.05) translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
-        button:disabled { filter: grayscale(1); cursor: not-allowed; transform: none; }
+
+        button:hover {
+            transform: scale(1.05) translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        button:disabled {
+            filter: grayscale(1);
+            cursor: not-allowed;
+            transform: none;
+        }
 
         /* MESA E OPONENTES */
-        .mesa-container { display: flex; justify-content: space-evenly; align-items: center; margin: 20px 0; gap: 40px; }
-        
-        .oponentes { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; }
-        .oponente { 
-            display: inline-flex; flex-direction: column; align-items: center; justify-content: center;
-            min-width: 90px; padding: 12px; background: rgba(0,0,0,0.5); margin: 5px; 
-            border-radius: 12px; font-size: 14px; border: 2px solid transparent; transition: 0.3s;
+        .mesa-container {
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+            margin: 20px 0;
+            gap: 40px;
+        }
+
+        .oponentes {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .oponente {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-width: 90px;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.5);
+            margin: 5px;
+            border-radius: 12px;
+            font-size: 14px;
+            border: 2px solid transparent;
+            transition: 0.3s;
             position: relative;
         }
-        .oponente span { color: white !important; }
-        .oponente-nome { font-weight: bold; margin-bottom: 5px; color: #e2e8f0; }
-        .oponente-cartas { 
-            background: #4a5568; color: white; padding: 4px 10px; 
-            border-radius: 20px; font-size: 16px; font-weight: bold;
-            border: 1px solid rgba(255,255,255,0.2); 
+
+        .oponente span {
+            color: white !important;
+        }
+
+        .oponente-nome {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #e2e8f0;
+        }
+
+        .oponente-cartas {
+            background: #4a5568;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border: 1px solid rgba(255, 255, 255, 0.2);
             margin-top: 5px;
         }
-        .oponente-ativo { 
-            border: 2px solid #fbd38d; box-shadow: 0 0 20px rgba(251, 211, 141, 0.4); 
-            background: rgba(251, 211, 141, 0.15); transform: translateY(-5px);
+
+        .oponente-ativo {
+            border: 2px solid #fbd38d;
+            box-shadow: 0 0 20px rgba(251, 211, 141, 0.4);
+            background: rgba(251, 211, 141, 0.15);
+            transform: translateY(-5px);
         }
 
-        .mesa { background: rgba(0,0,0,0.3); padding: 20px; border-radius: 8px; text-align: center; }
+        .mesa {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
 
-        .mao-container { margin-top: 20px; text-align: center; padding: 15px; border-radius: 12px;}
-        .meu-turno { border: 2px dashed #48bb78; background: rgba(72, 187, 120, 0.1); }
-        .mao { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
+        .mao-container {
+            margin-top: 20px;
+            text-align: center;
+            padding: 15px;
+            border-radius: 12px;
+        }
+
+        .meu-turno {
+            border: 2px dashed #48bb78;
+            background: rgba(72, 187, 120, 0.1);
+        }
+
+        .mao {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
 
         /* CARTAS DE UNO */
-        .carta { 
-            position: relative; display: inline-flex; justify-content: center; align-items: center; 
-            width: 75px; height: 115px; border-radius: 8px; margin: 8px; 
-            font-size: 34px; font-weight: 700; font-family: 'Rowdies', cursive;
-            color: white; cursor: pointer; user-select: none; 
-            border: 4px solid white; text-align: center; 
-            text-shadow: 2px 2px 0px rgba(0,0,0,0.5); 
-            box-shadow: 2px 5px 12px rgba(0,0,0,0.4), inset 0 0 0 3px rgba(0,0,0,0.1); 
+        .carta {
+            position: relative;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 75px;
+            height: 115px;
+            border-radius: 8px;
+            margin: 8px;
+            font-size: 34px;
+            font-weight: 700;
+            font-family: 'Rowdies', cursive;
+            color: white;
+            cursor: pointer;
+            user-select: none;
+            border: 4px solid white;
+            text-align: center;
+            text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.5);
+            box-shadow: 2px 5px 12px rgba(0, 0, 0, 0.4), inset 0 0 0 3px rgba(0, 0, 0, 0.1);
             transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            background-color: #333; overflow: hidden;
+            background-color: #333;
+            overflow: hidden;
             line-height: normal;
         }
+
         .carta::before {
-            content: ''; position: absolute; top: -10%; left: -10%; right: -10%; bottom: -10%;
-            background: rgba(255,255,255,0.15); border-radius: 50%;
-            transform: rotate(-25deg) scale(0.85); z-index: 0; pointer-events: none;
-        }
-        .carta span { position: relative; z-index: 1; pointer-events: none; }
-
-.bottom-corner { position: absolute; bottom: 5px; right: 8px; font-size: 16px; transform: rotate(180deg); font-weight: bold; }
-.carta::after { content: attr(data-valor); position: absolute; top: 5px; left: 8px; font-size: 16px; font-weight: bold; }
-
-        
-        .carta:hover { 
-            transform: translateY(-15px) scale(1.1) rotate(-2deg); 
-            z-index: 20; box-shadow: 5px 15px 25px rgba(0,0,0,0.5); 
+            content: '';
+            position: absolute;
+            top: -10%;
+            left: -10%;
+            right: -10%;
+            bottom: -10%;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            transform: rotate(-25deg) scale(0.85);
+            z-index: 0;
+            pointer-events: none;
         }
 
-        .carta-mesa { transform: scale(1.4); pointer-events: none; box-shadow: 0 10px 30px rgba(0,0,0,0.6); margin: 30px; }
-        
+        .carta span {
+            position: relative;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .bottom-corner {
+            position: absolute;
+            bottom: 5px;
+            right: 8px;
+            font-size: 16px;
+            transform: rotate(180deg);
+            font-weight: bold;
+        }
+
+        .carta::after {
+            content: attr(data-valor);
+            position: absolute;
+            top: 5px;
+            left: 8px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+
+        .carta:hover {
+            transform: translateY(-15px) scale(1.1) rotate(-2deg);
+            z-index: 20;
+            box-shadow: 5px 15px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .carta-mesa {
+            transform: scale(1.4);
+            pointer-events: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            margin: 30px;
+        }
+
         /* Cores reais do UNO */
-        .Vermelho { background: linear-gradient(135deg, #f56462 0%, #d82b28 100%); }
-        .Azul { background: linear-gradient(135deg, #0099ff 0%, #0056cc 100%); }
-        .Verde { background: linear-gradient(135deg, #2ecc71 0%, #158b44 100%); }
-        .Amarelo { background: linear-gradient(135deg, #ffda33 0%, #e0a300 100%); color: white; }
-        .Amarelo span { text-shadow: 2px 2px 0px rgba(0,0,0,0.3); }
-        .Curinga { background: conic-gradient(from 45deg, #f56462 0% 25%, #0099ff 25% 50%, #2ecc71 50% 75%, #ffda33 75% 100%); }
-        .Curinga::before { background: rgba(0,0,0,0.3); }
+        .Vermelho {
+            background: linear-gradient(135deg, #f56462 0%, #d82b28 100%);
+        }
+
+        .Azul {
+            background: linear-gradient(135deg, #0099ff 0%, #0056cc 100%);
+        }
+
+        .Verde {
+            background: linear-gradient(135deg, #2ecc71 0%, #158b44 100%);
+        }
+
+        .Amarelo {
+            background: linear-gradient(135deg, #ffda33 0%, #e0a300 100%);
+            color: white;
+        }
+
+        .Amarelo span {
+            text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.3);
+        }
+
+        .Curinga {
+            background: conic-gradient(from 45deg, #f56462 0% 25%, #0099ff 25% 50%, #2ecc71 50% 75%, #ffda33 75% 100%);
+        }
+
+        .Curinga::before {
+            background: rgba(0, 0, 0, 0.3);
+        }
 
         /* Animações */
-        @keyframes drawCard { 
-            0% { opacity: 0; transform: translateY(50px) scale(0.5) rotate(10deg); } 
-            100% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); } 
+        @keyframes drawCard {
+            0% {
+                opacity: 0;
+                transform: translateY(50px) scale(0.5) rotate(10deg);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1) rotate(0deg);
+            }
         }
-        .carta-animada { animation: drawCard 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-    
-    .ticker-wrap {
-        width: 100%;
-        overflow: hidden;
-        background-color: #2d3748;
-        color: #fff;
-        padding: 5px 0;
-        white-space: nowrap;
-        box-sizing: border-box;
-    }
-    .ticker {
-        display: inline-block;
-        white-space: nowrap;
-        animation: ticker 40s linear infinite;
-    }
-    .ticker-item {
-        display: inline-block;
-        padding: 0 2rem;
-        font-weight: bold;
-        font-size: 14px;
-        color: #fbbf24;
-    }
-    @keyframes ticker {
-        0% { transform: translate3d(100vw, 0, 0); }
-        100% { transform: translate3d(-100%, 0, 0); }
-    }
+
+        .carta-animada {
+            animation: drawCard 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        .ticker-wrap {
+            width: 100%;
+            overflow: hidden;
+            background-color: #2d3748;
+            color: #fff;
+            padding: 5px 0;
+            white-space: nowrap;
+            box-sizing: border-box;
+        }
+
+        .ticker {
+            display: inline-block;
+            white-space: nowrap;
+            animation: ticker 40s linear infinite;
+        }
+
+        .ticker-item {
+            display: inline-block;
+            padding: 0 2rem;
+            font-weight: bold;
+            font-size: 14px;
+            color: #fbbf24;
+        }
+
+        @keyframes ticker {
+            0% {
+                transform: translate3d(100vw, 0, 0);
+            }
+
+            100% {
+                transform: translate3d(-100%, 0, 0);
+            }
+        }
     </style>
 
 
 </head>
+
 <body>
-<div id="app" class="container">
-    <div id="backend-message" v-if="backendMessage" style="margin-bottom: 24px; background: #222; color: #fbd38d; padding: 18px; border-radius: 12px; text-align: center; font-size: 1.5em;">
-        {{ backendMessage }}
-    </div>
+    <div id="app" class="container">
+        <div id="backend-message" v-if="backendMessage"
+            style="margin-bottom: 24px; background: #222; color: #fbd38d; padding: 18px; border-radius: 12px; text-align: center; font-size: 1.5em;">
+            {{ backendMessage }}
+        </div>
 
-    <!-- Top Right Profile -->
-    <div style="position: absolute; top: 15px; right: 20px; z-index: 10000; text-align: right;">
-        <img :src="`https://api.dicebear.com/7.x/adventurer/svg?seed=${avatarSeed}`" 
-             v-if="estado === 'MENU'"
-             @click="menuPerfilAberto = !menuPerfilAberto"
-             style="width: 50px; height: 50px; border-radius: 50%; border: 3px solid #fbd38d; cursor: pointer; background: #2d3748; box-shadow: 0 4px 6px rgba(0,0,0,0.5);" />
-        
-        <div v-show="menuPerfilAberto" style="position: absolute; right: 0; background: rgba(45, 55, 72, 0.95); border: 2px solid #4a5568; border-radius: 10px; padding: 10px; margin-top: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.8); width: 220px; backdrop-filter: blur(5px);">
-            <div v-if="estado !== 'LOGIN'">
-                <div @click="abrirAbaPerfil('perfil')" style="padding: 10px; color: white; cursor: pointer; border-bottom: 1px solid #4a5568; font-weight: bold; text-align: left;">👤 Perfil</div>
-                <div @click="abrirAbaPerfil('bots')" style="padding: 10px; color: #63b3ed; cursor: pointer; border-bottom: 1px solid #4a5568; font-weight: bold; text-align: left;">🤖 Bots</div>
-                <div @click="abrirAbaPerfil('sacar')" style="padding: 10px; color: #68d391; cursor: pointer; border-bottom: 1px solid #4a5568; font-weight: bold; text-align: left;">💸 Sacar</div>
-                <div @click="abrirAbaPerfil('depositar')" style="padding: 10px; color: #fbd38d; cursor: pointer; border-bottom: 1px solid #4a5568; font-weight: bold; text-align: left;">💰 Depositar</div>
-                <div @click="abrirAbaPerfil('historico')" style="padding: 10px; color: white; cursor: pointer; border-bottom: 1px solid #4a5568; font-weight: bold; text-align: left;">📜 Histórico de Apostas</div>
-                <div @click="deslogar" style="padding: 10px; color: #fc8181; cursor: pointer; font-weight: bold; text-align: left;">🚪 Sair</div>
+        <!-- Top Right Profile -->
+        <div style="position: absolute; top: 15px; right: 20px; z-index: 10000; text-align: right;">
+            <img :src="`https://api.dicebear.com/7.x/adventurer/svg?seed=${avatarSeed}`" v-if="estado === 'MENU'"
+                @click="menuPerfilAberto = !menuPerfilAberto"
+                style="width: 50px; height: 50px; border-radius: 50%; border: 3px solid #fbd38d; cursor: pointer; background: #2d3748; box-shadow: 0 4px 6px rgba(0,0,0,0.5);" />
+
+            <div v-show="menuPerfilAberto"
+                style="position: absolute; right: 0; background: rgba(45, 55, 72, 0.95); border: 2px solid #4a5568; border-radius: 10px; padding: 10px; margin-top: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.8); width: 220px; backdrop-filter: blur(5px);">
+                <div v-if="estado !== 'LOGIN'">
+                    <div @click="abrirAbaPerfil('perfil')"
+                        style="padding: 10px; color: white; cursor: pointer; border-bottom: 1px solid #4a5568; font-weight: bold; text-align: left;">
+                        👤 Perfil</div>
+                    <div @click="abrirAbaPerfil('bots')"
+                        style="padding: 10px; color: #63b3ed; cursor: pointer; border-bottom: 1px solid #4a5568; font-weight: bold; text-align: left;">
+                        🤖 Bots</div>
+                    <div @click="abrirAbaPerfil('sacar')"
+                        style="padding: 10px; color: #68d391; cursor: pointer; border-bottom: 1px solid #4a5568; font-weight: bold; text-align: left;">
+                        💸 Sacar</div>
+                    <div @click="abrirAbaPerfil('depositar')"
+                        style="padding: 10px; color: #fbd38d; cursor: pointer; border-bottom: 1px solid #4a5568; font-weight: bold; text-align: left;">
+                        💰 Depositar</div>
+                    <div @click="abrirAbaPerfil('historico')"
+                        style="padding: 10px; color: white; cursor: pointer; border-bottom: 1px solid #4a5568; font-weight: bold; text-align: left;">
+                        📜 Histórico de Apostas</div>
+                    <div @click="deslogar"
+                        style="padding: 10px; color: #fc8181; cursor: pointer; font-weight: bold; text-align: left;">🚪
+                        Sair</div>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Modals para ações do Perfil (separado do menu, ocupa tela) -->
-    <div v-if="abaPerfilAtiva" class="modal-no-scroll-x" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:10001; display:flex; justify-content:center; align-items:center;">
-    <div v-if="estado !== 'LOGIN'" style="background: #1a202c; border: 2px solid #4a5568; color: white; width: 420px; padding: 24px; border-radius: 18px; position:relative; box-shadow: 0 10px 30px rgba(0,0,0,0.8); overflow-x:hidden; overflow-y:hidden; max-height:100vh; max-width:100vw;">
-            <button @click="abaPerfilAtiva = null" style="position: absolute; top: 10px; right: 10px; background: #e53e3e; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-weight:bold;">X</button>
-            
-            <h2 v-if="abaPerfilAtiva === 'perfil'" style="font-family: 'Rowdies', cursive; margin-top:0;">👤 Seu Perfil</h2>
-                        <h2 v-if="abaPerfilAtiva === 'bots'" style="font-family: 'Rowdies', cursive; margin-top:0; color:#63b3ed;">🤖 Gerenciar Bots</h2>
-                        <div v-if="abaPerfilAtiva === 'bots'" style="font-size: 16px; max-height: 60vh; overflow-y: hidden; max-height: 100%;">
-                            <p style="margin-bottom:18px; color:#a0aec0; text-align:center; font-size:20px; font-weight:600;">Configure seu bot para jogar Uno automaticamente.</p>
-                            <form @submit.prevent="criarBot()" style="background:rgba(255,255,255,0.12); border-radius:18px; padding:14px 8px; margin-bottom:24px; box-shadow:0 4px 16px rgba(0,0,0,0.12); max-width:320px; margin-left:auto; margin-right:auto; backdrop-filter: blur(6px); border:1px solid #63b3ed33; overflow-x:hidden; width:100%; box-sizing:border-box;">
-                                <label style="color:#fbd38d; font-weight:bold; margin-bottom:10px; display:block; font-size:18px;">Nome do Bot</label>
-                                <input type="text" v-model="botNovo.nome" placeholder="Nome do bot" style="width:268px; height:28px; max-width:268px; padding:6px; border-radius:8px; border:1px solid #63b3ed; background:rgba(26,34,51,0.85); color:white; margin-bottom:8px; font-size:14px; font-weight:500; display:block; margin-left:auto; margin-right:auto;">
-                                <label style="color:#63b3ed; font-weight:bold; margin-bottom:10px; display:block; font-size:18px;">Saldo Inicial</label>
-                                <input type="number" v-model.number="botNovo.saldo" min="1" placeholder="Saldo do bot" style="width:268px; height:28px; max-width:268px; padding:6px; border-radius:8px; border:1px solid #63b3ed; background:rgba(26,34,51,0.85); color:white; margin-bottom:8px; font-size:14px; font-weight:500; display:block; margin-left:auto; margin-right:auto;">
-                                <label style="color:#fc8181; font-weight:bold; margin-bottom:10px; display:block; font-size:18px;">Stop Loss</label>
-                                <input type="number" v-model.number="botNovo.stop_loss" min="1" placeholder="Stop Loss" style="width:268px; height:28px; max-width:268px; padding:6px; border-radius:8px; border:1px solid #fc8181; background:rgba(26,34,51,0.85); color:white; margin-bottom:8px; font-size:14px; font-weight:500; display:block; margin-left:auto; margin-right:auto;">
-                                <label style="color:#68d391; font-weight:bold; margin-bottom:10px; display:block; font-size:18px;">Stop Win</label>
-                                <input type="number" v-model.number="botNovo.stop_win" min="1" placeholder="Stop Win" style="width:268px; height:28px; max-width:268px; padding:6px; border-radius:8px; border:1px solid #68d391; background:rgba(26,34,51,0.85); color:white; margin-bottom:8px; font-size:14px; font-weight:500; display:block; margin-left:auto; margin-right:auto;">
-                                <button type="submit" style="display:block; margin:28px auto 0 auto; background:linear-gradient(135deg,#63b3ed 0%,#4f8cc9 100%); color:white; border:none; padding:18px 44px; border-radius:18px; font-weight:bold; font-size:24px; cursor:pointer; box-shadow:0 4px 16px #63b3ed33; transition:0.2s;">➕ Criar Bot</button>
-                            </form>
-                            <div style="display:flex; flex-wrap:wrap; gap:28px; justify-content:center; margin-top:28px;">
-                                <div v-for="bot in bots" :key="bot.id" class="bot-card-animado" style="background:rgba(255,255,255,0.13); border-radius:24px; padding:28px 24px; box-shadow: 0 8px 32px rgba(0,0,0,0.18); display:flex; flex-direction:column; align-items:center; min-width:240px; max-width:320px; margin-bottom:10px; border: 2px solid #63b3ed33; backdrop-filter: blur(8px);">
-                                    <div style="font-size:48px; color:#63b3ed; margin-bottom:12px; filter: drop-shadow(0 2px 8px #63b3ed55);"><span>🤖</span></div>
-                                    <div style="font-family:'Rowdies',cursive; font-size:24px; color:#fbd38d; margin-bottom:12px; letter-spacing:1px; font-weight:700;">{{ bot.nome }}</div>
-                                    <div style="display:flex; flex-direction:column; gap:8px; align-items:flex-start; width:100%; margin-bottom:12px;">
-                                        <span style="color:#63b3ed; font-weight:bold; font-size:18px;">💰 Saldo: R$ {{ bot.saldo }}</span>
-                                        <span style="color:#fc8181; font-weight:bold; font-size:18px;">🛑 Stop Loss: R$ {{ bot.stop_loss }}</span>
-                                        <span style="color:#68d391; font-weight:bold; font-size:18px;">🏆 Stop Win: R$ {{ bot.stop_win }}</span>
-                                    </div>
-                                    <div style="margin-top:10px; font-size:17px; font-weight:bold;">
-                                        <span style="color:#63b3ed;">Status:</span>
-                                        <span :style="{color: bot.status === 'Ativo' ? '#68d391' : '#fc8181', background: bot.status === 'Ativo' ? '#253e2e' : '#3a2323', padding: '4px 18px', borderRadius: '10px', marginLeft: '10px', fontWeight: 'bold', letterSpacing: '1px', fontSize:'17px', boxShadow:'0 2px 8px #0002'}">{{ bot.status }}</span>
-                                    </div>
-                                    <button @click="playBot(bot)" style="margin-top:18px; background:linear-gradient(135deg,#68d391 0%,#48bb78 100%); color:white; border:none; padding:14px 32px; border-radius:14px; font-weight:bold; font-size:20px; cursor:pointer; box-shadow:0 2px 8px #68d39133;">▶️ Play</button>
-                                    <button @click="excluirBot(bot)" style="margin-top:10px; background:linear-gradient(135deg,#fc8181 0%,#e53e3e 100%); color:white; border:none; padding:10px 28px; border-radius:14px; font-weight:bold; font-size:18px; cursor:pointer; box-shadow:0 2px 8px #fc818133;">🗑️ Excluir</button>
-                                </div>
+        <!-- Modals para ações do Perfil (separado do menu, ocupa tela) -->
+        <div v-if="abaPerfilAtiva" class="modal-no-scroll-x"
+            style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:10001; display:flex; justify-content:center; align-items:center;">
+            <div v-if="estado !== 'LOGIN'"
+                style="background: #1a202c; border: 2px solid #4a5568; color: white; width: 420px; padding: 24px; border-radius: 18px; position:relative; box-shadow: 0 10px 30px rgba(0,0,0,0.8); overflow-x:hidden; overflow-y:hidden; max-height:100vh; max-width:100vw;">
+                <button @click="abaPerfilAtiva = null"
+                    style="position: absolute; top: 10px; right: 10px; background: #e53e3e; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-weight:bold;">X</button>
+
+                <h2 v-if="abaPerfilAtiva === 'perfil'" style="font-family: 'Rowdies', cursive; margin-top:0;">👤 Seu
+                    Perfil</h2>
+                <h2 v-if="abaPerfilAtiva === 'bots'"
+                    style="font-family: 'Rowdies', cursive; margin-top:0; color:#63b3ed;">🤖 Gerenciar Bots</h2>
+                <div v-if="abaPerfilAtiva === 'bots'"
+                    style="font-size: 16px; max-height: 60vh; overflow-y: hidden; max-height: 100%;">
+                    <p style="margin-bottom:18px; color:#a0aec0; text-align:center; font-size:20px; font-weight:600;">
+                        Configure seu bot para jogar Uno automaticamente.</p>
+                    <form @submit.prevent="criarBot()"
+                        style="background:rgba(255,255,255,0.12); border-radius:18px; padding:14px 8px; margin-bottom:24px; box-shadow:0 4px 16px rgba(0,0,0,0.12); max-width:320px; margin-left:auto; margin-right:auto; backdrop-filter: blur(6px); border:1px solid #63b3ed33; overflow-x:hidden; width:100%; box-sizing:border-box;">
+                        <label
+                            style="color:#fbd38d; font-weight:bold; margin-bottom:10px; display:block; font-size:18px;">Nome
+                            do Bot</label>
+                        <input type="text" v-model="botNovo.nome" placeholder="Nome do bot"
+                            style="width:268px; height:28px; max-width:268px; padding:6px; border-radius:8px; border:1px solid #63b3ed; background:rgba(26,34,51,0.85); color:white; margin-bottom:8px; font-size:14px; font-weight:500; display:block; margin-left:auto; margin-right:auto;">
+                        <label
+                            style="color:#63b3ed; font-weight:bold; margin-bottom:10px; display:block; font-size:18px;">Saldo
+                            Inicial</label>
+                        <input type="number" v-model.number="botNovo.saldo" min="1" placeholder="Saldo do bot"
+                            style="width:268px; height:28px; max-width:268px; padding:6px; border-radius:8px; border:1px solid #63b3ed; background:rgba(26,34,51,0.85); color:white; margin-bottom:8px; font-size:14px; font-weight:500; display:block; margin-left:auto; margin-right:auto;">
+                        <label
+                            style="color:#fc8181; font-weight:bold; margin-bottom:10px; display:block; font-size:18px;">Stop
+                            Loss</label>
+                        <input type="number" v-model.number="botNovo.stop_loss" min="1" placeholder="Stop Loss"
+                            style="width:268px; height:28px; max-width:268px; padding:6px; border-radius:8px; border:1px solid #fc8181; background:rgba(26,34,51,0.85); color:white; margin-bottom:8px; font-size:14px; font-weight:500; display:block; margin-left:auto; margin-right:auto;">
+                        <label
+                            style="color:#68d391; font-weight:bold; margin-bottom:10px; display:block; font-size:18px;">Stop
+                            Win</label>
+                        <input type="number" v-model.number="botNovo.stop_win" min="1" placeholder="Stop Win"
+                            style="width:268px; height:28px; max-width:268px; padding:6px; border-radius:8px; border:1px solid #68d391; background:rgba(26,34,51,0.85); color:white; margin-bottom:8px; font-size:14px; font-weight:500; display:block; margin-left:auto; margin-right:auto;">
+                        <button type="submit"
+                            style="display:block; margin:28px auto 0 auto; background:linear-gradient(135deg,#63b3ed 0%,#4f8cc9 100%); color:white; border:none; padding:18px 44px; border-radius:18px; font-weight:bold; font-size:24px; cursor:pointer; box-shadow:0 4px 16px #63b3ed33; transition:0.2s;">➕
+                            Criar Bot</button>
+                    </form>
+                    <div style="display:flex; flex-wrap:wrap; gap:28px; justify-content:center; margin-top:28px;">
+                        <div v-for="bot in bots" :key="bot.id" class="bot-card-animado"
+                            style="background:rgba(255,255,255,0.13); border-radius:24px; padding:28px 24px; box-shadow: 0 8px 32px rgba(0,0,0,0.18); display:flex; flex-direction:column; align-items:center; min-width:240px; max-width:320px; margin-bottom:10px; border: 2px solid #63b3ed33; backdrop-filter: blur(8px);">
+                            <div
+                                style="font-size:48px; color:#63b3ed; margin-bottom:12px; filter: drop-shadow(0 2px 8px #63b3ed55);">
+                                <span>🤖</span></div>
+                            <div
+                                style="font-family:'Rowdies',cursive; font-size:24px; color:#fbd38d; margin-bottom:12px; letter-spacing:1px; font-weight:700;">
+                                {{ bot.nome }}</div>
+                            <div
+                                style="display:flex; flex-direction:column; gap:8px; align-items:flex-start; width:100%; margin-bottom:12px;">
+                                <span style="color:#63b3ed; font-weight:bold; font-size:18px;">💰 Saldo: R$ {{ bot.saldo
+                                    }}</span>
+                                <span style="color:#fc8181; font-weight:bold; font-size:18px;">🛑 Stop Loss: R$ {{
+                                    bot.stop_loss }}</span>
+                                <span style="color:#68d391; font-weight:bold; font-size:18px;">🏆 Stop Win: R$ {{
+                                    bot.stop_win }}</span>
                             </div>
-                            <div style="height:1px; background:linear-gradient(90deg,transparent,#63b3ed55,transparent); margin:28px 0 0 0;"></div>
+                            <div style="margin-top:10px; font-size:17px; font-weight:bold;">
+                                <span style="color:#63b3ed;">Status:</span>
+                                <span
+                                    :style="{color: bot.status === 'Ativo' ? '#68d391' : '#fc8181', background: bot.status === 'Ativo' ? '#253e2e' : '#3a2323', padding: '4px 18px', borderRadius: '10px', marginLeft: '10px', fontWeight: 'bold', letterSpacing: '1px', fontSize:'17px', boxShadow:'0 2px 8px #0002'}">{{
+                                    bot.status }}</span>
+                            </div>
+                            <button @click="playBot(bot)"
+                                style="margin-top:18px; background:linear-gradient(135deg,#68d391 0%,#48bb78 100%); color:white; border:none; padding:14px 32px; border-radius:14px; font-weight:bold; font-size:20px; cursor:pointer; box-shadow:0 2px 8px #68d39133;">▶️
+                                Play</button>
+                            <button @click="excluirBot(bot)"
+                                style="margin-top:10px; background:linear-gradient(135deg,#fc8181 0%,#e53e3e 100%); color:white; border:none; padding:10px 28px; border-radius:14px; font-weight:bold; font-size:18px; cursor:pointer; box-shadow:0 2px 8px #fc818133;">🗑️
+                                Excluir</button>
                         </div>
-            <div v-if="abaPerfilAtiva === 'perfil'" style="font-size: 16px;">
-                <p><strong>Nome:</strong> {{ gameUsername || loginNome }}</p>
-                <p><strong>Email:</strong> {{ usuarioId }}</p>
-                <p><strong>Saldo Atual:</strong> R$ {{ saldo.toFixed(2).replace('.', ',') }}</p>
-                <div style="display:flex; justify-content:center; margin-top: 15px;">
-                    <img :src="`https://api.dicebear.com/7.x/adventurer/svg?seed=${avatarSeed}`" style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid #fbd38d;" />
-                </div>
-            </div>
-
-            <h2 v-if="abaPerfilAtiva === 'sacar'" style="font-family: 'Rowdies', cursive; margin-top:0; color:#68d391;">💸 Sacar Fundos</h2>
-            <div v-if="abaPerfilAtiva === 'sacar'" style="font-size: 16px; color:#cbd5e0;">
-                <p>Nesta versão o saque em breve estará disponível.</p>
-            </div>
-
-            <h2 v-if="abaPerfilAtiva === 'depositar'" style="font-family: 'Rowdies', cursive; margin-top:0; color:#fbd38d;">💰 Depositar</h2>
-            <div v-if="abaPerfilAtiva === 'depositar'" style="font-size: 16px; color:#cbd5e0;">
-                <p>Depósitos em breve estarão disponíveis.</p>
-            </div>
-
-            <h2 v-if="abaPerfilAtiva === 'historico'" style="font-family: 'Rowdies', cursive; margin-top:0;">📜 Histórico de Apostas</h2>
-            <div v-if="abaPerfilAtiva === 'historico'" style="max-height: 50vh; overflow-y:auto;">
-                
-                <div v-if="partidaId" style="background: linear-gradient(135deg, #dd6b20, #e53e3e); padding:10px; border-radius: 10px; margin-bottom: 15px; cursor:pointer; border: 2px solid #fbd38d; box-shadow: 0 4px 15px rgba(221,107,32,0.4);" @click="abaPerfilAtiva=null; voltarPartidaForeground()">
-                    <p style="margin:0; font-weight:bold; color: white; font-family: 'Rowdies', cursive;">🔥 Partida Em Progresso</p>
-                    <p style="margin:5px 0 0 0; font-size:12px; color: #ffeebc;">Clique para voltar à mesa agora!</p>
-                </div>
-                
-                <p v-if="historicoApostas.length === 0 && !partidaId" style="color: #a0aec0; text-align:center; padding: 20px 0;">Nenhuma aposta ainda.</p>
-                
-                <div v-for="h in historicoApostas" :key="h.id" style="background: #2d3748; padding: 10px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid;" :style="{ borderLeftColor: h.ganhou ? '#48bb78' : '#e53e3e' }">
-                    <p style="margin:0; font-weight:bold; font-size:14px; word-break: break-all;">Partida: {{ h.id }}</p>
-                    <p style="margin:5px 0 0 0; font-size:14px; font-weight: bold;" :style="{color: h.ganhou ? '#48bb78' : '#e53e3e'}">
-                        {{ h.ganhou ? 'Venceu (+R$ ' + h.valor.toFixed(2) + ')' : 'Perdeu (R$ ' + h.valor.toFixed(2) + ')' }}
-                    </p>
-                </div>
-            </div>
-            
-        </div>
-    </div>
-
-    <div class="stats" v-if="estado !== 'LOGIN'">
-        <div>👤 Olá, {{ usuarioId }}</div>
-        <div>💰 Saldo: R$ {{ saldo.toFixed(2) }}</div>
-    </div>
-    
-    <div class="card-menu login-card" v-if="estado === 'LOGIN'" style="max-width: 400px; margin: 40px auto; padding: 40px 20px;">
-        <h1 style="font-size: 3.5em; margin-top: 0; margin-bottom: 0.7em; text-align: center; letter-spacing: 2px; font-weight: 900; color: #f1c40f; text-shadow: 2px 2px 0 #000;">Nero Games</h1>
-        <h2 style="color: #fdd48e; margin-bottom: 20px;" v-if="loginMode === 'login'">🔐 Acessar Conta</h2>
-        <h2 style="color: #fbd38d; margin-bottom: 20px;" v-else>📝 Criar Conta</h2>
-        
-        <p style="color: #a0aec0; margin-bottom: 30px; font-size: 16px;" v-if="loginMode === 'login'">Entre para continuar ganhando.</p>
-        <p style="color: #a0aec0; margin-bottom: 30px; font-size: 16px;" v-else>Cadastre-se rapidamente.</p>
-
-        <div style="text-align: left; margin-bottom: 20px;" v-if="loginMode === 'register'">
-            <label style="color: #e2e8f0; font-weight: bold; margin-bottom: 8px; display: block;">Nome de Usuário no Jogo</label>
-            <input type="text" v-model="loginNome" placeholder="Seu apelido..." style="width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #4a5568; background: rgba(0,0,0,0.5); color: white; font-size: 18px; box-sizing: border-box; outline: none; transition: 0.3s;" onfocus="this.style.borderColor='#fbd38d'" onblur="this.style.borderColor='#4a5568'">
-        </div>
-        <div style="text-align: left; margin-bottom: 20px;">
-            <label style="color: #e2e8f0; font-weight: bold; margin-bottom: 8px; display: block;">E-mail</label>
-            <input type="email" v-model="loginEmail" placeholder="Digite seu e-mail..." style="width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #4a5568; background: rgba(0,0,0,0.5); color: white; font-size: 18px; box-sizing: border-box; outline: none; transition: 0.3s;" onfocus="this.style.borderColor='#fbd38d'" onblur="this.style.borderColor='#4a5568'">
-        </div>
-        <div style="text-align: left; margin-bottom: 30px;">
-            <label style="color: #e2e8f0; font-weight: bold; margin-bottom: 8px; display: block;">Senha</label>
-            <input type="password" v-model="loginSenha" placeholder="Sua senha secreta..." style="width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #4a5568; background: rgba(0,0,0,0.5); color: white; font-size: 18px; box-sizing: border-box; outline: none; transition: 0.3s;" onfocus="this.style.borderColor='#fbd38d'" onblur="this.style.borderColor='#4a5568'">
-        </div>
-        
-        <button v-if="loginMode === 'login'" @click="efetuarLogin" style="width: 100%; padding: 18px; border-radius: 12px; font-size: 22px;">Entrar</button>
-        <button v-else @click="efetuarRegistro" style="width: 100%; padding: 18px; border-radius: 12px; font-size: 22px; background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%); color: white;">Cadastrar</button>
-
-        <div style="margin-top: 20px; cursor: pointer; color: #63b3ed; font-size: 16px; text-decoration: underline;" @click="loginMode = loginMode === 'login' ? 'register' : 'login'">
-            {{ loginMode === 'login' ? 'Não tem conta? Crie uma aqui' : 'Já tem conta? Faça login aqui' }}
-        </div>
-
-        <hr style="border-color: #4a5568; margin: 25px 0;">
-
-        <button @click="logarComGoogle" style="width: 100%; padding: 15px; border-radius: 12px; font-size: 18px; background: white; color: #4a5568; margin-top: 0; box-shadow: none; display: flex; align-items: center; justify-content: center; gap: 10px;">
-            <img src="https://www.svgrepo.com/show/475656/google-color.svg" width="24" height="24">
-            Entrar com Google
-        </button>
-    </div>
-
-    <div style="text-align: center; color: #a0aec0; margin: 15px 0 5px 0; font-size: 14px; text-transform: uppercase; font-weight: bold; letter-spacing: 1px;" v-if="estado === 'MENU'">Ganhadores da Semana</div>
-    <div class="ticker-wrap" v-if="estado === 'MENU'">
-        <div class="ticker" @animationiteration="gerarVencedorFalso">
-            <span class="ticker-item" v-for="(ganhador, idx) in ultimosGanhadores" :key="idx">🏆 {{ ganhador }} &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;</span>
-        </div>
-    </div>
-
-
-    
-    <div class="card-menu" v-if="estado === 'MENU'">
-        
-        
-
-        <h2>🌟 Escolha seu Desafio</h2>
-        <div style="display: flex; gap: 30px; justify-content: center; flex-wrap: wrap; margin-top: 30px;">
-            
-            <div @click="estado = 'ESCOLHER_APOSTA'" style="background: radial-gradient(circle at top, #f56565 0%, #9b2c2c 80%, #742a2a 100%); border: 6px solid #fbd38d; padding: 40px 20px 30px; border-radius: 25px; cursor: pointer; width: 320px; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.6), inset 0 0 20px rgba(0,0,0,0.5); position: relative; overflow: hidden;" onmouseover="this.style.transform='scale(1.08) translateY(-10px)'; this.style.boxShadow='0 20px 50px rgba(251, 211, 141, 0.4), inset 0 0 20px rgba(0,0,0,0.5)';" onmouseout="this.style.transform='scale(1.0) translateY(0)'; this.style.boxShadow='0 15px 35px rgba(0,0,0,0.6), inset 0 0 20px rgba(0,0,0,0.5)';">
-                
-                <!-- Raios de Luz ao Fundo -->
-                <div style="position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: conic-gradient(from 0deg, transparent 0deg, rgba(255,255,255,0.1) 15deg, transparent 30deg, rgba(255,255,255,0.1) 45deg, transparent 60deg, rgba(255,255,255,0.1) 75deg, transparent 90deg, rgba(255,255,255,0.1) 105deg, transparent 120deg, rgba(255,255,255,0.1) 135deg, transparent 150deg, rgba(255,255,255,0.1) 165deg, transparent 180deg, rgba(255,255,255,0.1) 195deg, transparent 210deg, rgba(255,255,255,0.1) 225deg, transparent 240deg, rgba(255,255,255,0.1) 255deg, transparent 270deg, rgba(255,255,255,0.1) 285deg, transparent 300deg, rgba(255,255,255,0.1) 315deg, transparent 330deg, rgba(255,255,255,0.1) 345deg, transparent 360deg); animation: spin 20s linear infinite; pointer-events: none; z-index: 0;"></div>
-
-                <!-- Emojis Flutuantes -->
-                <div style="position: absolute; top: 10px; left: 10px; font-size: 24px; filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.5)); transform: rotate(-15deg);">💰</div>
-                <div style="position: absolute; top: 20px; right: 15px; font-size: 28px; filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.5)); transform: rotate(20deg);">🏆</div>
-                <div style="position: absolute; bottom: 80px; left: 20px; font-size: 20px; filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.5)); transform: rotate(-10deg);">✨</div>
-                
-                <!-- Ribbon Superior -->
-                <div style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); background: #fbd38d; color: #744210; padding: 5px 30px; border-bottom-left-radius: 15px; border-bottom-right-radius: 15px; font-family: 'Baloo 2', cursive; font-weight: 800; font-size: 14px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); z-index: 10;">
-                    🔥 MULTIPLICADOR 3.8x 🔥
-                </div>
-
-                <!-- Cartas do UNO Sobrepostas -->
-                <div style="position: relative; height: 160px; display: flex; justify-content: center; align-items: center; margin-bottom: 20px; pointer-events: none; z-index: 5;">
-                    
-                    <!-- Carta Esquerda (Azul) -->
-                    <div class="carta Azul" data-valor="Ø" style="position: absolute; transform: rotate(-30deg) translateX(-60px) translateY(10px) scale(0.9); box-shadow: -8px 12px 20px rgba(0,0,0,0.6);">
-                        <span>Ø</span>
-                        <div class="bottom-corner">Ø</div>
                     </div>
-                    
-                    <!-- Carta Direita (Verde) -->
-                    <div class="carta Verde" data-valor="+2" style="position: absolute; transform: rotate(30deg) translateX(60px) translateY(10px) scale(0.9); box-shadow: 8px 12px 20px rgba(0,0,0,0.6);">
-                        <span>+2</span>
-                        <div class="bottom-corner">+2</div>
+                    <div
+                        style="height:1px; background:linear-gradient(90deg,transparent,#63b3ed55,transparent); margin:28px 0 0 0;">
                     </div>
-
-                    <!-- Carta Central (Curinga +4 Suprema) -->
-                    <div class="carta Curinga" data-valor="+4" style="position: absolute; transform: rotate(0deg) translateY(-5px) scale(1.25); box-shadow: 0 20px 35px rgba(0,0,0,0.8); border: 3px solid #fff; z-index: 10;">
-                        <span>+4</span>
-                        <div class="bottom-corner">+4</div>
+                </div>
+                <div v-if="abaPerfilAtiva === 'perfil'" style="font-size: 16px;">
+                    <p><strong>Nome:</strong> {{ gameUsername || loginNome }}</p>
+                    <p><strong>Email:</strong> {{ usuarioId }}</p>
+                    <p><strong>Saldo Atual:</strong> R$ {{ saldo.toFixed(2).replace('.', ',') }}</p>
+                    <div style="display:flex; justify-content:center; margin-top: 15px;">
+                        <img :src="`https://api.dicebear.com/7.x/adventurer/svg?seed=${avatarSeed}`"
+                            style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid #fbd38d;" />
                     </div>
                 </div>
 
-                <!-- Título -->
-                <div style="position: relative; z-index: 5; background: rgba(0,0,0,0.5); padding: 15px 10px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px);">
-                    <h3 style="margin: 0; color: #fbd38d; font-family: 'Rowdies', cursive; font-size: 42px; text-shadow: 4px 4px 0px #000, 0 0 15px #fbd38d; letter-spacing: 1px; line-height: 1;">UNO</h3>
-                    <h4 style="margin: 0; color: #fff; font-family: 'Baloo 2', cursive; font-weight: 800; font-size: 24px; letter-spacing: 8px; text-shadow: 2px 2px 0px #000;">ROYALE</h4>
+                <h2 v-if="abaPerfilAtiva === 'sacar'"
+                    style="font-family: 'Rowdies', cursive; margin-top:0; color:#68d391;">💸 Sacar Fundos</h2>
+                <div v-if="abaPerfilAtiva === 'sacar'" style="font-size: 16px; color:#cbd5e0;">
+                    <p>Nesta versão o saque em breve estará disponível.</p>
                 </div>
-                
-                <!-- Botão Jogar -->
-                <div style="margin-top: 25px; background: linear-gradient(to bottom, #4ade80, #22c55e); color: white; padding: 15px 30px; border-radius: 40px; font-family: 'Rowdies', cursive; font-size: 22px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); box-shadow: 0 8px 0 #166534, 0 15px 20px rgba(0,0,0,0.4); display: inline-block; position: relative; z-index: 5; transition: 0.2s;" onmousedown="this.style.transform='translateY(8px)'; this.style.boxShadow='0 0px 0 #166534, 0 5px 10px rgba(0,0,0,0.4)';" onmouseup="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 0 #166534, 0 15px 20px rgba(0,0,0,0.4)';">
-                    🃏 APOSTAR
+
+                <h2 v-if="abaPerfilAtiva === 'depositar'"
+                    style="font-family: 'Rowdies', cursive; margin-top:0; color:#fbd38d;">💰 Depositar</h2>
+                <div v-if="abaPerfilAtiva === 'depositar'" style="font-size: 16px; color:#cbd5e0;">
+                    <p>Depósitos em breve estarão disponíveis.</p>
                 </div>
+
+                <h2 v-if="abaPerfilAtiva === 'historico'" style="font-family: 'Rowdies', cursive; margin-top:0;">📜
+                    Histórico de Apostas</h2>
+                <div v-if="abaPerfilAtiva === 'historico'" style="max-height: 50vh; overflow-y:auto;">
+
+                    <div v-if="partidaId"
+                        style="background: linear-gradient(135deg, #dd6b20, #e53e3e); padding:10px; border-radius: 10px; margin-bottom: 15px; cursor:pointer; border: 2px solid #fbd38d; box-shadow: 0 4px 15px rgba(221,107,32,0.4);"
+                        @click="abaPerfilAtiva=null; voltarPartidaForeground()">
+                        <p style="margin:0; font-weight:bold; color: white; font-family: 'Rowdies', cursive;">🔥 Partida
+                            Em Progresso</p>
+                        <p style="margin:5px 0 0 0; font-size:12px; color: #ffeebc;">Clique para voltar à mesa agora!
+                        </p>
+                    </div>
+
+                    <p v-if="historicoApostas.length === 0 && !partidaId"
+                        style="color: #a0aec0; text-align:center; padding: 20px 0;">Nenhuma aposta ainda.</p>
+
+                    <div v-for="h in historicoApostas" :key="h.id"
+                        style="background: #2d3748; padding: 10px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid;"
+                        :style="{ borderLeftColor: h.ganhou ? '#48bb78' : '#e53e3e' }">
+                        <p style="margin:0; font-weight:bold; font-size:14px; word-break: break-all;">Partida: {{ h.id
+                            }}</p>
+                        <p style="margin:5px 0 0 0; font-size:14px; font-weight: bold;"
+                            :style="{color: h.ganhou ? '#48bb78' : '#e53e3e'}">
+                            {{ h.ganhou ? 'Venceu (+R$ ' + h.valor.toFixed(2) + ')' : 'Perdeu (R$ ' + h.valor.toFixed(2)
+                            + ')' }}
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="stats" v-if="estado !== 'LOGIN'">
+            <div>👤 Olá, {{ usuarioId }}</div>
+            <div>💰 Saldo: R$ {{ saldo.toFixed(2) }}</div>
+        </div>
+
+        <div class="card-menu login-card" v-if="estado === 'LOGIN'"
+            style="max-width: 400px; margin: 40px auto; padding: 40px 20px;">
+            <h1
+                style="font-size: 3.5em; margin-top: 0; margin-bottom: 0.7em; text-align: center; letter-spacing: 2px; font-weight: 900; color: #f1c40f; text-shadow: 2px 2px 0 #000;">
+                Nero Games</h1>
+            <h2 style="color: #fdd48e; margin-bottom: 20px;" v-if="loginMode === 'login'">🔐 Acessar Conta</h2>
+            <h2 style="color: #fbd38d; margin-bottom: 20px;" v-else>📝 Criar Conta</h2>
+
+            <p style="color: #a0aec0; margin-bottom: 30px; font-size: 16px;" v-if="loginMode === 'login'">Entre para
+                continuar ganhando.</p>
+            <p style="color: #a0aec0; margin-bottom: 30px; font-size: 16px;" v-else>Cadastre-se rapidamente.</p>
+
+            <div style="text-align: left; margin-bottom: 20px;" v-if="loginMode === 'register'">
+                <label style="color: #e2e8f0; font-weight: bold; margin-bottom: 8px; display: block;">Nome de Usuário no
+                    Jogo</label>
+                <input type="text" v-model="loginNome" placeholder="Seu apelido..."
+                    style="width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #4a5568; background: rgba(0,0,0,0.5); color: white; font-size: 18px; box-sizing: border-box; outline: none; transition: 0.3s;"
+                    onfocus="this.style.borderColor='#fbd38d'" onblur="this.style.borderColor='#4a5568'">
+            </div>
+            <div style="text-align: left; margin-bottom: 20px;">
+                <label style="color: #e2e8f0; font-weight: bold; margin-bottom: 8px; display: block;">E-mail</label>
+                <input type="email" v-model="loginEmail" placeholder="Digite seu e-mail..."
+                    style="width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #4a5568; background: rgba(0,0,0,0.5); color: white; font-size: 18px; box-sizing: border-box; outline: none; transition: 0.3s;"
+                    onfocus="this.style.borderColor='#fbd38d'" onblur="this.style.borderColor='#4a5568'">
+            </div>
+            <div style="text-align: left; margin-bottom: 30px;">
+                <label style="color: #e2e8f0; font-weight: bold; margin-bottom: 8px; display: block;">Senha</label>
+                <input type="password" v-model="loginSenha" placeholder="Sua senha secreta..."
+                    style="width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #4a5568; background: rgba(0,0,0,0.5); color: white; font-size: 18px; box-sizing: border-box; outline: none; transition: 0.3s;"
+                    onfocus="this.style.borderColor='#fbd38d'" onblur="this.style.borderColor='#4a5568'">
             </div>
 
-        </div>
-    </div>
+            <button v-if="loginMode === 'login'" @click="efetuarLogin"
+                style="width: 100%; padding: 18px; border-radius: 12px; font-size: 22px;">Entrar</button>
+            <button v-else @click="efetuarRegistro"
+                style="width: 100%; padding: 18px; border-radius: 12px; font-size: 22px; background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%); color: white;">Cadastrar</button>
 
+            <div style="margin-top: 20px; cursor: pointer; color: #63b3ed; font-size: 16px; text-decoration: underline;"
+                @click="loginMode = loginMode === 'login' ? 'register' : 'login'">
+                {{ loginMode === 'login' ? 'Não tem conta? Crie uma aqui' : 'Já tem conta? Faça login aqui' }}
+            </div>
 
-    <div class="card-menu" v-if="estado === 'ESCOLHER_APOSTA'" style="position: relative;">
-        <button style="position: absolute; top: 15px; left: 15px; padding: 8px 15px; font-size: 14px; margin: 0; width: auto; background: #4a5568; color: white;" @click="estado = 'MENU'">⬅️ Voltar</button>
-        <h2>🃏 UNO Royale - Selecione a Aposta</h2>
-        <p style="color: #a0aec0; font-size: 18px;">Vencedor ganha 3.8x o valor apostado!</p>
-        <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 25px;">
-            
-            <button v-for="(valor, index) in opcoesAposta" :key="valor"
-                class="aposta-btn-safe"
-                :style="{ background: ['linear-gradient(135deg, #f56565, #c53030)', 'linear-gradient(135deg, #4299e1, #2b6cb0)', 'linear-gradient(135deg, #48bb78, #2f855a)'][index % 3] }"
-                @click="pagarEEntrarNaFila(valor)">
-                R$ {{ valor.toFixed(2).replace('.', ',') }}
+            <hr style="border-color: #4a5568; margin: 25px 0;">
+
+            <button @click="logarComGoogle"
+                style="width: 100%; padding: 15px; border-radius: 12px; font-size: 18px; background: white; color: #4a5568; margin-top: 0; box-shadow: none; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" width="24" height="24">
+                Entrar com Google
             </button>
-
         </div>
-    </div>
 
-    <div class="card-menu" v-if="estado === 'FILA'">
-        <h2>⏳ Aguardando jogadores...</h2>
-        <p style="color: #63b3ed; font-size: 18px;">A partida iniciará automaticamente assim que 4 jogadores entrarem.</p>
-        <div class="loader"></div>
-    </div>
+        <div style="text-align: center; color: #a0aec0; margin: 15px 0 5px 0; font-size: 14px; text-transform: uppercase; font-weight: bold; letter-spacing: 1px;"
+            v-if="estado === 'MENU'">Ganhadores da Semana</div>
+        <div class="ticker-wrap" v-if="estado === 'MENU'">
+            <div class="ticker" @animationiteration="gerarVencedorFalso">
+                <span class="ticker-item" v-for="(ganhador, idx) in ultimosGanhadores" :key="idx">🏆 {{ ganhador }}
+                    &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;</span>
+            </div>
+        </div>
 
-    <div class="card-menu" v-if="estado === 'JOGO'" style="background: transparent; box-shadow: none; border: none; padding: 0;">
-        <div class="mesa-container">
-            <div class="oponentes">
-                <div v-for="op in getOponentes()" :key="op.id" :id="'oponente-' + op.id" class="oponente" :class="{ 'oponente-ativo': op.id === turnoAtual }">
-                    <span class="oponente-nome">🤖 {{ op.id }}</span>
-                    <span class="oponente-cartas">🃏 {{ op.cartas }}</span>
-                    <span v-if="op.id === turnoAtual" style="position:absolute; right: -20px; top: -10px; font-size: 24px; ">👈</span>
+
+
+        <div class="card-menu" v-if="estado === 'MENU'">
+
+
+
+            <h2>🌟 Escolha seu Desafio</h2>
+            <div style="display: flex; gap: 30px; justify-content: center; flex-wrap: wrap; margin-top: 30px;">
+
+                <div @click="estado = 'ESCOLHER_APOSTA'"
+                    style="background: radial-gradient(circle at top, #f56565 0%, #9b2c2c 80%, #742a2a 100%); border: 6px solid #fbd38d; padding: 40px 20px 30px; border-radius: 25px; cursor: pointer; width: 320px; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.6), inset 0 0 20px rgba(0,0,0,0.5); position: relative; overflow: hidden;"
+                    onmouseover="this.style.transform='scale(1.08) translateY(-10px)'; this.style.boxShadow='0 20px 50px rgba(251, 211, 141, 0.4), inset 0 0 20px rgba(0,0,0,0.5)';"
+                    onmouseout="this.style.transform='scale(1.0) translateY(0)'; this.style.boxShadow='0 15px 35px rgba(0,0,0,0.6), inset 0 0 20px rgba(0,0,0,0.5)';">
+
+                    <!-- Raios de Luz ao Fundo -->
+                    <div
+                        style="position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: conic-gradient(from 0deg, transparent 0deg, rgba(255,255,255,0.1) 15deg, transparent 30deg, rgba(255,255,255,0.1) 45deg, transparent 60deg, rgba(255,255,255,0.1) 75deg, transparent 90deg, rgba(255,255,255,0.1) 105deg, transparent 120deg, rgba(255,255,255,0.1) 135deg, transparent 150deg, rgba(255,255,255,0.1) 165deg, transparent 180deg, rgba(255,255,255,0.1) 195deg, transparent 210deg, rgba(255,255,255,0.1) 225deg, transparent 240deg, rgba(255,255,255,0.1) 255deg, transparent 270deg, rgba(255,255,255,0.1) 285deg, transparent 300deg, rgba(255,255,255,0.1) 315deg, transparent 330deg, rgba(255,255,255,0.1) 345deg, transparent 360deg); animation: spin 20s linear infinite; pointer-events: none; z-index: 0;">
+                    </div>
+
+                    <!-- Emojis Flutuantes -->
+                    <div
+                        style="position: absolute; top: 10px; left: 10px; font-size: 24px; filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.5)); transform: rotate(-15deg);">
+                        💰</div>
+                    <div
+                        style="position: absolute; top: 20px; right: 15px; font-size: 28px; filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.5)); transform: rotate(20deg);">
+                        🏆</div>
+                    <div
+                        style="position: absolute; bottom: 80px; left: 20px; font-size: 20px; filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.5)); transform: rotate(-10deg);">
+                        ✨</div>
+
+                    <!-- Ribbon Superior -->
+                    <div
+                        style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); background: #fbd38d; color: #744210; padding: 5px 30px; border-bottom-left-radius: 15px; border-bottom-right-radius: 15px; font-family: 'Baloo 2', cursive; font-weight: 800; font-size: 14px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); z-index: 10;">
+                        🔥 MULTIPLICADOR 3.8x 🔥
+                    </div>
+
+                    <!-- Cartas do UNO Sobrepostas -->
+                    <div
+                        style="position: relative; height: 160px; display: flex; justify-content: center; align-items: center; margin-bottom: 20px; pointer-events: none; z-index: 5;">
+
+                        <!-- Carta Esquerda (Azul) -->
+                        <div class="carta Azul" data-valor="Ø"
+                            style="position: absolute; transform: rotate(-30deg) translateX(-60px) translateY(10px) scale(0.9); box-shadow: -8px 12px 20px rgba(0,0,0,0.6);">
+                            <span>Ø</span>
+                            <div class="bottom-corner">Ø</div>
+                        </div>
+
+                        <!-- Carta Direita (Verde) -->
+                        <div class="carta Verde" data-valor="+2"
+                            style="position: absolute; transform: rotate(30deg) translateX(60px) translateY(10px) scale(0.9); box-shadow: 8px 12px 20px rgba(0,0,0,0.6);">
+                            <span>+2</span>
+                            <div class="bottom-corner">+2</div>
+                        </div>
+
+                        <!-- Carta Central (Curinga +4 Suprema) -->
+                        <div class="carta Curinga" data-valor="+4"
+                            style="position: absolute; transform: rotate(0deg) translateY(-5px) scale(1.25); box-shadow: 0 20px 35px rgba(0,0,0,0.8); border: 3px solid #fff; z-index: 10;">
+                            <span>+4</span>
+                            <div class="bottom-corner">+4</div>
+                        </div>
+                    </div>
+
+                    <!-- Título -->
+                    <div
+                        style="position: relative; z-index: 5; background: rgba(0,0,0,0.5); padding: 15px 10px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px);">
+                        <h3
+                            style="margin: 0; color: #fbd38d; font-family: 'Rowdies', cursive; font-size: 42px; text-shadow: 4px 4px 0px #000, 0 0 15px #fbd38d; letter-spacing: 1px; line-height: 1;">
+                            UNO</h3>
+                        <h4
+                            style="margin: 0; color: #fff; font-family: 'Baloo 2', cursive; font-weight: 800; font-size: 24px; letter-spacing: 8px; text-shadow: 2px 2px 0px #000;">
+                            ROYALE</h4>
+                    </div>
+
+                    <!-- Botão Jogar -->
+                    <div style="margin-top: 25px; background: linear-gradient(to bottom, #4ade80, #22c55e); color: white; padding: 15px 30px; border-radius: 40px; font-family: 'Rowdies', cursive; font-size: 22px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); box-shadow: 0 8px 0 #166534, 0 15px 20px rgba(0,0,0,0.4); display: inline-block; position: relative; z-index: 5; transition: 0.2s;"
+                        onmousedown="this.style.transform='translateY(8px)'; this.style.boxShadow='0 0px 0 #166534, 0 5px 10px rgba(0,0,0,0.4)';"
+                        onmouseup="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 0 #166534, 0 15px 20px rgba(0,0,0,0.4)';">
+                        🃏 APOSTAR
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+        <div class="card-menu" v-if="estado === 'ESCOLHER_APOSTA'" style="position: relative;">
+            <button
+                style="position: absolute; top: 15px; left: 15px; padding: 8px 15px; font-size: 14px; margin: 0; width: auto; background: #4a5568; color: white;"
+                @click="estado = 'MENU'">⬅️ Voltar</button>
+            <h2>🃏 UNO Royale - Selecione a Aposta</h2>
+            <p style="color: #a0aec0; font-size: 18px;">Vencedor ganha 3.8x o valor apostado!</p>
+            <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 25px;">
+
+                <button v-for="(valor, index) in opcoesAposta" :key="valor" class="aposta-btn-safe"
+                    :style="{ background: ['linear-gradient(135deg, #f56565, #c53030)', 'linear-gradient(135deg, #4299e1, #2b6cb0)', 'linear-gradient(135deg, #48bb78, #2f855a)'][index % 3] }"
+                    @click="pagarEEntrarNaFila(valor)">
+                    R$ {{ valor.toFixed(2).replace('.', ',') }}
+                </button>
+
+            </div>
+        </div>
+
+        <div class="card-menu" v-if="estado === 'FILA'">
+            <h2>⏳ Aguardando jogadores...</h2>
+            <p style="color: #63b3ed; font-size: 18px;">A partida iniciará automaticamente assim que 4 jogadores
+                entrarem.</p>
+            <div class="loader"></div>
+        </div>
+
+        <div class="card-menu" v-if="estado === 'JOGO'"
+            style="background: transparent; box-shadow: none; border: none; padding: 0;">
+            <div class="mesa-container">
+                <div class="oponentes">
+                    <div v-for="op in getOponentes()" :key="op.id" :id="'oponente-' + op.id" class="oponente"
+                        :class="{ 'oponente-ativo': op.id === turnoAtual }">
+                        <span class="oponente-nome">🤖 {{ op.id }}</span>
+                        <span class="oponente-cartas">🃏 {{ op.cartas }}</span>
+                        <span v-if="op.id === turnoAtual"
+                            style="position:absolute; right: -20px; top: -10px; font-size: 24px; ">👈</span>
+                    </div>
+                </div>
+                <div class="mesa">
+                    <p
+                        style="color: #a0aec0; margin-top: 0; font-weight: bold; font-size: 16px; text-transform: uppercase;">
+                        A Mesa</p>
+                    <div v-if="cartaMesa" class="carta carta-mesa"
+                        :class="[cartaMesa.cor, cartaMesa.cor_escolhida ? 'Cor-'+cartaMesa.cor_escolhida : '']"
+                        :data-valor="formatValor(cartaMesa.valor)">
+                        <span><span>{{ formatValor(cartaMesa.valor) }}</span></span>
+                        <div class="bottom-corner"><span>{{ formatValor(cartaMesa.valor) }}</span></div>
+                    </div>
                 </div>
             </div>
-            <div class="mesa">
-                <p style="color: #a0aec0; margin-top: 0; font-weight: bold; font-size: 16px; text-transform: uppercase;">A Mesa</p>
-                <div v-if="cartaMesa" class="carta carta-mesa" :class="[cartaMesa.cor, cartaMesa.cor_escolhida ? 'Cor-'+cartaMesa.cor_escolhida : '']" :data-valor="formatValor(cartaMesa.valor)">
-                    <span><span>{{ formatValor(cartaMesa.valor) }}</span></span>
-                    <div class="bottom-corner"><span>{{ formatValor(cartaMesa.valor) }}</span></div>
+
+            <div class="mao-container" :class="{ 'meu-turno': usuarioId === turnoAtual }">
+                <h3 v-if="usuarioId === turnoAtual" style="margin: 0 0 10px 0; color: #48bb78; font-size: 24px;">✨ É A
+                    SUA VEZ! <span style="color: #e53e3e;">({{ tempoRestante }}s)</span> ✨</h3>
+                <p v-else
+                    style="color: #a0aec0; margin-bottom: 5px; font-size: 16px; text-transform: uppercase; font-weight: bold;">
+                    Aguarde a sua vez...</p>
+                <button v-if="usuarioId === turnoAtual" @click="comprarCarta"
+                    style="margin-bottom: 15px; background: #e53e3e; padding: 12px 25px; font-size: 16px; width: auto; display: inline-block;">🤷‍♂️
+                    Nenhuma carta serve? Comprar e Passar Vez</button>
+                <p style="color: #a0aec0; margin-bottom: 5px; font-size: 16px; text-transform: uppercase;">Suas Cartas
+                    (Clique para jogar)</p>
+                <div class="mao">
+                    <div v-for="(carta, index) in mao" :key="index" class="carta carta-animada"
+                        :class="[carta.cor, carta.cor_escolhida ? 'Cor-'+carta.cor_escolhida : '']"
+                        :data-valor="formatValor(carta.valor)" @click="jogarCarta(index)">
+                        <span><span>{{ formatValor(carta.valor) }}</span></span>
+                        <div class="bottom-corner"><span>{{ formatValor(carta.valor) }}</span></div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="mao-container" :class="{ 'meu-turno': usuarioId === turnoAtual }">
-            <h3 v-if="usuarioId === turnoAtual" style="margin: 0 0 10px 0; color: #48bb78; font-size: 24px;">✨ É A SUA VEZ! <span style="color: #e53e3e;">({{ tempoRestante }}s)</span> ✨</h3>
-            <p v-else style="color: #a0aec0; margin-bottom: 5px; font-size: 16px; text-transform: uppercase; font-weight: bold;">Aguarde a sua vez...</p>
-            <button v-if="usuarioId === turnoAtual" @click="comprarCarta" style="margin-bottom: 15px; background: #e53e3e; padding: 12px 25px; font-size: 16px; width: auto; display: inline-block;">🤷‍♂️ Nenhuma carta serve? Comprar e Passar Vez</button>
-            <p style="color: #a0aec0; margin-bottom: 5px; font-size: 16px; text-transform: uppercase;">Suas Cartas (Clique para jogar)</p>
-            <div class="mao">
-                <div v-for="(carta, index) in mao" :key="index" class="carta carta-animada" :class="[carta.cor, carta.cor_escolhida ? 'Cor-'+carta.cor_escolhida : '']" :data-valor="formatValor(carta.valor)" @click="jogarCarta(index)">
-                    <span><span>{{ formatValor(carta.valor) }}</span></span>
-                    <div class="bottom-corner"><span>{{ formatValor(carta.valor) }}</span></div>
+        <!-- BOT AUTO TOGGLE -->
+        <div v-if="estado === 'JOGO'"
+            style="position: absolute; top: 10px; right: 20px; background: rgba(0,0,0,0.8); padding: 8px 12px; border-radius: 8px; z-index: 9999; border: 1px solid #4a5568;">
+            <label
+                style="color: #63b3ed; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px;">
+                <input type="checkbox" v-model="autoPlay" style="width: 18px; height: 18px; cursor: pointer;" />
+                AUTO JOGAR
+            </label>
+            <button @click="minimizarPartida"
+                style="margin-top: 10px; width: 100%; padding: 6px; background: #e53e3e; color: white; border: none; border-radius: 6px; font-size: 11px; cursor: pointer; font-weight: bold; text-transform: uppercase;"
+                onmouseover="this.style.background='#c53030'" onmouseout="this.style.background='#e53e3e'">
+                Sair (Deixar Bot)
+            </button>
+        </div>
+
+        <div v-if="escolhendoCor" class="modal-cor">
+            <div class="modal-cor-content">
+                <h3>🎨</h3>
+                <div style="display: flex; gap: 15px; justify-content: center;">
+                    <button class="cor-btn Vermelho" @click="enviarCor('Vermelho')"></button>
+                    <button class="cor-btn Azul" @click="enviarCor('Azul')"></button>
+                    <button class="cor-btn Verde" @click="enviarCor('Verde')"></button>
+                    <button class="cor-btn Amarelo" @click="enviarCor('Amarelo')"></button>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- BOT AUTO TOGGLE -->
-    <div v-if="estado === 'JOGO'" style="position: absolute; top: 10px; right: 20px; background: rgba(0,0,0,0.8); padding: 8px 12px; border-radius: 8px; z-index: 9999; border: 1px solid #4a5568;">
-        <label style="color: #63b3ed; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px;">
-            <input type="checkbox" v-model="autoPlay" style="width: 18px; height: 18px; cursor: pointer;" />
-            AUTO JOGAR
-        </label>
-        <button @click="minimizarPartida" style="margin-top: 10px; width: 100%; padding: 6px; background: #e53e3e; color: white; border: none; border-radius: 6px; font-size: 11px; cursor: pointer; font-weight: bold; text-transform: uppercase;" onmouseover="this.style.background='#c53030'" onmouseout="this.style.background='#e53e3e'">
-            Sair (Deixar Bot)
-        </button>
-    </div>
-
-    <div v-if="escolhendoCor" class="modal-cor">
-        <div class="modal-cor-content">
-            <h3>🎨</h3>
-            <div style="display: flex; gap: 15px; justify-content: center;">
-                <button class="cor-btn Vermelho" @click="enviarCor('Vermelho')"></button>
-                <button class="cor-btn Azul" @click="enviarCor('Azul')"></button>
-                <button class="cor-btn Verde" @click="enviarCor('Verde')"></button>
-                <button class="cor-btn Amarelo" @click="enviarCor('Amarelo')"></button>
-            </div>
+        <div class="card-menu" v-if="estado === 'FIM'">
+            <h2 style="color: #f1c40f; font-size: 36px;">🏆 Fim de Jogo!</h2>
+            <h1 style="color: #48bb78; font-size: 40px; margin: 10px 0;">Vencedor: {{ vencedor }}</h1>
+            <p style="font-size: 20px;">Prêmio de <b>R$ {{ premio.toFixed(2) }}</b> creditado!</p>
+            <button @click="estado = 'MENU'; mao = []">🕹️ Jogar Novamente</button>
         </div>
     </div>
 
-    <div class="card-menu" v-if="estado === 'FIM'">
-        <h2 style="color: #f1c40f; font-size: 36px;">🏆 Fim de Jogo!</h2>
-        <h1 style="color: #48bb78; font-size: 40px; margin: 10px 0;">Vencedor: {{ vencedor }}</h1>
-        <p style="font-size: 20px;">Prêmio de <b>R$ {{ premio.toFixed(2) }}</b> creditado!</p>
-        <button @click="estado = 'MENU'; mao = []">🕹️ Jogar Novamente</button>
-    </div>
-</div>
-
-<script>
-const params = new URLSearchParams(window.location.search);
-const userIdUrl = params.get('user') || localStorage.getItem('usuario_id') || '';
-new Vue({
-    el: "#app",
-    data: {
-        usuarioId: userIdUrl,
-        loginMode: 'login', // login ou register
-        loginNome: '',
-        loginEmail: '',
-        loginSenha: '',
-        saldo: (() => {
-            // Limpa saldo_uno se usuarioId mudou
-            const lastUser = localStorage.getItem('usuario_id');
-            if (lastUser !== userIdUrl) {
-                localStorage.removeItem('saldo_uno');
-                localStorage.setItem('usuario_id', userIdUrl);
-                return 10.00;
-            }
-            return localStorage.getItem('saldo_uno') !== null ? parseFloat(localStorage.getItem('saldo_uno')) : 10.00;
-        })(),
-        estado: userIdUrl ? 'MENU' : 'LOGIN',
-        menuPerfilAberto: false,
-        abaPerfilAtiva: null,
-            bots: [],
-            botNovo: {
-                nome: '',
-                saldo: 10,
-                stop_loss: 5,
-                stop_win: 20
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const userIdUrl = params.get('user') || localStorage.getItem('usuario_id') || '';
+        new Vue({
+            el: "#app",
+            data: {
+                usuarioId: userIdUrl,
+                loginMode: 'login', // login ou register
+                loginNome: '',
+                loginEmail: '',
+                loginSenha: '',
+                saldo: (() => {
+                    // Limpa saldo_uno se usuarioId mudou
+                    const lastUser = localStorage.getItem('usuario_id');
+                    if (lastUser !== userIdUrl) {
+                        localStorage.removeItem('saldo_uno');
+                        localStorage.setItem('usuario_id', userIdUrl);
+                        return 10.00;
+                    }
+                    return localStorage.getItem('saldo_uno') !== null ? parseFloat(localStorage.getItem('saldo_uno')) : 10.00;
+                })(),
+                estado: userIdUrl ? 'MENU' : 'LOGIN',
+                menuPerfilAberto: false,
+                abaPerfilAtiva: null,
+                bots: [],
+                botNovo: {
+                    nome: '',
+                    saldo: 10,
+                    stop_loss: 5,
+                    stop_win: 20
+                },
+                avatarSeed: localStorage.getItem('avatar_seed') || Math.random().toString(36).substring(7),
+                historicoApostas: JSON.parse(localStorage.getItem('historico_apostas')) || [],
+                socket: null,
+                partidaId: null,
+                cartaMesa: null,
+                mao: [],
+                oponentes: [],
+                turnoAtual: "",
+                logs: [],
+                vencedor: "",
+                premio: 0,
+                esperandoResposta: false,
+                ultimaCartaTentada: null,
+                tempoRestante: 14,
+                timerInterval: null,
+                escolhendoCor: false,
+                cartaCuringaIndex: null,
+                autoPlay: false,
+                ultimosGanhadores: [],
+                usuariosFakesDB: [],
+                ultimoUsoDB: {},
+                opcoesAposta: (() => {
+                    const periodo = Math.floor(Date.now() / (3 * 60 * 60 * 1000));
+                    const base1 = [0.50, 2.00];
+                    const base2 = [5.00, 8.00, 10.00, 15.00, 20.00];
+                    return [
+                        base1[periodo % base1.length],
+                        base2[periodo % base2.length],
+                        50.00
+                    ];
+                })(),
+                backendMessage: ''
             },
-        avatarSeed: localStorage.getItem('avatar_seed') || Math.random().toString(36).substring(7),
-        historicoApostas: JSON.parse(localStorage.getItem('historico_apostas')) || [], 
-        socket: null, 
-        partidaId: null, 
-        cartaMesa: null, 
-        mao: [], 
-        oponentes: [], 
-        turnoAtual: "", 
-        logs: [], 
-        vencedor: "", 
-        premio: 0, 
-        esperandoResposta: false, 
-        ultimaCartaTentada: null,
-        tempoRestante: 14,
-        timerInterval: null, 
-        escolhendoCor: false,
-        cartaCuringaIndex: null,
-        autoPlay: false,
-        ultimosGanhadores: [],
-        usuariosFakesDB: [],
-        ultimoUsoDB: {},
-        opcoesAposta: (() => {
-            const periodo = Math.floor(Date.now() / (3 * 60 * 60 * 1000));
-            const base1 = [0.50, 2.00];
-            const base2 = [5.00, 8.00, 10.00, 15.00, 20.00];
-            return [
-                base1[periodo % base1.length], 
-                base2[periodo % base2.length], 
-                50.00
-            ];
-        })(),
-        backendMessage: ''
-    },
-    created() {
-            50.00
-        ];
+            created() {
+                const prefixos = ["Alex", "Dani", "Gabi", "Mari", "Luiz", "Feli", "Brun", "Carl", "Vito", "Pedr", "Rafa", "Thia", "Guil", "Fern", "Leti", "Cami", "Juli", "Arth", "Bern", "Mich", "Davi", "Heit", "Math", "Luca", "Nico", "Enzo", "Yuri", "Kaua", "Igor", "Caio", "Kevi", "Will", "Ruan", "Vini", "Levi", "Theo", "Gael", "Migu", "Roge", "Dieg", "Andr", "Bata", "Silv", "Sant", "Melo", "Cost", "Lima", "Mora", "Gome", "Pere", "Ribe", "Mart", "Carv", "Alme", "Lope", "Soar", "Viei", "Mont", "Rodr", "Cunh", "Mede", "Nune", "Roch", "Frei", "Corr", "Mour", "Nasc", "Amar", "Card", "Teix", "Mach", "Tava", "Pint", "Agui", "Xavi", "Ramo", "Fari", "Borg", "Pinh", "Dias", "Brit", "Neve", "Maci", "Mati", "Vare", "Leal", "Vale", "Bast", "Texe", "Camp", "Mell", "Blan", "Garc", "Duar", "Figu", "Font", "Pess", "Fons", "Sale", "Band"];
+                const nomesInteiros = ["Miguel", "Arthur", "Gael", "Théo", "Heitor", "Ravi", "Davi", "Bernardo", "Noah", "Gabriel", "Samuel", "Pedro", "Antônio", "João", "Isaac", "Helena", "Alice", "Laura", "Maria", "Sophia", "Manuela", "Maitê", "Liz", "Cecília", "Isabella", "Luísa", "Valentina", "Heloísa", "Júlia", "Lívia", "Lorena", "Elisa", "Giovanna", "darkaco", "detonatromba", "matador_noob", "ze_da_manga", "sarrada_br", "xX_matador_Xx", "bala_tensa", "pai_ta_on", "mae_ta_on", "goku_careca", "careca_tv", "tiringa", "zeca_urubu", "calvo_aos_20", "jogador_caro", "amassa_nozes", "chupa_cabra", "corta_giro", "grau_e_corte", "mandrake", "cria_de_favela", "noob_master", "ping_999", "so_capa", "rei_do_gado", "cachorro_louco", "pao_de_batata", "bolacha_br", "toca_do_tatu", "lobo_solitario", "gato_net", "robozao", "deusa_gamer", "imperador", "cavaleiro_br", "ninja_suave", "assassino_br", "bruxo_br", "lenda_viva", "mito_ofc", "coringa_louco", "peppa_pig", "shaolin_matador", "cabeca_de_gelo", "bota_fogo", "tio_patinhas", "nego_ney", "vidaloka", "perna_longa", "tropa_do_buxa", "pro_player", "ze_droguinha", "mestre_yoda", "anao_bombado"];
+                while (this.usuariosFakesDB.length < 1000) {
+                    let nomeFake = "";
+                    let tipo = Math.random();
 
-        const prefixos = ["Alex", "Dani", "Gabi", "Mari", "Luiz", "Feli", "Brun", "Carl", "Vito", "Pedr", "Rafa", "Thia", "Guil", "Fern", "Leti", "Cami", "Juli", "Arth", "Bern", "Mich", "Davi", "Heit", "Math", "Luca", "Nico", "Enzo", "Yuri", "Kaua", "Igor", "Caio", "Kevi", "Will", "Ruan", "Vini", "Levi", "Theo", "Gael", "Migu", "Roge", "Dieg", "Andr", "Bata", "Silv", "Sant", "Melo", "Cost", "Lima", "Mora", "Gome", "Pere", "Ribe", "Mart", "Carv", "Alme", "Lope", "Soar", "Viei", "Mont", "Rodr", "Cunh", "Mede", "Nune", "Roch", "Frei", "Corr", "Mour", "Nasc", "Amar", "Card", "Teix", "Mach", "Tava", "Pint", "Agui", "Xavi", "Ramo", "Fari", "Borg", "Pinh", "Dias", "Brit", "Neve", "Maci", "Mati", "Vare", "Leal", "Vale", "Bast", "Texe", "Camp", "Mell", "Blan", "Garc", "Duar", "Figu", "Font", "Pess", "Fons", "Sale", "Band"];
-        const nomesInteiros = ["Miguel", "Arthur", "Gael", "Théo", "Heitor", "Ravi", "Davi", "Bernardo", "Noah", "Gabriel", "Samuel", "Pedro", "Antônio", "João", "Isaac", "Helena", "Alice", "Laura", "Maria", "Sophia", "Manuela", "Maitê", "Liz", "Cecília", "Isabella", "Luísa", "Valentina", "Heloísa", "Júlia", "Lívia", "Lorena", "Elisa", "Giovanna", "darkaco", "detonatromba", "matador_noob", "ze_da_manga", "sarrada_br", "xX_matador_Xx", "bala_tensa", "pai_ta_on", "mae_ta_on", "goku_careca", "careca_tv", "tiringa", "zeca_urubu", "calvo_aos_20", "jogador_caro", "amassa_nozes", "chupa_cabra", "corta_giro", "grau_e_corte", "mandrake", "cria_de_favela", "noob_master", "ping_999", "so_capa", "rei_do_gado", "cachorro_louco", "pao_de_batata", "bolacha_br", "toca_do_tatu", "lobo_solitario", "gato_net", "robozao", "deusa_gamer", "imperador", "cavaleiro_br", "ninja_suave", "assassino_br", "bruxo_br", "lenda_viva", "mito_ofc", "coringa_louco", "peppa_pig", "shaolin_matador", "cabeca_de_gelo", "bota_fogo", "tio_patinhas", "nego_ney", "vidaloka", "perna_longa", "tropa_do_buxa", "pro_player", "ze_droguinha", "mestre_yoda", "anao_bombado"];
-        while(this.usuariosFakesDB.length < 1000) {
-            let nomeFake = "";
-            let tipo = Math.random();
-            
-            if (tipo < 0.33) {
-                // Tipo 1: Só o nome
-                const nome = nomesInteiros[Math.floor(Math.random() * nomesInteiros.length)];
-                nomeFake = `${nome}`;
-            } else if (tipo < 0.66) {
-                // Tipo 2: Prefixo comum
-                const prefixo = prefixos[Math.floor(Math.random() * prefixos.length)];
-                nomeFake = `${prefixo}`;
-            } else {
-                // Tipo 3: Traz prefixo com números
-                const prefixo = prefixos[Math.floor(Math.random() * prefixos.length)];
-                const numero = Math.floor(Math.random() * 99).toString().padStart(2, '0');
-                nomeFake = `${prefixo}${numero}`;
-            }
+                    if (tipo < 0.33) {
+                        // Tipo 1: Só o nome
+                        const nome = nomesInteiros[Math.floor(Math.random() * nomesInteiros.length)];
+                        nomeFake = `${nome}`;
+                    } else if (tipo < 0.66) {
+                        // Tipo 2: Prefixo comum
+                        const prefixo = prefixos[Math.floor(Math.random() * prefixos.length)];
+                        nomeFake = `${prefixo}`;
+                    } else {
+                        // Tipo 3: Traz prefixo com números
+                        const prefixo = prefixos[Math.floor(Math.random() * prefixos.length)];
+                        const numero = Math.floor(Math.random() * 99).toString().padStart(2, '0');
+                        nomeFake = `${prefixo}${numero}`;
+                    }
 
-            if (!this.usuariosFakesDB.includes(nomeFake)) {
-                this.usuariosFakesDB.push(nomeFake);
-                this.ultimoUsoDB[nomeFake] = 0;
-            }
-        }
-    },
-    mounted() {
-        localStorage.setItem('avatar_seed', this.avatarSeed);
-        if (!localStorage.getItem('bonus_100_claim')) {
-            this.saldo += 10.00;
-            localStorage.setItem('bonus_100_claim', 'true');
-        }
-        this.addLog("Sistema inicializado. Conectado como: " + this.usuarioId);
-        this.carregarGanhadores();
-        
-        // Auto-conectar pra ver se tem jogo rolando:
-        this.conectarSocket(() => {
-            this.socket.emit("verificarReconexao", {usuarioId: this.usuarioId});
-        });
+                    if (!this.usuariosFakesDB.includes(nomeFake)) {
+                        this.usuariosFakesDB.push(nomeFake);
+                        this.ultimoUsoDB[nomeFake] = 0;
+                    }
+                }
+            },
+            mounted() {
+                localStorage.setItem('avatar_seed', this.avatarSeed);
+                if (!localStorage.getItem('bonus_100_claim')) {
+                    this.saldo += 10.00;
+                    localStorage.setItem('bonus_100_claim', 'true');
+                }
+                this.addLog("Sistema inicializado. Conectado como: " + this.usuarioId);
+                this.carregarGanhadores();
 
-        // Pegar mensagem do backend
-        fetch('https://soaplike-lavone-suicidally.ngrok-free.dev/')
-            .then(res => res.json())
-            .then(data => {
-                this.backendMessage = data.message;
-            })
-            .catch(() => {
-                this.backendMessage = 'Não foi possível conectar ao backend.';
-            });
-    },
-    watch: {
+                // Auto-conectar pra ver se tem jogo rolando:
+                this.conectarSocket(() => {
+                    this.socket.emit("verificarReconexao", { usuarioId: this.usuarioId });
+                });
+
+                // Pegar mensagem do backend
+                fetch('https://soaplike-lavone-suicidally.ngrok-free.dev/')
+                    .then(res => res.json())
+                    .then(data => {
+                        this.backendMessage = data.message;
+                    })
+                    .catch(() => {
+                        this.backendMessage = 'Não foi possível conectar ao backend.';
+                    });
+            },
+            watch: {
                 saldo(newVal) {
-            localStorage.setItem('saldo_uno', newVal);
-        },
-        ultimaAposta(newVal) {
-            localStorage.setItem('ultima_aposta', newVal);
-        },
-        historicoApostas: {
-            handler(newVal) {
-                localStorage.setItem('historico_apostas', JSON.stringify(newVal));
-            },
-            deep: true
-        },
-        oponentes: {
-            handler(newVal, oldVal) {
-                if(!oldVal) return;
-                newVal.forEach(newOp => {
-                    const oldOp = oldVal.find(o => o.id === newOp.id);
-                    if(oldOp && newOp.cartas > oldOp.cartas) {
-                        const diff = newOp.cartas - oldOp.cartas;
-                        // Encontra o elemento no DOM
-                        this.$nextTick(() => {
-                            const el = document.getElementById('oponente-' + newOp.id);
-                            if(el) {
-                                // Mostra tooltip e pisca
-                                const flot = document.createElement('div');
-                                flot.innerText = "+" + diff + " 🃏";
-                                flot.style.position = "absolute";
-                                flot.style.color = "#ffeb3b";
-                                flot.style.fontWeight = "bold";
-                                flot.style.fontSize = "22px";
-                                flot.style.top = "-25px";
-                                flot.style.right = "-15px";
-                                flot.style.textShadow = "2px 2px 4px #000";
-                                flot.style.zIndex = "9999";
-                                flot.style.transition = "all 1s ease-out";
-                                el.appendChild(flot);
-                                
-                                el.classList.remove('animar-recebe-cartas');
-                                void el.offsetWidth; // trigger reflow
-                                el.classList.add('animar-recebe-cartas');
-                                
-                                setTimeout(() => {
-                                    flot.style.top = "-60px";
-                                    flot.style.opacity = "0";
-                                }, 50);
-                                setTimeout(() => {
-                                    if(el.contains(flot)) el.removeChild(flot);
-                                }, 1000);
+                    localStorage.setItem('saldo_uno', newVal);
+                },
+                ultimaAposta(newVal) {
+                    localStorage.setItem('ultima_aposta', newVal);
+                },
+                historicoApostas: {
+                    handler(newVal) {
+                        localStorage.setItem('historico_apostas', JSON.stringify(newVal));
+                    },
+                    deep: true
+                },
+                oponentes: {
+                    handler(newVal, oldVal) {
+                        if (!oldVal) return;
+                        newVal.forEach(newOp => {
+                            const oldOp = oldVal.find(o => o.id === newOp.id);
+                            if (oldOp && newOp.cartas > oldOp.cartas) {
+                                const diff = newOp.cartas - oldOp.cartas;
+                                // Encontra o elemento no DOM
+                                this.$nextTick(() => {
+                                    const el = document.getElementById('oponente-' + newOp.id);
+                                    if (el) {
+                                        // Mostra tooltip e pisca
+                                        const flot = document.createElement('div');
+                                        flot.innerText = "+" + diff + " 🃏";
+                                        flot.style.position = "absolute";
+                                        flot.style.color = "#ffeb3b";
+                                        flot.style.fontWeight = "bold";
+                                        flot.style.fontSize = "22px";
+                                        flot.style.top = "-25px";
+                                        flot.style.right = "-15px";
+                                        flot.style.textShadow = "2px 2px 4px #000";
+                                        flot.style.zIndex = "9999";
+                                        flot.style.transition = "all 1s ease-out";
+                                        el.appendChild(flot);
+
+                                        el.classList.remove('animar-recebe-cartas');
+                                        void el.offsetWidth; // trigger reflow
+                                        el.classList.add('animar-recebe-cartas');
+
+                                        setTimeout(() => {
+                                            flot.style.top = "-60px";
+                                            flot.style.opacity = "0";
+                                        }, 50);
+                                        setTimeout(() => {
+                                            if (el.contains(flot)) el.removeChild(flot);
+                                        }, 1000);
+                                    }
+                                });
                             }
                         });
+                    },
+                    deep: true
+                },
+                turnoAtual(newVal) {
+                    if (this.timerInterval) clearInterval(this.timerInterval);
+                    if (newVal === this.usuarioId) {
+                        this.tempoRestante = 14;
+                        this.timerInterval = setInterval(() => {
+                            if (this.tempoRestante > 0) this.tempoRestante--;
+                        }, 1000);
+                        if (this.autoPlay && !this.esperandoResposta) {
+                            setTimeout(() => { this.tentarJogadaAutomatica(); }, 800);
+                        }
+                    } else {
+                        this.escolhendoCor = false;
+                        this.cartaCuringaIndex = null;
                     }
-                });
+                },
+                autoPlay(newVal) {
+                    if (newVal && this.turnoAtual === this.usuarioId && !this.esperandoResposta) {
+                        this.tentarJogadaAutomatica();
+                    }
+                }
             },
-            deep: true
-        },
-        turnoAtual(newVal) {
-            if (this.timerInterval) clearInterval(this.timerInterval);
-            if (newVal === this.usuarioId) {
-                this.tempoRestante = 14;
-                this.timerInterval = setInterval(() => {
-                    if (this.tempoRestante > 0) this.tempoRestante--;
-                }, 1000);
-                if (this.autoPlay && !this.esperandoResposta) {
-                    setTimeout(() => { this.tentarJogadaAutomatica(); }, 800);
-                }
-            } else {
-                this.escolhendoCor = false;
-                this.cartaCuringaIndex = null;
-            }
-        },
-        autoPlay(newVal) {
-            if(newVal && this.turnoAtual === this.usuarioId && !this.esperandoResposta) {
-                this.tentarJogadaAutomatica();
-            }
-        }
-    },
-    methods: {
-        deslogar() {
-            localStorage.removeItem('usuario_id');
-            this.usuarioId = '';
-            this.loginEmail = '';
-            this.loginSenha = '';
-            this.estado = 'LOGIN';
-            if(this.socket) {
-                this.socket.disconnect();
-                this.socket = null;
-            }
-        },
-        logarComGoogle() {
-            if (typeof google === 'undefined' || !google.accounts) {
-                alert("A biblioteca do Google ainda não carregou. Verifique sua internet ou tente novamente em alguns segundos.");
-                return;
-            }
-
-            const clienteId = "718604370086-acag935gch24qo5qt0s3on0os4bjaugk.apps.googleusercontent.com"; // <-- VOCÊ PRECISA COLOCAR AQUI A CHAVE DO GOOGLE
-
-            if (clienteId === "SEU_CLIENT_ID_AQUI") {
-                alert("⚠️ OPÇÃO DESATIVADA!\n\nVocê precisa ir no painel do Google Cloud, gerar o seu Client ID e colar no código (no arquivo index.html e no routes.py) para que esta tela do Google apareça.");
-                return;
-            }
-
-            // Inicializa a janela suspensa do Google 
-            google.accounts.id.initialize({
-                client_id: clienteId,
-                callback: this.handleGoogleCallback
-            });
-            google.accounts.id.prompt(); // Mostra o pop-up nativo
-        },
-        async handleGoogleCallback(response) {
-            let host = window.location.hostname || "localhost";
-            let baseUrl = (window.location.protocol === 'file:' || window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '8000' ? 'http://localhost:8000' : '';
-            
-            try {
-                const r = await fetch(baseUrl + '/api/login/google', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ token: response.credential })
-                });
-                
-                const res = await r.json();
-                if(r.ok && res.success) {
-                    this.usuarioId = res.player_data.email;
-                    this.gameUsername = res.player_data.game_username || '';
-                    localStorage.setItem('usuario_id', this.usuarioId);
-                    this.estado = 'MENU';
-                } else {
-                    alert(res.detail || "Erro ao fazer login com o Google.");
-                }
-            } catch(e) {
-                console.error(e);
-                alert("Erro de conexão com o servidor ao entrar pelo Google.");
-            }
-        },
-        efetuarRegistro() {
-            if(!this.loginEmail || !this.loginSenha || !this.loginNome) {
-                alert("Preencha todos os campos!");
-                return;
-            }
-            
-            let host = window.location.hostname || "localhost";
-            let baseUrl = (window.location.protocol === 'file:' || window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '8000' ? 'http://localhost:8000' : '';
-            
-            fetch(baseUrl + '/api/register', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ email: this.loginEmail, password: this.loginSenha, username: this.loginNome })
-            }).then(async r => {
-                const res = await r.json();
-                if(r.ok && res.success) {
-                    alert("Conta criada com sucesso! Faça login para entrar.");
-                    this.loginMode = 'login';
-                } else if(res.detail) {
-                    alert(res.detail);
-                } else {
-                    alert("Erro ao efetuar cadastro.");
-                }
-            }).catch(e => {
-                console.error(e);
-                alert("Erro de conexão com o banco de dados.");
-            });
-        },
-        efetuarLogin() {
-            if(!this.loginEmail || !this.loginSenha) {
-                alert("Preencha e-mail e senha!");
-                return;
-            }
-
-            let host = window.location.hostname || "localhost";
-            let baseUrl = window.location.protocol === 'file:' ? 'http://localhost:8000' : (window.location.port !== '8000' ? 'http://' + host + ':8000' : '');
-            
-            fetch(baseUrl + '/api/login', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ email: this.loginEmail, password: this.loginSenha })
-            }).then(r => r.json()).then(res => {
-                if(res.success) {
-                    this.usuarioId = this.loginEmail;
-                    localStorage.setItem('usuario_id', this.usuarioId);
-                    this.estado = 'MENU';
-                } else if(res.detail) {
-                    alert(res.detail);
-                } else {
-                    alert("Erro ao efetuar login ou cadastro.");
-                }
-            }).catch(e => {
-                console.error(e);
-                alert("Erro de conexão ao acessar a conta.");
-            });
-        },
-        formatValor(val) {
-            if (val === "Pular") return "Ø";
-            if (val === "Inverter") return "⇆";
-            if (val === "Curinga") return "★";
-            if (val === "Curinga +4") return "+4";
-            return val;
-        },
-        abrirAbaPerfil(aba) {
-            if(aba === 'bots') {
-                alert('Clique em Bots detectado!');
-            }
-            this.abaPerfilAtiva = aba;
-            this.menuPerfilAberto = false;
-        },
-        minimizarPartida() {
-            this.estado = 'MENU';
-            this.addLog("Você saiu da visão da mesa. O Servidor ativou o Bot!");
-            this.socket.emit("deixarPartidaEmBackground", { usuarioId: this.usuarioId });
-        },
-        voltarPartidaForeground() {
-            this.estado = 'JOGO';
-            this.addLog("Você retomou o controle da mesa!");
-            this.socket.emit("verificarReconexao", { usuarioId: this.usuarioId });
-        },
-        async carregarGanhadores() {
-            // Primeiro preenchemos instantaneamente localmente sem esperar a rede
-            while(this.ultimosGanhadores.length < 25) {
-                const apostas = [0.50, 2.00, 8.00, 20.00, 50.00];
-                const randomAposta = apostas[Math.floor(Math.random() * apostas.length)];
-                const premio = (randomAposta * 3.8).toFixed(2);
-
-                const agora = Date.now();
-                const validos = this.usuariosFakesDB.filter(n => agora - this.ultimoUsoDB[n] > 180000);
-                let randomNome = validos.length > 0 ? validos[Math.floor(Math.random() * validos.length)] : this.usuariosFakesDB[Math.floor(Math.random() * this.usuariosFakesDB.length)];
-                
-                this.ultimoUsoDB[randomNome] = agora;
-                this.ultimosGanhadores.push(`${randomNome} ganhou R$ ${premio}`);
-            }
-
-            try {
-                let baseUrl = (window.location.protocol === 'file:' || window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '8000' ? 'http://localhost:8000' : '';
-                const res = await fetch(baseUrl + '/api/ultimos-ganhadores');
-                if (res.ok) {
-                    const reais = await res.json();
-                    
-                    // Empurra pro começo (fictícios caem pro final)
-                    for (let real of reais.reverse()) {
-                        this.ultimosGanhadores.unshift(real);
+            methods: {
+                deslogar() {
+                    localStorage.removeItem('usuario_id');
+                    this.usuarioId = '';
+                    this.loginEmail = '';
+                    this.loginSenha = '';
+                    this.estado = 'LOGIN';
+                    if (this.socket) {
+                        this.socket.disconnect();
+                        this.socket = null;
                     }
-                    
-                    // Limpa excedente se sobrou muitos
-                    while(this.ultimosGanhadores.length > 25) {
-                        this.ultimosGanhadores.pop();
+                },
+                logarComGoogle() {
+                    if (typeof google === 'undefined' || !google.accounts) {
+                        alert("A biblioteca do Google ainda não carregou. Verifique sua internet ou tente novamente em alguns segundos.");
+                        return;
                     }
-                }
-            } catch(e) {
-                console.error("Erro ao puxar vencedores", e);
-            }
-        },
-        gerarVencedorFalso() {
-            const apostas = [0.50, 2.00, 8.00, 20.00, 50.00];
-            const quantosGerar = Math.floor(Math.random() * (4 - 1 + 1)) + 1; // Gera entre 1 e 4 por vez no máximo
 
-            let nomesUsados = [];
-            const agora = Date.now();
-            let validos = this.usuariosFakesDB.filter(nome => agora - this.ultimoUsoDB[nome] > 180000);
+                    const clienteId = "718604370086-acag935gch24qo5qt0s3on0os4bjaugk.apps.googleusercontent.com"; // <-- VOCÊ PRECISA COLOCAR AQUI A CHAVE DO GOOGLE
 
-            for(let i=0; i < quantosGerar; i++) {
-                // Remove os já escolhidos nesta rodada da lista de validos
-                const candidators = validos.filter(n => !nomesUsados.includes(n));
-                
-                let randomNome = "";
-                if (candidators.length > 0) {
-                    randomNome = candidators[Math.floor(Math.random() * candidators.length)];
-                } else {
-                    randomNome = this.usuariosFakesDB[Math.floor(Math.random() * this.usuariosFakesDB.length)];
-                }
+                    if (clienteId === "SEU_CLIENT_ID_AQUI") {
+                        alert("⚠️ OPÇÃO DESATIVADA!\n\nVocê precisa ir no painel do Google Cloud, gerar o seu Client ID e colar no código (no arquivo index.html e no routes.py) para que esta tela do Google apareça.");
+                        return;
+                    }
 
-                nomesUsados.push(randomNome);
-                this.ultimoUsoDB[randomNome] = agora;
-
-                const randomAposta = apostas[Math.floor(Math.random() * apostas.length)];
-                const premio = (randomAposta * 3.8).toFixed(2);
-                this.ultimosGanhadores.push(`${randomNome} ganhou R$ ${premio}`);
-            }
-
-            while(this.ultimosGanhadores.length > 25) {
-                this.ultimosGanhadores.shift();
-            }
-        },
-        tentarJogadaAutomatica() {
-            if(!this.socket || this.estado !== "JOGO" || this.turnoAtual !== this.usuarioId) return;
-            this.addLog("🤖 Jogando no automático...");
-            this.escolhendoCor = false;
-            this.cartaCuringaIndex = null;
-            this.socket.emit("forcarAutoPlay", { partidaId: this.partidaId });
-        },
-        getOponentes() { return this.oponentes.filter(op => op.id !== this.usuarioId); },
-        addLog(msg) {
-            const time = new Date().toLocaleTimeString();
-            this.logs.push(`[${time}] ${msg}`);
-            this.$nextTick(() => { if(this.$refs.logContainer) this.$refs.logContainer.scrollTop = this.$refs.logContainer.scrollHeight; });
-        },
-        conectarSocket(callback) {
-            if(!this.socket) {
-                this.addLog("Conectando ao servidor...");
-                  let serverUrl = (window.location.protocol === 'file:' || window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '8000' ? 'http://localhost:8000' : window.location.origin;
-                this.socket = io(serverUrl);
-                this.socket.on("connect", () => { this.addLog("✅ Conectado com sucesso!"); if(callback) callback(); });
-                this.socket.on("partidaIniciada", (data) => {
-                    this.addLog("🔥 A PARTIDA COMEÇOU!"); this.estado = "JOGO"; this.partidaId = data.partidaId;
-                    this.mao = data.suaMao; this.cartaMesa = data.cartaMesa; this.turnoAtual = data.turnoAtual; this.oponentes = data.oponentes;
-                });
-                this.socket.on("atualizarMao", (data) => { this.mao = data.mao; });
-                this.socket.on("jogadaAceita", (data) => {
-                    this.esperandoResposta = false; this.addLog(`⭐ ${data.jogador} jogou: ${data.carta.valor}`);
-                    this.cartaMesa = data.carta; this.turnoAtual = data.proximoTurno; this.oponentes = data.oponentes || this.oponentes;
-                });
-                this.socket.on("jogadaInvalida", (data) => {
-                    this.esperandoResposta = false; alert("Atenção: " + data.mensagem); this.addLog("❌ Jogada Inválida: " + data.mensagem);
-                    if (this.ultimaCartaTentada) { this.mao.splice(this.ultimaCartaTentada.index, 0, this.ultimaCartaTentada.carta); this.ultimaCartaTentada = null; }
-                });
-                this.socket.on("suaNovaCarta", (data) => { this.esperandoResposta = false; this.mao.push(data.carta); this.addLog(`🎴 Você comprou um ${data.carta.valor}`); });
-                this.socket.on("mensagem_jogo", (data) => { this.addLog(data.msg); });
-                this.socket.on("fimDeJogo", (data) => {
-                    this.addLog(`🏆 Vencedor: ${data.vencedor}`); this.vencedor = data.vencedor; this.premio = data.premio_total; this.estado = "FIM"; 
-                    
-                    const ganhou = (data.vencedor === this.usuarioId);
-                    if(ganhou) this.saldo += this.premio;
-                    
-                    // Salvar no histórico
-                    this.historicoApostas.unshift({
-                        id: this.partidaId,
-                        ganhou: ganhou,
-                        valor: ganhou ? this.premio : (this.ultimaAposta || 0)
+                    // Inicializa a janela suspensa do Google 
+                    google.accounts.id.initialize({
+                        client_id: clienteId,
+                        callback: this.handleGoogleCallback
                     });
+                    google.accounts.id.prompt(); // Mostra o pop-up nativo
+                },
+                async handleGoogleCallback(response) {
+                    let host = window.location.hostname || "localhost";
+                    let baseUrl = (window.location.protocol === 'file:' || window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '8000' ? 'http://localhost:8000' : '';
 
-                    this.partidaId = null;
-                });
-                this.socket.on("connect_error", (err) => { this.addLog("❌ Erro de conexão com servidor!"); });
-            } else { if(callback) callback(); }
-        },
-        pagarEEntrarNaFila(valorAposta) {
-            if(this.saldo < valorAposta) { alert("Você não tem saldo suficiente (R$ " + valorAposta.toFixed(2) + ")!"); return; }
-            this.saldo -= valorAposta; this.ultimaAposta = valorAposta; this.estado = "FILA";
-            this.conectarSocket(() => { this.addLog("💳 Pagamento de R$ " + valorAposta.toFixed(2) + " confirmado. Entrando na fila..."); this.socket.emit("entrarFila", { usuarioId: this.usuarioId, aposta: valorAposta }); });
-        },
-        jogarCarta(index) {
-            if(!this.socket) return;
-            if(this.turnoAtual !== this.usuarioId) { this.addLog("⏳ Aguarde o servidor processar sua vez..."); return; }
-            const carta = this.mao[index];
-            if (carta.cor === 'Curinga') { 
-                this.escolhendoCor = true; 
-                this.cartaCuringaIndex = index; 
-                return; 
-            }
-            this.esperandoResposta = true; this.addLog("Enviando jogada..."); 
-            this.socket.emit('jogarCarta', { partidaId: this.partidaId, cartaIndex: index });
-            const c = this.mao[index]; this.mao.splice(index, 1); this.ultimaCartaTentada = { index, carta: c };
-            setTimeout(() => { if(this.esperandoResposta) { this.esperandoResposta = false; this.addLog("⚠️ Timeout."); if(this.ultimaCartaTentada) { this.mao.splice(this.ultimaCartaTentada.index, 0, this.ultimaCartaTentada.carta); this.ultimaCartaTentada = null; } } }, 5000);
-        },
-        enviarCor(corEscolhida) {
-            this.escolhendoCor = false; this.esperandoResposta = true; const index = this.cartaCuringaIndex;
-            this.addLog("Enviando jogada Curinga com cor " + corEscolhida + "..."); 
-            this.socket.emit('jogarCarta', { partidaId: this.partidaId, cartaIndex: index, corEscolhida: corEscolhida });
-            const c = this.mao[index]; this.mao.splice(index, 1); this.ultimaCartaTentada = { index, carta: c }; this.cartaCuringaIndex = null;
-            setTimeout(() => { if(this.esperandoResposta) { this.esperandoResposta = false; this.addLog("⚠️ Timeout."); if(this.ultimaCartaTentada) { this.mao.splice(this.ultimaCartaTentada.index, 0, this.ultimaCartaTentada.carta); this.ultimaCartaTentada = null; } } }, 5000);
-        },
-        comprarCarta() {
-            if(!this.socket) return; if(this.turnoAtual !== this.usuarioId) return; if(this.esperandoResposta) return;
-            this.esperandoResposta = true; this.addLog("Comprando carta e passando a vez..."); this.socket.emit('comprarCartaAqui', { partidaId: this.partidaId });
-            setTimeout(() => { if(this.esperandoResposta) { this.esperandoResposta = false; this.addLog("⚠️ Timeout."); } }, 5000);
-        },
-        criarBot() {
-            const novoBot = {
-                usuario_email: this.usuarioId,
-                nome: this.botNovo.nome,
-                saldo: parseFloat(this.botNovo.saldo),
-                stop_loss: parseFloat(this.botNovo.stop_loss),
-                stop_win: parseFloat(this.botNovo.stop_win),
-                valor_aposta: 1.00
-            };
-            let baseUrl = (window.location.protocol === 'file:' || window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '8000' ? 'http://localhost:8000' : '';
-            fetch(baseUrl + '/api/bots/criar', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(novoBot)
-            }).then(async res => {
-                const data = await res.json();
-                if(data.success) {
-                    this.bots.push({
-                        id: this.bots.length + 1,
-                        saldo: novoBot.saldo,
-                        stopLoss: novoBot.stop_loss,
-                        stopWin: novoBot.stop_win,
-                        valorAposta: novoBot.valor_aposta,
-                        status: 'Parado'
+                    try {
+                        const r = await fetch(baseUrl + '/api/login/google', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ token: response.credential })
+                        });
+
+                        const res = await r.json();
+                        if (r.ok && res.success) {
+                            this.usuarioId = res.player_data.email;
+                            this.gameUsername = res.player_data.game_username || '';
+                            localStorage.setItem('usuario_id', this.usuarioId);
+                            this.estado = 'MENU';
+                        } else {
+                            alert(res.detail || "Erro ao fazer login com o Google.");
+                        }
+                    } catch (e) {
+                        console.error(e);
+                        alert("Erro de conexão com o servidor ao entrar pelo Google.");
+                    }
+                },
+                efetuarRegistro() {
+                    if (!this.loginEmail || !this.loginSenha || !this.loginNome) {
+                        alert("Preencha todos os campos!");
+                        return;
+                    }
+
+                    let host = window.location.hostname || "localhost";
+                    let baseUrl = (window.location.protocol === 'file:' || window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '8000' ? 'http://localhost:8000' : '';
+
+                    fetch(baseUrl + '/api/register', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: this.loginEmail, password: this.loginSenha, username: this.loginNome })
+                    }).then(async r => {
+                        const res = await r.json();
+                        if (r.ok && res.success) {
+                            alert("Conta criada com sucesso! Faça login para entrar.");
+                            this.loginMode = 'login';
+                        } else if (res.detail) {
+                            alert(res.detail);
+                        } else {
+                            alert("Erro ao efetuar cadastro.");
+                        }
+                    }).catch(e => {
+                        console.error(e);
+                        alert("Erro de conexão com o banco de dados.");
                     });
-                } else {
-                        alert(typeof data.detail === "object" ? JSON.stringify(data.detail) : data.detail || 'Erro ao criar bot.');
+                },
+                efetuarLogin() {
+                    if (!this.loginEmail || !this.loginSenha) {
+                        alert("Preencha e-mail e senha!");
+                        return;
+                    }
+
+                    let host = window.location.hostname || "localhost";
+                    let baseUrl = window.location.protocol === 'file:' ? 'http://localhost:8000' : (window.location.port !== '8000' ? 'http://' + host + ':8000' : '');
+
+                    fetch(baseUrl + '/api/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: this.loginEmail, password: this.loginSenha })
+                    }).then(r => r.json()).then(res => {
+                        if (res.success) {
+                            this.usuarioId = this.loginEmail;
+                            localStorage.setItem('usuario_id', this.usuarioId);
+                            this.estado = 'MENU';
+                        } else if (res.detail) {
+                            alert(res.detail);
+                        } else {
+                            alert("Erro ao efetuar login ou cadastro.");
+                        }
+                    }).catch(e => {
+                        console.error(e);
+                        alert("Erro de conexão ao acessar a conta.");
+                    });
+                },
+                formatValor(val) {
+                    if (val === "Pular") return "Ø";
+                    if (val === "Inverter") return "⇆";
+                    if (val === "Curinga") return "★";
+                    if (val === "Curinga +4") return "+4";
+                    return val;
+                },
+                abrirAbaPerfil(aba) {
+                    if (aba === 'bots') {
+                        alert('Clique em Bots detectado!');
+                    }
+                    this.abaPerfilAtiva = aba;
+                    this.menuPerfilAberto = false;
+                },
+                minimizarPartida() {
+                    this.estado = 'MENU';
+                    this.addLog("Você saiu da visão da mesa. O Servidor ativou o Bot!");
+                    this.socket.emit("deixarPartidaEmBackground", { usuarioId: this.usuarioId });
+                },
+                voltarPartidaForeground() {
+                    this.estado = 'JOGO';
+                    this.addLog("Você retomou o controle da mesa!");
+                    this.socket.emit("verificarReconexao", { usuarioId: this.usuarioId });
+                },
+                async carregarGanhadores() {
+                    // Primeiro preenchemos instantaneamente localmente sem esperar a rede
+                    while (this.ultimosGanhadores.length < 25) {
+                        const apostas = [0.50, 2.00, 8.00, 20.00, 50.00];
+                        const randomAposta = apostas[Math.floor(Math.random() * apostas.length)];
+                        const premio = (randomAposta * 3.8).toFixed(2);
+
+                        const agora = Date.now();
+                        const validos = this.usuariosFakesDB.filter(n => agora - this.ultimoUsoDB[n] > 180000);
+                        let randomNome = validos.length > 0 ? validos[Math.floor(Math.random() * validos.length)] : this.usuariosFakesDB[Math.floor(Math.random() * this.usuariosFakesDB.length)];
+
+                        this.ultimoUsoDB[randomNome] = agora;
+                        this.ultimosGanhadores.push(`${randomNome} ganhou R$ ${premio}`);
+                    }
+
+                    try {
+                        let baseUrl = (window.location.protocol === 'file:' || window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '8000' ? 'http://localhost:8000' : '';
+                        const res = await fetch(baseUrl + '/api/ultimos-ganhadores');
+                        if (res.ok) {
+                            const reais = await res.json();
+
+                            // Empurra pro começo (fictícios caem pro final)
+                            for (let real of reais.reverse()) {
+                                this.ultimosGanhadores.unshift(real);
+                            }
+
+                            // Limpa excedente se sobrou muitos
+                            while (this.ultimosGanhadores.length > 25) {
+                                this.ultimosGanhadores.pop();
+                            }
+                        }
+                    } catch (e) {
+                        console.error("Erro ao puxar vencedores", e);
+                    }
+                },
+                gerarVencedorFalso() {
+                    const apostas = [0.50, 2.00, 8.00, 20.00, 50.00];
+                    const quantosGerar = Math.floor(Math.random() * (4 - 1 + 1)) + 1; // Gera entre 1 e 4 por vez no máximo
+
+                    let nomesUsados = [];
+                    const agora = Date.now();
+                    let validos = this.usuariosFakesDB.filter(nome => agora - this.ultimoUsoDB[nome] > 180000);
+
+                    for (let i = 0; i < quantosGerar; i++) {
+                        // Remove os já escolhidos nesta rodada da lista de validos
+                        const candidators = validos.filter(n => !nomesUsados.includes(n));
+
+                        let randomNome = "";
+                        if (candidators.length > 0) {
+                            randomNome = candidators[Math.floor(Math.random() * candidators.length)];
+                        } else {
+                            randomNome = this.usuariosFakesDB[Math.floor(Math.random() * this.usuariosFakesDB.length)];
+                        }
+
+                        nomesUsados.push(randomNome);
+                        this.ultimoUsoDB[randomNome] = agora;
+
+                        const randomAposta = apostas[Math.floor(Math.random() * apostas.length)];
+                        const premio = (randomAposta * 3.8).toFixed(2);
+                        this.ultimosGanhadores.push(`${randomNome} ganhou R$ ${premio}`);
+                    }
+
+                    while (this.ultimosGanhadores.length > 25) {
+                        this.ultimosGanhadores.shift();
+                    }
+                },
+                tentarJogadaAutomatica() {
+                    if (!this.socket || this.estado !== "JOGO" || this.turnoAtual !== this.usuarioId) return;
+                    this.addLog("🤖 Jogando no automático...");
+                    this.escolhendoCor = false;
+                    this.cartaCuringaIndex = null;
+                    this.socket.emit("forcarAutoPlay", { partidaId: this.partidaId });
+                },
+                getOponentes() { return this.oponentes.filter(op => op.id !== this.usuarioId); },
+                addLog(msg) {
+                    const time = new Date().toLocaleTimeString();
+                    this.logs.push(`[${time}] ${msg}`);
+                    this.$nextTick(() => { if (this.$refs.logContainer) this.$refs.logContainer.scrollTop = this.$refs.logContainer.scrollHeight; });
+                },
+                conectarSocket(callback) {
+                    if (!this.socket) {
+                        this.addLog("Conectando ao servidor...");
+                        let serverUrl = (window.location.protocol === 'file:' || window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '8000' ? 'http://localhost:8000' : window.location.origin;
+                        this.socket = io(serverUrl);
+                        this.socket.on("connect", () => { this.addLog("✅ Conectado com sucesso!"); if (callback) callback(); });
+                        this.socket.on("partidaIniciada", (data) => {
+                            this.addLog("🔥 A PARTIDA COMEÇOU!"); this.estado = "JOGO"; this.partidaId = data.partidaId;
+                            this.mao = data.suaMao; this.cartaMesa = data.cartaMesa; this.turnoAtual = data.turnoAtual; this.oponentes = data.oponentes;
+                        });
+                        this.socket.on("atualizarMao", (data) => { this.mao = data.mao; });
+                        this.socket.on("jogadaAceita", (data) => {
+                            this.esperandoResposta = false; this.addLog(`⭐ ${data.jogador} jogou: ${data.carta.valor}`);
+                            this.cartaMesa = data.carta; this.turnoAtual = data.proximoTurno; this.oponentes = data.oponentes || this.oponentes;
+                        });
+                        this.socket.on("jogadaInvalida", (data) => {
+                            this.esperandoResposta = false; alert("Atenção: " + data.mensagem); this.addLog("❌ Jogada Inválida: " + data.mensagem);
+                            if (this.ultimaCartaTentada) { this.mao.splice(this.ultimaCartaTentada.index, 0, this.ultimaCartaTentada.carta); this.ultimaCartaTentada = null; }
+                        });
+                        this.socket.on("suaNovaCarta", (data) => { this.esperandoResposta = false; this.mao.push(data.carta); this.addLog(`🎴 Você comprou um ${data.carta.valor}`); });
+                        this.socket.on("mensagem_jogo", (data) => { this.addLog(data.msg); });
+                        this.socket.on("fimDeJogo", (data) => {
+                            this.addLog(`🏆 Vencedor: ${data.vencedor}`); this.vencedor = data.vencedor; this.premio = data.premio_total; this.estado = "FIM";
+
+                            const ganhou = (data.vencedor === this.usuarioId);
+                            if (ganhou) this.saldo += this.premio;
+
+                            // Salvar no histórico
+                            this.historicoApostas.unshift({
+                                id: this.partidaId,
+                                ganhou: ganhou,
+                                valor: ganhou ? this.premio : (this.ultimaAposta || 0)
+                            });
+
+                            this.partidaId = null;
+                        });
+                        this.socket.on("connect_error", (err) => { this.addLog("❌ Erro de conexão com servidor!"); });
+                    } else { if (callback) callback(); }
+                },
+                pagarEEntrarNaFila(valorAposta) {
+                    if (this.saldo < valorAposta) { alert("Você não tem saldo suficiente (R$ " + valorAposta.toFixed(2) + ")!"); return; }
+                    this.saldo -= valorAposta; this.ultimaAposta = valorAposta; this.estado = "FILA";
+                    this.conectarSocket(() => { this.addLog("💳 Pagamento de R$ " + valorAposta.toFixed(2) + " confirmado. Entrando na fila..."); this.socket.emit("entrarFila", { usuarioId: this.usuarioId, aposta: valorAposta }); });
+                },
+                jogarCarta(index) {
+                    if (!this.socket) return;
+                    if (this.turnoAtual !== this.usuarioId) { this.addLog("⏳ Aguarde o servidor processar sua vez..."); return; }
+                    const carta = this.mao[index];
+                    if (carta.cor === 'Curinga') {
+                        this.escolhendoCor = true;
+                        this.cartaCuringaIndex = index;
+                        return;
+                    }
+                    this.esperandoResposta = true; this.addLog("Enviando jogada...");
+                    this.socket.emit('jogarCarta', { partidaId: this.partidaId, cartaIndex: index });
+                    const c = this.mao[index]; this.mao.splice(index, 1); this.ultimaCartaTentada = { index, carta: c };
+                    setTimeout(() => { if (this.esperandoResposta) { this.esperandoResposta = false; this.addLog("⚠️ Timeout."); if (this.ultimaCartaTentada) { this.mao.splice(this.ultimaCartaTentada.index, 0, this.ultimaCartaTentada.carta); this.ultimaCartaTentada = null; } } }, 5000);
+                },
+                enviarCor(corEscolhida) {
+                    this.escolhendoCor = false; this.esperandoResposta = true; const index = this.cartaCuringaIndex;
+                    this.addLog("Enviando jogada Curinga com cor " + corEscolhida + "...");
+                    this.socket.emit('jogarCarta', { partidaId: this.partidaId, cartaIndex: index, corEscolhida: corEscolhida });
+                    const c = this.mao[index]; this.mao.splice(index, 1); this.ultimaCartaTentada = { index, carta: c }; this.cartaCuringaIndex = null;
+                    setTimeout(() => { if (this.esperandoResposta) { this.esperandoResposta = false; this.addLog("⚠️ Timeout."); if (this.ultimaCartaTentada) { this.mao.splice(this.ultimaCartaTentada.index, 0, this.ultimaCartaTentada.carta); this.ultimaCartaTentada = null; } } }, 5000);
+                },
+                comprarCarta() {
+                    if (!this.socket) return; if (this.turnoAtual !== this.usuarioId) return; if (this.esperandoResposta) return;
+                    this.esperandoResposta = true; this.addLog("Comprando carta e passando a vez..."); this.socket.emit('comprarCartaAqui', { partidaId: this.partidaId });
+                    setTimeout(() => { if (this.esperandoResposta) { this.esperandoResposta = false; this.addLog("⚠️ Timeout."); } }, 5000);
+                },
+                criarBot() {
+                    const novoBot = {
+                        usuario_email: this.usuarioId,
+                        nome: this.botNovo.nome,
+                        saldo: parseFloat(this.botNovo.saldo),
+                        stop_loss: parseFloat(this.botNovo.stop_loss),
+                        stop_win: parseFloat(this.botNovo.stop_win),
+                        valor_aposta: 1.00
+                    };
+                    let baseUrl = (window.location.protocol === 'file:' || window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '8000' ? 'http://localhost:8000' : '';
+                    fetch(baseUrl + '/api/bots/criar', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(novoBot)
+                    }).then(async res => {
+                        const data = await res.json();
+                        if (data.success) {
+                            this.bots.push({
+                                id: this.bots.length + 1,
+                                saldo: novoBot.saldo,
+                                stopLoss: novoBot.stop_loss,
+                                stopWin: novoBot.stop_win,
+                                valorAposta: novoBot.valor_aposta,
+                                status: 'Parado'
+                            });
+                        } else {
+                            alert(typeof data.detail === "object" ? JSON.stringify(data.detail) : data.detail || 'Erro ao criar bot.');
+                        }
+                    });
                 }
-            });
-        }
-    }
-});
-</script>
+            }
+        });
+    </script>
 </body>
+
 </html>
