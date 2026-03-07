@@ -32,4 +32,4 @@ if __name__ == "__main__":
     print("🚀 Servidor do Jogo Iniciando em http://localhost:8000")
     import os
     os.environ["UVICORN_APP"] = "main:main_app"
-    uvicorn.run(main_app, host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("main:main_app", host="0.0.0.0", port=8000, reload=True)
