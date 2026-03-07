@@ -3,6 +3,7 @@ import time
 import re
 import os
 import sys
+import threading
 
 def run_command(command, shell=True, capture_output=True):
     if isinstance(command, list) and shell:
@@ -43,18 +44,41 @@ def main():
     # 1. Iniciar o Servidor Backend (FastAPI) em background
     backend_proc = run_command([sys.executable, "main.py"], capture_output=False)
     
-    # 2. Iniciar o Túnel (LocalTunnel)
-    print("🌐 Abrindo túnel público...")
-    tunnel_proc = subprocess.Popen("npx localtunnel --port 8000", shell=True, stdout=subprocess.PIPE, text=True)
+    # 2. Iniciar o Túnel Sem Tela de Bloqueio (localhost.run)
+    print("🌐 Abrindo túnel público seguro (localhost.run)...")
+    tunnel_proc = subprocess.Popen(
+        ["ssh", "-o", "StrictHostKeyChecking=no", "-R", "80:localhost:8000", "nokey@localhost.run"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True
+    )
     
-    url = None
-    if tunnel_proc.stdout:
-        for line in tunnel_proc.stdout:
-            print(line, end="")
-            if "your url is:" in line:
-                url = line.split("is:")[1].strip()
+    url_found = []
+    
+    def read_output(pipe):
+        for line in iter(pipe.readline, ''):
+            if not line:
                 break
-            
+            print(line, end="")
+            match = re.search(r'(https://[a-zA-Z0-9-]+\.lhr\.life)', line)
+            if match and not url_found:
+                url_found.append(match.group(1))
+
+    t1 = threading.Thread(target=read_output, args=(tunnel_proc.stdout,))
+    t2 = threading.Thread(target=read_output, args=(tunnel_proc.stderr,))
+    t1.daemon = True
+    t2.daemon = True
+    t1.start()
+    t2.start()
+
+    # Espera até achar a URL (máx 30 seg)
+    for _ in range(30):
+        if url_found:
+            break
+        time.sleep(1)
+
+    url = url_found[0] if url_found else None
+
     if not url:
         print("❌ Erro ao obter URL do túnel.")
         backend_proc.terminate()
@@ -75,7 +99,7 @@ def main():
         while True:
             time.sleep(10)
     except KeyboardInterrupt:
-        print("\n🛑 Encerrando servidor...")
+        print("\n🛑 Encerrando servidor e túnel...")
         backend_proc.terminate()
         tunnel_proc.terminate()
 
