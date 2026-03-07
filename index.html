@@ -981,7 +981,7 @@
                 <div class="oponentes">
                     <div v-for="op in getOponentes()" :key="op.id" :id="'oponente-' + op.id" class="oponente"
                         :class="{ 'oponente-ativo': op.id === turnoAtual, 'oponente-afetado': efeitosJogadores[op.id] }">
-                        <span class="oponente-nome">🤖 {{ op.id }}</span>
+                        <span class="oponente-nome">👤 {{ op.id }}</span>
                         <span class="oponente-cartas">🃏 {{ op.cartas }}</span>
                         <span v-if="op.id === turnoAtual"
                             style="position:absolute; right: -20px; top: -10px; font-size: 24px; ">👈</span>
