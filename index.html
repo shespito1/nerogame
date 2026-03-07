@@ -456,232 +456,137 @@
             animation: drawCard 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
-        /* === ANIMAÇÕES DE CARTAS ESPECIAIS === */
-        .game-effect-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            z-index: 99999;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            pointer-events: none;
-            animation: effectFadeIn 0.15s ease-out;
-        }
-
-        .game-effect-overlay.fade-out {
-            animation: effectFadeOut 0.4s ease-in forwards;
-        }
-
-        @keyframes effectFadeIn {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
-        }
-
-        @keyframes effectFadeOut {
-            from {
-                opacity: 1;
-            }
-
-            to {
-                opacity: 0;
-            }
-        }
-
-        .effect-box {
+        /* === EFEITOS VISUAIS EM JOGADORES === */
+        .efeito-jogador {
+            position: absolute;
+            top: -45px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
             text-align: center;
-            padding: 30px 50px;
-            border-radius: 24px;
-            animation: effectPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            animation: efeitoPopUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            pointer-events: none;
         }
 
-        @keyframes effectPop {
+        .efeito-jogador.efeito-saindo {
+            animation: efeitoSaindo 0.4s ease-in forwards;
+        }
+
+        @keyframes efeitoPopUp {
             0% {
-                transform: scale(0.3) rotate(-10deg);
+                transform: translateX(-50%) scale(0) translateY(20px);
                 opacity: 0;
             }
 
             60% {
-                transform: scale(1.15) rotate(3deg);
+                transform: translateX(-50%) scale(1.2) translateY(-5px);
                 opacity: 1;
             }
 
             100% {
-                transform: scale(1) rotate(0deg);
+                transform: translateX(-50%) scale(1) translateY(0);
                 opacity: 1;
             }
         }
 
-        .effect-emoji {
-            font-size: 80px;
-            animation: emojiPulse 0.6s ease-in-out infinite alternate;
-            filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.5));
-        }
-
-        @keyframes emojiPulse {
-            from {
-                transform: scale(1);
+        @keyframes efeitoSaindo {
+            0% {
+                transform: translateX(-50%) scale(1) translateY(0);
+                opacity: 1;
             }
 
-            to {
-                transform: scale(1.2);
+            100% {
+                transform: translateX(-50%) scale(0.5) translateY(-30px);
+                opacity: 0;
             }
         }
 
-        .effect-title {
-            font-family: 'Rowdies', cursive;
+        .efeito-badge {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 6px 14px;
+            border-radius: 12px;
+            white-space: nowrap;
+        }
+
+        .efeito-badge-emoji {
             font-size: 32px;
-            color: white;
-            text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.5), 0 0 30px currentColor;
-            margin-top: 10px;
-            letter-spacing: 2px;
+            line-height: 1;
         }
 
-        .effect-subtitle {
-            font-family: 'Baloo 2', cursive;
-            font-size: 18px;
-            color: rgba(255, 255, 255, 0.85);
-            margin-top: 5px;
+        .efeito-badge-texto {
+            font-family: 'Rowdies', cursive;
+            font-size: 12px;
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+            margin-top: 2px;
+            letter-spacing: 1px;
         }
 
         /* Bloqueio */
-        .effect-bloqueio .effect-box {
-            background: radial-gradient(circle, rgba(229, 62, 62, 0.95) 0%, rgba(155, 44, 44, 0.95) 100%);
-            border: 4px solid #fbd38d;
-            box-shadow: 0 0 60px rgba(229, 62, 62, 0.6), inset 0 0 30px rgba(0, 0, 0, 0.3);
+        .efeito-bloqueio .efeito-badge {
+            background: rgba(229, 62, 62, 0.9);
+            border: 2px solid #fbd38d;
+            box-shadow: 0 0 15px rgba(229, 62, 62, 0.6);
         }
 
-        .effect-bloqueio .effect-title {
-            color: #fbd38d;
+        .efeito-bloqueio .efeito-badge-emoji {
+            animation: emojiShake 0.3s ease-in-out 3;
         }
 
-        /* Inverter */
-        .effect-inverter .effect-box {
-            background: radial-gradient(circle, rgba(66, 153, 225, 0.95) 0%, rgba(43, 108, 176, 0.95) 100%);
-            border: 4px solid #bee3f8;
-            box-shadow: 0 0 60px rgba(66, 153, 225, 0.6), inset 0 0 30px rgba(0, 0, 0, 0.3);
-        }
-
-        @keyframes spinReverse {
-            0% {
-                transform: rotate(0deg) scale(1);
-            }
-
-            50% {
-                transform: rotate(180deg) scale(1.3);
-            }
-
-            100% {
-                transform: rotate(360deg) scale(1);
-            }
-        }
-
-        .effect-inverter .effect-emoji {
-            animation: spinReverse 0.8s ease-in-out infinite;
-        }
-
-        /* +2 */
-        .effect-mais2 .effect-box {
-            background: radial-gradient(circle, rgba(237, 137, 54, 0.95) 0%, rgba(192, 86, 33, 0.95) 100%);
-            border: 4px solid #fefcbf;
-            box-shadow: 0 0 60px rgba(237, 137, 54, 0.6), inset 0 0 30px rgba(0, 0, 0, 0.3);
-        }
-
-        @keyframes shakeEffect {
+        @keyframes emojiShake {
 
             0%,
             100% {
-                transform: translateX(0);
-            }
-
-            20% {
-                transform: translateX(-8px) rotate(-3deg);
-            }
-
-            40% {
-                transform: translateX(8px) rotate(3deg);
-            }
-
-            60% {
-                transform: translateX(-5px) rotate(-2deg);
-            }
-
-            80% {
-                transform: translateX(5px) rotate(2deg);
-            }
-        }
-
-        .effect-mais2 .effect-emoji {
-            animation: shakeEffect 0.5s ease-in-out infinite;
-        }
-
-        /* +4 */
-        .effect-mais4 .effect-box {
-            background: conic-gradient(from 0deg, rgba(229, 62, 62, 0.9), rgba(66, 153, 225, 0.9), rgba(72, 187, 120, 0.9), rgba(237, 201, 54, 0.9), rgba(229, 62, 62, 0.9));
-            border: 4px solid white;
-            box-shadow: 0 0 80px rgba(255, 255, 255, 0.4), inset 0 0 40px rgba(0, 0, 0, 0.4);
-        }
-
-        @keyframes rainbowShake {
-
-            0%,
-            100% {
-                transform: scale(1) rotate(0deg);
+                transform: rotate(0deg);
             }
 
             25% {
-                transform: scale(1.2) rotate(-10deg);
-            }
-
-            50% {
-                transform: scale(0.9) rotate(10deg);
+                transform: rotate(-15deg);
             }
 
             75% {
-                transform: scale(1.15) rotate(-5deg);
+                transform: rotate(15deg);
             }
         }
 
-        .effect-mais4 .effect-emoji {
-            animation: rainbowShake 0.6s ease-in-out infinite;
+        /* Inverter */
+        .efeito-inverter .efeito-badge {
+            background: rgba(66, 153, 225, 0.9);
+            border: 2px solid #bee3f8;
+            box-shadow: 0 0 15px rgba(66, 153, 225, 0.6);
         }
 
-        /* Cor Escolhida */
-        .effect-cor .effect-box {
-            background: radial-gradient(circle, rgba(128, 90, 213, 0.95) 0%, rgba(85, 60, 154, 0.95) 100%);
-            border: 4px solid #d6bcfa;
-            box-shadow: 0 0 60px rgba(128, 90, 213, 0.6), inset 0 0 30px rgba(0, 0, 0, 0.3);
+        .efeito-inverter .efeito-badge-emoji {
+            animation: emojiSpin 0.6s linear 2;
         }
 
-        .effect-particles {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-        }
-
-        .effect-particles span {
-            position: absolute;
-            font-size: 28px;
-            animation: particleFly 1s ease-out forwards;
-        }
-
-        @keyframes particleFly {
-            0% {
-                transform: translate(0, 0) scale(1);
-                opacity: 1;
+        @keyframes emojiSpin {
+            from {
+                transform: rotate(0deg);
             }
 
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Pulso no oponente afetado */
+        .oponente-afetado {
+            animation: oponentePulse 0.5s ease-in-out 2;
+        }
+
+        @keyframes oponentePulse {
+
+            0%,
             100% {
-                opacity: 0;
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+                box-shadow: 0 0 20px rgba(229, 62, 62, 0.5);
             }
         }
 
@@ -1075,11 +980,19 @@
             <div class="mesa-container">
                 <div class="oponentes">
                     <div v-for="op in getOponentes()" :key="op.id" :id="'oponente-' + op.id" class="oponente"
-                        :class="{ 'oponente-ativo': op.id === turnoAtual }">
+                        :class="{ 'oponente-ativo': op.id === turnoAtual, 'oponente-afetado': efeitosJogadores[op.id] }">
                         <span class="oponente-nome">🤖 {{ op.id }}</span>
                         <span class="oponente-cartas">🃏 {{ op.cartas }}</span>
                         <span v-if="op.id === turnoAtual"
                             style="position:absolute; right: -20px; top: -10px; font-size: 24px; ">👈</span>
+                        <!-- Efeito flutuante no jogador -->
+                        <div v-if="efeitosJogadores[op.id]" class="efeito-jogador"
+                            :class="efeitosJogadores[op.id].classe">
+                            <div class="efeito-badge">
+                                <span class="efeito-badge-emoji">{{ efeitosJogadores[op.id].emoji }}</span>
+                                <span class="efeito-badge-texto">{{ efeitosJogadores[op.id].texto }}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="mesa">
@@ -1144,17 +1057,7 @@
             </div>
         </div>
 
-        <!-- OVERLAY DE ANIMAÇÕES DE CARTAS ESPECIAIS -->
-        <div v-if="efeitoAtivo" class="game-effect-overlay" :class="[efeitoClasse, efeitoFading ? 'fade-out' : '']">
-            <div class="effect-box">
-                <div class="effect-emoji">{{ efeitoEmoji }}</div>
-                <div class="effect-title">{{ efeitoTitulo }}</div>
-                <div class="effect-subtitle">{{ efeitoSubtitulo }}</div>
-            </div>
-            <div class="effect-particles">
-                <span v-for="(p, i) in efeitoParticulas" :key="i" :style="p.style">{{ p.emoji }}</span>
-            </div>
-        </div>
+
 
         <div class="card-menu" v-if="estado === 'FIM'">
             <h2 style="color: #f1c40f; font-size: 36px;">🏆 Fim de Jogo!</h2>
@@ -1189,13 +1092,7 @@
                     return localStorage.getItem('saldo_uno') !== null ? parseFloat(localStorage.getItem('saldo_uno')) : 10.00;
                 })(),
                 estado: userIdUrl ? 'MENU' : 'LOGIN',
-                efeitoAtivo: false,
-                efeitoClasse: '',
-                efeitoEmoji: '',
-                efeitoTitulo: '',
-                efeitoSubtitulo: '',
-                efeitoFading: false,
-                efeitoParticulas: [],
+                efeitosJogadores: {}, // Novo objeto para gerenciar efeitos por jogador
                 menuPerfilAberto: false,
                 abaPerfilAtiva: null,
                 bots: [],
@@ -1594,37 +1491,31 @@
                 },
                 dispararEfeitoEspecial(carta, jogador) {
                     const val = carta.valor;
+                    if (val !== 'Pular' && val !== 'Inverter') return;
+
+                    // Determinar o alvo do efeito
+                    let alvoId = null;
                     let cfg = null;
+
                     if (val === 'Pular') {
-                        cfg = { classe: 'effect-bloqueio', emoji: '🚫', titulo: 'BLOQUEADO!', subtitulo: `${jogador} bloqueou o próximo!`, particulas: ['🚫', '❌', '🛑', '⛔', '🚷'] };
+                        // O bloqueado é o jogador que deveria jogar depois de quem jogou
+                        const ids = this.oponentes.map(o => o.id);
+                        const jogadorIdx = ids.indexOf(jogador);
+                        if (jogadorIdx !== -1) {
+                            alvoId = ids[(jogadorIdx + 1) % ids.length];
+                        }
+                        cfg = { classe: 'efeito-bloqueio', emoji: '🚫', texto: 'BLOQUEADO!' };
                     } else if (val === 'Inverter') {
-                        cfg = { classe: 'effect-inverter', emoji: '🔄', titulo: 'INVERTEU!', subtitulo: `${jogador} inverteu o sentido do jogo!`, particulas: ['🔄', '↩️', '🔃', '🔁', '⤴️'] };
-                    } else if (val === '+2') {
-                        cfg = { classe: 'effect-mais2', emoji: '💥', titulo: '+2 CARTAS!', subtitulo: `${jogador} mandou o próximo comprar 2!`, particulas: ['🃏', '🃏', '💥', '😱', '💣'] };
-                    } else if (val === '+4') {
-                        cfg = { classe: 'effect-mais4', emoji: '🌈💣', titulo: '+4 DEVASTADOR!', subtitulo: `${jogador} soltou o +4 mortal!`, particulas: ['🌈', '💣', '🔥', '💀', '😈', '🃏', '🃏', '🃏', '🃏'] };
-                    } else if (carta.cor_escolhida || carta.cor_original === 'Curinga') {
-                        const cores = { 'Vermelho': '🔴', 'Azul': '🔵', 'Verde': '🟢', 'Amarelo': '🟡' };
-                        const corNome = carta.cor_escolhida || carta.cor;
-                        cfg = { classe: 'effect-cor', emoji: '🎨', titulo: `COR: ${corNome.toUpperCase()}!`, subtitulo: `${jogador} escolheu ${corNome}!`, particulas: [cores[corNome] || '🎨', cores[corNome] || '🎨', '✨', '🌟', '💫'] };
+                        alvoId = jogador;
+                        cfg = { classe: 'efeito-inverter', emoji: '🔄', texto: 'INVERTEU!' };
                     }
-                    if (!cfg) return;
-                    // Gerar partículas com posições aleatórias
-                    this.efeitoParticulas = cfg.particulas.map((emoji, i) => {
-                        const angle = (Math.PI * 2 / cfg.particulas.length) * i + Math.random() * 0.5;
-                        const dist = 80 + Math.random() * 120;
-                        const x = Math.cos(angle) * dist;
-                        const y = Math.sin(angle) * dist;
-                        return { emoji, style: `transform: translate(${x}px, ${y}px) scale(0); animation: particleFly 1s ${i * 0.05}s ease-out forwards;` };
-                    });
-                    this.efeitoClasse = cfg.classe;
-                    this.efeitoEmoji = cfg.emoji;
-                    this.efeitoTitulo = cfg.titulo;
-                    this.efeitoSubtitulo = cfg.subtitulo;
-                    this.efeitoFading = false;
-                    this.efeitoAtivo = true;
-                    setTimeout(() => { this.efeitoFading = true; }, 1600);
-                    setTimeout(() => { this.efeitoAtivo = false; this.efeitoFading = false; }, 2000);
+
+                    if (!alvoId || !cfg) return;
+
+                    this.$set(this.efeitosJogadores, alvoId, cfg);
+                    setTimeout(() => {
+                        this.$delete(this.efeitosJogadores, alvoId);
+                    }, 2000);
                 },
                 conectarSocket(callback) {
                     if (!this.socket) {
