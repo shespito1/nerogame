@@ -1361,6 +1361,7 @@
                 },
                 efetuarRegistro() {
                     let baseUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
+                    console.log("Tentando registrar em:", baseUrl + '/api/register');
 
                     fetch(baseUrl + '/api/register', {
                         method: 'POST',
@@ -1368,39 +1369,45 @@
                         body: JSON.stringify({ email: this.loginEmail, password: this.loginSenha, username: this.loginNome })
                     }).then(async r => {
                         const res = await r.json();
+                        console.log("Resposta do servidor:", res);
                         if (r.ok && res.success) {
-                            alert("Conta criada com sucesso! Faça login para entrar.");
+                            alert("✅ Conta criada com sucesso! Agora você já pode fazer login.");
                             this.loginMode = 'login';
                         } else if (res.detail) {
-                            alert(res.detail);
+                            alert("❌ " + res.detail);
                         } else {
-                            alert("Erro ao efetuar cadastro.");
+                            alert("❌ Erro ao efetuar cadastro. Verifique os campos.");
                         }
                     }).catch(e => {
-                        console.error(e);
-                        alert("Erro de conexão com o banco de dados.");
+                        console.error("Erro no fetch /api/register:", e);
+                        alert("🚨 Erro de conexão! O servidor pode estar offline ou o túnel expirou.");
                     });
                 },
                 efetuarLogin() {
                     let baseUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
+                    console.log("Tentando login em:", baseUrl + '/api/login');
 
                     fetch(baseUrl + '/api/login', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ email: this.loginEmail, password: this.loginSenha })
-                    }).then(r => r.json()).then(res => {
+                    }).then(r => {
+                        if (!r.ok) {
+                            return r.json().then(err => { throw new Error(err.detail || "Erro no servidor") });
+                        }
+                        return r.json();
+                    }).then(res => {
+                        console.log("Sucesso no login:", res);
                         if (res.success) {
                             this.usuarioId = this.loginEmail;
                             localStorage.setItem('usuario_id', this.usuarioId);
                             this.estado = 'MENU';
-                        } else if (res.detail) {
-                            alert(res.detail);
                         } else {
-                            alert("Erro ao efetuar login ou cadastro.");
+                            alert("❌ " + (res.detail || "Erro desconhecido."));
                         }
                     }).catch(e => {
-                        console.error(e);
-                        alert("Erro de conexão ao acessar a conta.");
+                        console.error("Erro no fetch /api/login:", e);
+                        alert("🚨 " + e.message || "Erro de conexão ao acessar a conta.");
                     });
                 },
                 formatValor(val) {
