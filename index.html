@@ -1159,7 +1159,7 @@
                     try {
                         const r = await fetch(baseUrl + '/api/login/google', {
                             method: 'POST',
-                            headers: { 'Content-Type': 'application/json', 'Bypass-Tunnel-Reminder': 'true' },
+                            headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ token: response.credential })
                         });
 
@@ -1190,7 +1190,7 @@
 
                     fetch(baseUrl + '/api/register', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'Bypass-Tunnel-Reminder': 'true' },
+                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ email: this.loginEmail, password: this.loginSenha, username: this.loginNome })
                     }).then(async r => {
                         const res = await r.json();
@@ -1219,7 +1219,7 @@
 
                     fetch(baseUrl + '/api/login', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'Bypass-Tunnel-Reminder': 'true' },
+                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ email: this.loginEmail, password: this.loginSenha })
                     }).then(r => {
                         if (!r.ok) {
@@ -1282,7 +1282,7 @@
                     }
 
                     try {
-                        const res = await fetch(baseUrl + '/api/ultimos-ganhadores', { headers: { 'Bypass-Tunnel-Reminder': 'true' } });
+                        const res = await fetch(baseUrl + '/api/ultimos-ganhadores');
                         if (res.ok) {
                             const reais = await res.json();
 
@@ -1348,7 +1348,7 @@
                     if (!this.socket) {
                         this.addLog("Conectando ao servidor...");
                         let serverUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
-                        this.socket = io(serverUrl, { extraHeaders: { "Bypass-Tunnel-Reminder": "true", "User-Agent": "NeroApp" } });
+                        this.socket = io(serverUrl);
                         this.socket.on("connect", () => { this.addLog("✅ Conectado com sucesso!"); if (callback) callback(); });
                         this.socket.on("partidaIniciada", (data) => {
                             this.addLog("🔥 A PARTIDA COMEÇOU!"); this.estado = "JOGO"; this.partidaId = data.partidaId;
@@ -1431,7 +1431,7 @@
                     let baseUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
                     fetch(baseUrl + '/api/bots/criar', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'Bypass-Tunnel-Reminder': 'true' },
+                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(novoBot)
                     }).then(async res => {
                         const data = await res.json();
@@ -1449,7 +1449,7 @@
                 },
                 carregarBots() {
                     let baseUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
-                    fetch(baseUrl + '/api/bots/listar?usuario_email=' + this.usuarioId, { headers: { 'Bypass-Tunnel-Reminder': 'true' } })
+                    fetch(baseUrl + '/api/bots/listar?usuario_email=' + this.usuarioId)
                         .then(r => r.json())
                         .then(res => {
                             if (res.success) {
@@ -1461,7 +1461,7 @@
                     let baseUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
                     fetch(baseUrl + '/api/bots/ativar', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'Bypass-Tunnel-Reminder': 'true' },
+                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ usuario_email: this.usuarioId, bot_id: bot.id })
                     }).then(r => r.json()).then(res => {
                         if (res.success) {
@@ -1475,7 +1475,7 @@
                     let baseUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
                     fetch(baseUrl + '/api/bots/deletar', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'Bypass-Tunnel-Reminder': 'true' },
+                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ usuario_email: this.usuarioId, bot_id: bot.id })
                     }).then(r => r.json()).then(res => {
                         if (res.success) {

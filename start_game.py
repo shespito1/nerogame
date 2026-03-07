@@ -43,26 +43,43 @@ def main():
     # 1. Iniciar o Servidor Backend (FastAPI) em background
     backend_proc = run_command([sys.executable, "main.py"], capture_output=False)
     
-    # 2. Iniciar o Túnel (localhost.run)
-    print("🌐 Abrindo túnel público seguro...")
-    log_name = f"tunnel_{int(time.time())}.log"
-    tunnel_proc = subprocess.Popen(f"ssh -o StrictHostKeyChecking=no -R 80:localhost:8000 nokey@localhost.run > {log_name} 2>&1", shell=True)
+    # 2. Iniciar o Túnel (serveo.net)
+    print("🌐 Abrindo túnel público seguro (serveo.net)...")
+    if os.path.exists("serveo.log"):
+        os.remove("serveo.log")
+        
+    tunnel_proc = subprocess.Popen("ssh -o StrictHostKeyChecking=no -R 80:127.0.0.1:8000 serveo.net > serveo.log 2>&1", shell=True)
     
     url = None
-    for _ in range(15):
-        if os.path.exists(log_name):
-            with open(log_name, "r", encoding="utf-8", errors="ignore") as f:
+    for _ in range(20):
+        if os.path.exists("serveo.log"):
+            with open("serveo.log", "r", encoding="utf-8", errors="ignore") as f:
                 content = f.read()
-                match = re.search(r'(https://[a-zA-Z0-9-]+\.lhr\.life)', content)
+                # Serveo usually gives: Forwarding HTTP traffic from https://[subdomain].serveousercontent.com
+                match = re.search(r'(https://[a-zA-Z0-9-]+\.serveousercontent\.com)', content)
                 if match:
                     url = match.group(1)
                     break
         time.sleep(1)
             
     if not url:
-        print("❌ Erro ao obter URL do túnel.")
+        print("❌ Erro ao obter URL do túnel serveo.")
+        # Fallback to localhost.run if serveo fails
+        print("🔄 Tentando localhost.run como alternativa...")
+        tunnel_proc = subprocess.Popen("ssh -o StrictHostKeyChecking=no -R 80:127.0.0.1:8000 nokey@localhost.run > tunnel.log 2>&1", shell=True)
+        for _ in range(15):
+             if os.path.exists("tunnel.log"):
+                with open("tunnel.log", "r", encoding="utf-8", errors="ignore") as f:
+                    content = f.read()
+                    match = re.search(r'(https://[a-zA-Z0-9-]+\.lhr\.life)', content)
+                    if match:
+                        url = match.group(1)
+                        break
+             time.sleep(1)
+
+    if not url:
+        print("❌ Erro fatal: nenhum túnel disponível.")
         backend_proc.terminate()
-        tunnel_proc.terminate()
         return
 
     # 3. Atualizar o frontend e mandar pro GitHub
