@@ -740,8 +740,12 @@
                                 {{ bot.nome }}</div>
                             <div
                                 style="display:flex; flex-direction:column; gap:5px; align-items:flex-start; width:100%; margin-bottom:8px;">
-                                <span style="color:#63b3ed; font-weight:bold; font-size:14px;">💰 Saldo: R$ {{ bot.saldo
-                                    }}</span>
+                                <span style="color:#63b3ed; font-weight:bold; font-size:14px;">💰 Saldo: R$ {{
+                                    bot.saldo.toFixed(2) }}</span>
+                                <span :style="{color: bot.lucro >= 0 ? '#68d391' : '#fc8181'}"
+                                    style="font-weight:bold; font-size:14px;">
+                                    📈 Lucro: R$ {{ bot.lucro >= 0 ? '+' : '' }}{{ bot.lucro.toFixed(2) }}
+                                </span>
                                 <span style="color:#fc8181; font-weight:bold; font-size:14px;">🛑 Stop Loss: R$ {{
                                     bot.stop_loss }}</span>
                                 <span style="color:#68d391; font-weight:bold; font-size:14px;">🏆 Stop Win: R$ {{
@@ -1151,6 +1155,7 @@
                     stop_loss: 5,
                     stop_win: 20
                 },
+                intervaloBots: null,
                 avatarSeed: localStorage.getItem('avatar_seed') || Math.random().toString(36).substring(7),
                 historicoApostas: JSON.parse(localStorage.getItem('historico_apostas')) || [],
                 socket: null,
@@ -1475,8 +1480,23 @@
                 abrirAbaPerfil(aba) {
                     this.abaPerfilAtiva = aba;
                     this.menuPerfilAberto = false;
+
+                    if (this.intervaloBots) {
+                        clearInterval(this.intervaloBots);
+                        this.intervaloBots = null;
+                    }
+
                     if (aba === 'bots') {
                         this.carregarBots();
+                        // Atualiza os bots a cada 5 segundos enquanto estiver na aba
+                        this.intervaloBots = setInterval(() => {
+                            if (this.abaPerfilAtiva === 'bots') {
+                                this.carregarBots();
+                            } else {
+                                clearInterval(this.intervaloBots);
+                                this.intervaloBots = null;
+                            }
+                        }, 5000);
                     }
                 },
                 minimizarPartida() {
@@ -1735,7 +1755,7 @@
                     });
                 },
                 excluirBot(bot) {
-                    if (!confirm("Deseja realmente excluir este bot?")) return;
+                    if (!confirm("Deseja realmente excluir este bot e devolver o saldo de R$ " + bot.saldo.toFixed(2) + " para sua conta?")) return;
                     let baseUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
                     fetch(baseUrl + '/api/bots/deletar', {
                         method: 'POST',
@@ -1743,6 +1763,8 @@
                         body: JSON.stringify({ usuario_email: this.usuarioId, bot_id: bot.id })
                     }).then(r => r.json()).then(res => {
                         if (res.success) {
+                            alert("✅ Bot removido. Saldo devolvido com sucesso!");
+                            this.saldo += bot.saldo;
                             this.carregarBots();
                         }
                     });

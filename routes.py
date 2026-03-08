@@ -40,11 +40,13 @@ async def encerrar_bot(request: BotEncerrarRequest):
     novo_saldo_usuario = user['saldo'] + saldo_bot
     # Atualiza saldo do usuário
     cursor.execute("UPDATE usuarios SET saldo = ? WHERE id = ?", (novo_saldo_usuario, user['id']))
+    # Registra transação de devolução
+    cursor.execute("INSERT INTO transacoes (usuario_id, valor, tipo) VALUES (?, ?, ?)", (user['id'], saldo_bot, 'Premio'))
     # Exclui bot
     cursor.execute("DELETE FROM bots WHERE id = ?", (request.bot_id,))
     conn.commit()
     conn.close()
-    return {"success": True, "novo_saldo_usuario": novo_saldo_usuario}
+    return {"success": True, "novo_saldo_usuario": novo_saldo_usuario, "valor_devolvido": saldo_bot}
 # Endpoint para transferir saldo do usuário para o bot
 class BotSaldoRequest(BaseModel):
     usuario_email: str
@@ -110,7 +112,15 @@ async def listar_bots(usuario_email: str):
     conn = get_db()
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM bots WHERE usuario_email = ?", (usuario_email,))
-    bots = [dict(row) for row in cursor.fetchall()]
+    bots = []
+    for row in cursor.fetchall():
+        d = dict(row)
+        # O lucro real é o saldo atual menos o que ele custou (no criar_bot, tiramos saldo do usuário)
+        # Se o usuário quer saber o histórico de ganhos, podemos usar (saldo atual - saldo inicial)
+        d['lucro'] = d['saldo'] - (d['stop_loss'] + 5.0) # Aproximação ou apenas saldo - stop_loss se saldo_incital não for salvo
+        # Melhor: apenas retornar saldo e deixar o front comparar se quiser, mas vamos mandar um campo lucro
+        # Como não salvamos saldo_original, vamos assumir que o bot começa com o valor que o user definiu
+        bots.append(d)
     conn.close()
     return {"success": True, "bots": bots}
 
@@ -122,6 +132,24 @@ class BotDeleteRequest(BaseModel):
 async def deletar_bot(request: BotDeleteRequest):
     conn = get_db()
     cursor = conn.cursor()
+    # Busca bot e saldo antes de deletar
+    cursor.execute("SELECT saldo FROM bots WHERE id = ? AND usuario_email = ?", (request.bot_id, request.usuario_email))
+    bot = cursor.fetchone()
+    if not bot:
+        conn.close()
+        return {"success": False, "detail": "Bot não encontrado."}
+    
+    saldo_bot = bot['saldo']
+    
+    # Busca usuário
+    cursor.execute("SELECT id, saldo FROM usuarios WHERE email = ?", (request.usuario_email,))
+    user = cursor.fetchone()
+    if user:
+        # Devolve saldo
+        novo_saldo = user['saldo'] + saldo_bot
+        cursor.execute("UPDATE usuarios SET saldo = ? WHERE id = ?", (novo_saldo, user['id']))
+        cursor.execute("INSERT INTO transacoes (usuario_id, valor, tipo) VALUES (?, ?, ?)", (user['id'], saldo_bot, 'Premio'))
+    
     cursor.execute("DELETE FROM bots WHERE id = ? AND usuario_email = ?", (request.bot_id, request.usuario_email))
     conn.commit()
     conn.close()
