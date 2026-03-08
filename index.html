@@ -142,8 +142,19 @@
             min-width: 0 !important;
         }
 
-        .modal-no-scroll-x::-webkit-scrollbar {
-            display: none;
+        .modal-scroll-hide::-webkit-scrollbar,
+        .modal-no-scroll-x::-webkit-scrollbar,
+        .modal-no-scroll-x>div::-webkit-scrollbar {
+            display: none !important;
+            width: 0 !important;
+            background: transparent !important;
+        }
+
+        .modal-scroll-hide,
+        .modal-no-scroll-x,
+        .modal-no-scroll-x>div {
+            scrollbar-width: none !important;
+            -ms-overflow-style: none !important;
         }
 
         .modal-no-scroll-x>div {
@@ -678,8 +689,8 @@
         <!-- Modals para ações do Perfil (separado do menu, ocupa tela) -->
         <div v-if="abaPerfilAtiva" class="modal-no-scroll-x"
             style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:10001; display:flex; justify-content:center; align-items:center;">
-            <div v-if="estado !== 'LOGIN'"
-                style="background: #1a202c; border: 2px solid #4a5568; color: white; width: 360px; padding: 15px; border-radius: 18px; position:relative; box-shadow: 0 10px 30px rgba(0,0,0,0.8); overflow-x:hidden; overflow-y:hidden; max-height:95vh; max-width:95vw;">
+            <div v-if="estado !== 'LOGIN'" class="modal-scroll-hide"
+                style="background: #1a202c; border: 2px solid #4a5568; color: white; width: 360px; padding: 15px; border-radius: 18px; position:relative; box-shadow: 0 10px 30px rgba(0,0,0,0.8); overflow-x:hidden; overflow-y:auto; max-height:95vh; max-width:95vw;">
                 <button @click="abaPerfilAtiva = null"
                     style="position: absolute; top: 10px; right: 10px; background: #e53e3e; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-weight:bold;">X</button>
 

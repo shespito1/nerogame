@@ -87,7 +87,6 @@ async def adicionar_saldo_bot(request: BotSaldoRequest):
 class BotAtivarRequest(BaseModel):
     usuario_email: str
     bot_id: int
-    partida_id: int
 
 @router.post("/api/bots/ativar")
 async def ativar_bot(request: BotAtivarRequest):
