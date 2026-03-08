@@ -185,8 +185,8 @@ async def criar_bot(request: BotCreateRequest):
         cursor.execute("SELECT id, saldo FROM usuarios WHERE email = ?", (request.usuario_email,))
         user = cursor.fetchone()
         if not user:
-            # Se não existe em usuarios, cria com 10 de presente pra ele não ficar travado
-            cursor.execute("INSERT INTO usuarios (nome, email, senha, saldo) VALUES (?, ?, '123', 10.00)", 
+            # Se não existe em usuarios, cria com 100 de presente pra ele não ficar travado
+            cursor.execute("INSERT INTO usuarios (nome, email, senha, saldo) VALUES (?, ?, '123', 100.00)", 
                            (request.usuario_email, request.usuario_email))
             conn.commit()
             cursor.execute("SELECT id, saldo FROM usuarios WHERE email = ?", (request.usuario_email,))
@@ -343,7 +343,7 @@ async def login_game(request: LoginRequest):
     # Pega o saldo da tabela usuarios (Uno)
     cursor.execute("SELECT saldo FROM usuarios WHERE email = ?", (email_limpo,))
     uno_user = cursor.fetchone()
-    uno_saldo = uno_user['saldo'] if uno_user else 10.00 # Padrão se não existir
+    uno_saldo = uno_user['saldo'] if uno_user else 100.00 # Padrão se não existir
 
     conn.close()
 
@@ -402,7 +402,7 @@ async def login_google(request: GoogleLoginRequest):
         # Pega o saldo da tabela usuarios (Uno)
         cursor.execute("SELECT saldo FROM usuarios WHERE email = ?", (email_limpo,))
         uno_user = cursor.fetchone()
-        uno_saldo = uno_user['saldo'] if uno_user else 10.00 # Padrão
+        uno_saldo = uno_user['saldo'] if uno_user else 100.00 # Padrão
         
         conn.close()
 
@@ -441,7 +441,7 @@ async def cobrar_entrada(request: CobrarEntradaRequest):
     user = cursor.fetchone()
     
     if not user:
-        cursor.execute("INSERT INTO usuarios (nome, email, senha, saldo) VALUES (?, ?, '123', 10.00)", (usuario_id, usuario_id))
+        cursor.execute("INSERT INTO usuarios (nome, email, senha, saldo) VALUES (?, ?, '123', 100.00)", (usuario_id, usuario_id))
         conn.commit()
         cursor.execute("SELECT id, saldo FROM usuarios WHERE email = ?", (usuario_id,))
         user = cursor.fetchone()
