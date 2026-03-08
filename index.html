@@ -100,7 +100,7 @@
                 flex-wrap: wrap !important;
             }
 
-            button {
+            button:not(.btn-icon) {
                 width: 100% !important;
                 font-size: 1.1rem !important;
                 padding: 12px !important;
@@ -691,8 +691,8 @@
             style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:10001; display:flex; justify-content:center; align-items:center;">
             <div v-if="estado !== 'LOGIN'" class="modal-scroll-hide"
                 style="background: #1a202c; border: 2px solid #4a5568; color: white; width: 360px; padding: 15px; border-radius: 18px; position:relative; box-shadow: 0 10px 30px rgba(0,0,0,0.8); overflow-x:hidden; overflow-y:auto; max-height:95vh; max-width:95vw;">
-                <button @click="abaPerfilAtiva = null"
-                    style="position: absolute; top: 10px; right: 10px; background: #e53e3e; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-weight:bold;">X</button>
+                <button class="btn-icon" @click="abaPerfilAtiva = null"
+                    style="position: absolute; top: 10px; right: 10px; background: #e53e3e; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-weight:bold; width: auto; font-size: 16px;">X</button>
 
                 <h2 v-if="abaPerfilAtiva === 'perfil'" style="font-family: 'Rowdies', cursive; margin-top:0;">👤 Seu
                     Perfil</h2>
@@ -703,38 +703,57 @@
                     <p style="margin-bottom:12px; color:#a0aec0; text-align:center; font-size:16px; font-weight:600;">
                         Configure seu bot para jogar Uno automaticamente.</p>
                     <form @submit.prevent="criarBot()"
-                        style="background:rgba(255,255,255,0.12); border-radius:14px; padding:10px 5px; margin-bottom:15px; box-shadow:0 4px 12px rgba(0,0,0,0.12); max-width:280px; margin-left:auto; margin-right:auto; backdrop-filter: blur(6px); border:1px solid #63b3ed33; overflow-x:hidden; width:100%; box-sizing:border-box;">
-                        <label
-                            style="color:#fbd38d; font-weight:bold; margin-bottom:5px; display:block; font-size:14px;">Nome
-                            do Bot</label>
-                        <input type="text" v-model="botNovo.nome" placeholder="Nome do bot"
-                            style="width:240px; height:24px; max-width:240px; padding:4px; border-radius:6px; border:1px solid #63b3ed; background:rgba(26,34,51,0.85); color:white; margin-bottom:6px; font-size:13px; font-weight:500; display:block; margin-left:auto; margin-right:auto;">
-                        <label
-                            style="color:#63b3ed; font-weight:bold; margin-bottom:5px; display:block; font-size:14px;">Saldo
-                            Inicial</label>
-                        <input type="number" v-model.number="botNovo.saldo" min="1" placeholder="Saldo do bot"
-                            style="width:240px; height:24px; max-width:240px; padding:4px; border-radius:6px; border:1px solid #63b3ed; background:rgba(26,34,51,0.85); color:white; margin-bottom:6px; font-size:13px; font-weight:500; display:block; margin-left:auto; margin-right:auto;">
-                        <label
-                            style="color:#fc8181; font-weight:bold; margin-bottom:5px; display:block; font-size:14px;">Stop
-                            Loss</label>
-                        <input type="number" v-model.number="botNovo.stop_loss" min="1" placeholder="Stop Loss"
-                            style="width:240px; height:24px; max-width:240px; padding:4px; border-radius:6px; border:1px solid #fc8181; background:rgba(26,34,51,0.85); color:white; margin-bottom:6px; font-size:13px; font-weight:500; display:block; margin-left:auto; margin-right:auto;">
-                        <label
-                            style="color:#68d391; font-weight:bold; margin-bottom:5px; display:block; font-size:14px;">Stop
-                            Win</label>
-                        <input type="number" v-model.number="botNovo.stop_win" min="1" placeholder="Stop Win"
-                            style="width:240px; height:24px; max-width:240px; padding:4px; border-radius:6px; border:1px solid #68d391; background:rgba(26,34,51,0.85); color:white; margin-bottom:6px; font-size:13px; font-weight:500; display:block; margin-left:auto; margin-right:auto;">
+                        style="background:rgba(255,255,255,0.08); border-radius:18px; padding:20px; margin-bottom:25px; margin-top: 15px; box-shadow:0 8px 24px rgba(0,0,0,0.25); width:100%; box-sizing:border-box; backdrop-filter: blur(8px); border:1px solid rgba(99, 179, 237, 0.3); text-align: left;">
 
                         <label
-                            style="color:#63b3ed; font-weight:bold; margin-bottom:5px; display:block; font-size:14px;">Valor
-                            da Aposta</label>
-                        <select v-model.number="botNovo.valor_aposta"
-                            style="width:240px; height:28px; max-width:240px; padding:4px; border-radius:6px; border:1px solid #63b3ed; background:rgba(26,34,51,0.85); color:white; margin-bottom:6px; font-size:13px; font-weight:500; display:block; margin-left:auto; margin-right:auto;">
-                            <option v-for="op in opcoesAposta" :value="op">R$ {{ op.toFixed(2) }}</option>
-                        </select>
-                        <button type="submit"
-                            style="display:block; margin:20px auto 0 auto; background:linear-gradient(135deg,#63b3ed 0%,#4f8cc9 100%); color:white; border:none; padding:12px 30px; border-radius:14px; font-weight:bold; font-size:18px; cursor:pointer; box-shadow:0 4px 12px #63b3ed33; transition:0.2s;">➕
-                            Criar Bot</button>
+                            style="color:#fbd38d; font-weight:600; margin-bottom:6px; display:block; font-size:14px; text-transform: uppercase; letter-spacing: 0.5px;">Nome
+                            do Bot</label>
+                        <input type="text" v-model="botNovo.nome" placeholder="Ex: Uno Master"
+                            style="width:100%; box-sizing: border-box; padding:12px; border-radius:10px; border:1px solid #63b3ed88; background:rgba(15, 23, 42, 0.7); color:white; margin-bottom:16px; font-size:15px; display:block; transition: 0.3s; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);">
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 16px;">
+                            <div>
+                                <label
+                                    style="color:#63b3ed; font-weight:600; margin-bottom:6px; display:block; font-size:13px; text-transform: uppercase;">Aposta
+                                    Básica</label>
+                                <select v-model.number="botNovo.valor_aposta"
+                                    style="width:100%; box-sizing: border-box; padding:12px; border-radius:10px; border:1px solid #63b3ed88; background:rgba(15, 23, 42, 0.7); color:white; font-size:15px; display:block; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); appearance: none;">
+                                    <option v-for="op in opcoesAposta" :value="op" style="background:#1a202c;">R$ {{
+                                        op.toFixed(2) }}</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label
+                                    style="color:#68d391; font-weight:600; margin-bottom:6px; display:block; font-size:13px; text-transform: uppercase;">Fundo
+                                    (💰)</label>
+                                <input type="number" v-model.number="botNovo.saldo" min="1" placeholder="R$ 10"
+                                    style="width:100%; box-sizing: border-box; padding:12px; border-radius:10px; border:1px solid #68d39188; background:rgba(15, 23, 42, 0.7); color:white; font-size:15px; display:block; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);">
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                            <div>
+                                <label
+                                    style="color:#fc8181; font-weight:600; margin-bottom:6px; display:block; font-size:13px; text-transform: uppercase;">Stop
+                                    Loss</label>
+                                <input type="number" v-model.number="botNovo.stop_loss" min="1"
+                                    placeholder="Parar em R$"
+                                    style="width:100%; box-sizing: border-box; padding:12px; border-radius:10px; border:1px solid #fc818188; background:rgba(15, 23, 42, 0.7); color:white; font-size:15px; display:block; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);">
+                            </div>
+                            <div>
+                                <label
+                                    style="color:#fbd38d; font-weight:600; margin-bottom:6px; display:block; font-size:13px; text-transform: uppercase;">Stop
+                                    Win</label>
+                                <input type="number" v-model.number="botNovo.stop_win" min="1"
+                                    placeholder="Meta de Lucro"
+                                    style="width:100%; box-sizing: border-box; padding:12px; border-radius:10px; border:1px solid #fbd38d88; background:rgba(15, 23, 42, 0.7); color:white; font-size:15px; display:block; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-icon"
+                            style="display:flex; justify-content:center; align-items:center; width:100%; box-sizing:border-box; background:linear-gradient(135deg,#63b3ed 0%,#4f8cc9 100%); color:white; border:none; padding:14px; border-radius:12px; font-weight:800; font-size:16px; cursor:pointer; box-shadow:0 4px 15px rgba(99, 179, 237, 0.4); text-transform:uppercase; letter-spacing:1px; transition: transform 0.2s;">
+                            ➕ Adicionar Bot
+                        </button>
                     </form>
                     <div style="display:flex; flex-wrap:wrap; gap:15px; justify-content:center; margin-top:20px;">
                         <div v-for="bot in bots" :key="bot.id" class="bot-card-animado"
@@ -828,7 +847,8 @@
                             </div>
                         </div>
                         <p style="font-size: 12px; color: #a0aec0; margin-top: 5px;">
-                            {{ mostrandoCriadorAvatar ? 'Clique para fechar o editor' : 'Clique na foto acima para personalizar seu visual' }}
+                            {{ mostrandoCriadorAvatar ? 'Clique para fechar o editor' : 'Clique na foto acima para
+                            personalizar seu visual' }}
                         </p>
 
                         <!-- Criador de Avatar (Oculto até clicar no lapiz) -->
@@ -1105,8 +1125,8 @@
 
 
         <div class="card-menu" v-if="estado === 'ESCOLHER_APOSTA'" style="position: relative;">
-            <button
-                style="position: absolute; top: 15px; left: 15px; padding: 8px 15px; font-size: 14px; margin: 0; width: auto; background: #4a5568; color: white;"
+            <button class="btn-icon"
+                style="position: absolute; top: 15px; left: 15px; padding: 8px 15px; font-size: 14px; margin: 0; width: auto; background: #4a5568; color: white; border-radius: 6px; border: none; cursor: pointer;"
                 @click="estado = 'MENU'">⬅️ Voltar</button>
             <h2>🃏 UNO Royale - Selecione a Aposta</h2>
             <p style="color: #a0aec0; font-size: 18px;">Vencedor ganha 3.8x o valor apostado!</p>
