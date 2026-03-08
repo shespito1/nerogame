@@ -201,7 +201,7 @@ async def bot_play_task(partida_id, bot_jogador):
     import random
     import asyncio
     while partida_id in partidas:
-        await asyncio.sleep(3)  # Bot verifica o turno a cada 3 segundos
+        await asyncio.sleep(1)  # Bot verifica o turno a cada 1 segundo (Mais rápido!)
         if partida_id not in partidas: break
         partida = partidas[partida_id]
 
@@ -231,8 +231,8 @@ async def bot_play_task(partida_id, bot_jogador):
                 carta_index = escolher_melhor_carta_index(mao, carta_mesa)
                 
                 cor_bot = random.choice(['Vermelho', 'Azul', 'Verde', 'Amarelo']) if mao[carta_index]['cor'] == 'Curinga' else None
-                # Delay de 2 a 5 segundos conforme solicitado para dar tempo de assistir
-                await asyncio.sleep(random.uniform(2.0, 5.0))
+                # Delay reduzido para 1.5 a 3 segundos para o jogo fluir melhor
+                await asyncio.sleep(random.uniform(1.5, 3.0))
                 await sio.emit("mensagem_jogo", {"msg": f"🤖 {bot_jogador['usuarioId']} está jogando..."}, room=partida_id)
                 await processar_jogada(partida_id, bot_jogador["socketId"], carta_index, cor_bot)
             else:
@@ -355,7 +355,7 @@ async def user_timeout_task(partida_id):
 
         tempo_agora = time.time()
         ultimo_turno = partida.get("ultimo_turno_horario", tempo_agora)
-        if tempo_agora - ultimo_turno >= 14:
+        if tempo_agora - ultimo_turno >= 10: # Timeout de 10 segundos para players reais
             await forcar_jogada_bot(partida_id, jogador_da_vez)
             if partida_id in partidas:
                 partidas[partida_id]["ultimo_turno_horario"] = time.time() + 2
