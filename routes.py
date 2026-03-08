@@ -140,10 +140,29 @@ class BotCreateRequest(BaseModel):
 
 @router.post("/api/bots/criar")
 async def criar_bot(request: BotCreateRequest):
-    print(f"POST /api/bots/criar hit for user: {request.usuario_email}, bot: {request.nome}")
     try:
         conn = get_db()
         cursor = conn.cursor()
+        
+        # 1. Verifica saldo do usuário na tabela usuarios (Uno)
+        cursor.execute("SELECT id, saldo FROM usuarios WHERE email = ?", (request.usuario_email,))
+        user = cursor.fetchone()
+        if not user:
+            # Se não existe em usuarios, cria com 10 de presente pra ele não ficar travado
+            cursor.execute("INSERT INTO usuarios (nome, email, senha, saldo) VALUES (?, ?, '123', 10.00)", 
+                           (request.usuario_email, request.usuario_email))
+            conn.commit()
+            cursor.execute("SELECT id, saldo FROM usuarios WHERE email = ?", (request.usuario_email,))
+            user = cursor.fetchone()
+        
+        if user['saldo'] < request.saldo:
+            conn.close()
+            return {"success": False, "detail": f"Saldo insuficiente em sua conta Uno. Você tem R$ {user['saldo']:.2f}"}
+
+        # 2. Desconta do usuário
+        cursor.execute("UPDATE usuarios SET saldo = saldo - ? WHERE id = ?", (request.saldo, user['id']))
+
+        # 3. Cria o Bot
         cursor.execute("INSERT INTO bots (usuario_email, nome, saldo, stop_loss, stop_win, valor_aposta, status) VALUES (?, ?, ?, ?, ?, ?, ?)",
                        (request.usuario_email, request.nome, request.saldo, request.stop_loss, request.stop_win, request.valor_aposta, 'Parado'))
         conn.commit()
@@ -284,6 +303,11 @@ async def login_game(request: LoginRequest):
     cursor.execute("SELECT item_name, quantity FROM inventory WHERE email = ?", (email_limpo,))
     inventory = {row['item_name']: row['quantity'] for row in cursor.fetchall()}
 
+    # Pega o saldo da tabela usuarios (Uno)
+    cursor.execute("SELECT saldo FROM usuarios WHERE email = ?", (email_limpo,))
+    uno_user = cursor.fetchone()
+    uno_saldo = uno_user['saldo'] if uno_user else 10.00 # Padrão se não existir
+
     conn.close()
 
     # Retorna os dados removendo a senha por segurança
@@ -293,6 +317,7 @@ async def login_game(request: LoginRequest):
     return {
         "success": True,
         "player_data": player_data,
+        "uno_saldo": uno_saldo,
         "farmers": farmers,
         "inventory": inventory
     }
@@ -337,7 +362,13 @@ async def login_google(request: GoogleLoginRequest):
 
         cursor.execute("SELECT item_name, quantity FROM inventory WHERE email = ?", (email_limpo,))
         inventory = {row['item_name']: row['quantity'] for row in cursor.fetchall()}
+        # Pega o saldo da tabela usuarios (Uno)
+        cursor.execute("SELECT saldo FROM usuarios WHERE email = ?", (email_limpo,))
+        uno_user = cursor.fetchone()
+        uno_saldo = uno_user['saldo'] if uno_user else 10.00 # Padrão
+        
         conn.close()
+
 
         player_data = dict(player)
         player_data.pop('password', None)
@@ -345,6 +376,7 @@ async def login_google(request: GoogleLoginRequest):
         return {
             "success": True,
             "player_data": player_data,
+            "uno_saldo": uno_saldo,
             "farmers": farmers,
             "inventory": inventory
         }
