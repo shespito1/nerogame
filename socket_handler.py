@@ -227,9 +227,14 @@ async def bot_play_task(partida_id, bot_jogador):
         try:
             cartas_validas = [i for i, c in enumerate(mao) if validar_jogada(c, carta_mesa)]
             if cartas_validas:
-                carta_index = cartas_validas[0]
+                # Bot escolhe uma carta (com pequena chance de erro para parecer humano)
+                if random.random() < 0.15 and len(cartas_validas) > 1:
+                    carta_index = random.choice(cartas_validas)
+                else:
+                    carta_index = escolher_melhor_carta_index(mao, carta_mesa)
+                
                 cor_bot = random.choice(['Vermelho', 'Azul', 'Verde', 'Amarelo']) if mao[carta_index]['cor'] == 'Curinga' else None
-                await asyncio.sleep(2)  # Simula tempo de reflexão do bot
+                await asyncio.sleep(random.uniform(1.0, 3.0))  # Tempo de reflexão variável
                 await processar_jogada(partida_id, bot_jogador["socketId"], carta_index, cor_bot)
             else:
                 if len(partida["baralho"]) == 0:

@@ -120,7 +120,7 @@ async def listar_bots(usuario_email: str):
     bots = []
     for row in cursor.fetchall():
         d = dict(row)
-        d['lucro'] = d['saldo'] - (d['stop_loss'] + 5.0)
+        d['lucro'] = d['saldo'] - d.get('saldo_inicial', d['saldo'])
         
         # Procura se este bot está em alguma partida ativa agora
         d['partida_id'] = None
@@ -200,8 +200,8 @@ async def criar_bot(request: BotCreateRequest):
         cursor.execute("UPDATE usuarios SET saldo = saldo - ? WHERE id = ?", (request.saldo, user['id']))
 
         # 3. Cria o Bot
-        cursor.execute("INSERT INTO bots (usuario_email, nome, saldo, stop_loss, stop_win, valor_aposta, status) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                       (request.usuario_email, request.nome, request.saldo, request.stop_loss, request.stop_win, request.valor_aposta, 'Parado'))
+        cursor.execute("INSERT INTO bots (usuario_email, nome, saldo, stop_loss, stop_win, valor_aposta, status, saldo_inicial) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                       (request.usuario_email, request.nome, request.saldo, request.stop_loss, request.stop_win, request.valor_aposta, 'Parado', request.saldo))
         conn.commit()
         conn.close()
         return {"success": True}
