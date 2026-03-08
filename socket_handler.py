@@ -233,6 +233,7 @@ async def bot_play_task(partida_id, bot_jogador):
                 cor_bot = random.choice(['Vermelho', 'Azul', 'Verde', 'Amarelo']) if mao[carta_index]['cor'] == 'Curinga' else None
                 # Delay de 2 a 5 segundos conforme solicitado para dar tempo de assistir
                 await asyncio.sleep(random.uniform(2.0, 5.0))
+                await sio.emit("mensagem_jogo", {"msg": f"🤖 {bot_jogador['usuarioId']} está jogando..."}, room=partida_id)
                 await processar_jogada(partida_id, bot_jogador["socketId"], carta_index, cor_bot)
             else:
                 if len(partida["baralho"]) == 0:
@@ -576,6 +577,7 @@ async def processar_jogada(partida_id, socket_id, carta_index, cor_escolhida=Non
             status_jogadores = [{"id": j["usuarioId"], "cartas": len(j["mao"])} for j in partida["jogadores"]]
             
             print(f"[{partida_id}] Emitindo jogadaAceita para o jogador {jogador['usuarioId']} e proximo é {proximo_jogador}")
+            await sio.emit("mensagem_jogo", {"msg": f"🃏 {jogador['usuarioId']} jogou {carta_removida['valor']} {carta_removida['cor']}"}, room=partida_id)
             await sio.emit("jogadaAceita", {
                 "jogador": jogador["usuarioId"],
                 "carta": carta_removida,
