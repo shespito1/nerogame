@@ -657,8 +657,8 @@
 
         <!-- Top Right Profile -->
         <div style="position: absolute; top: 15px; right: 20px; z-index: 10000; text-align: right;">
-            <img :src="`https://api.dicebear.com/7.x/adventurer/svg?seed=${avatarSeed}`" v-if="estado === 'MENU'"
-                @click="menuPerfilAberto = !menuPerfilAberto"
+            <img :src="`https://api.dicebear.com/7.x/adventurer/svg?${avatarSeed.includes('=') ? avatarSeed : 'seed=' + avatarSeed}`"
+                v-if="estado === 'MENU'" @click="menuPerfilAberto = !menuPerfilAberto"
                 style="width: 50px; height: 50px; border-radius: 50%; border: 3px solid #fbd38d; cursor: pointer; background: #2d3748; box-shadow: 0 4px 6px rgba(0,0,0,0.5);" />
 
             <div v-show="menuPerfilAberto"
@@ -815,30 +815,72 @@
                     <p><strong>Nome:</strong> {{ gameUsername || loginNome }}</p>
                     <p><strong>Email:</strong> {{ usuarioId }}</p>
                     <p><strong>Saldo Atual:</strong> R$ {{ saldo.toFixed(2).replace('.', ',') }}</p>
+
                     <div
-                        style="display:flex; flex-direction:column; align-items:center; margin-top: 15px; position: relative;">
-                        <div style="position: relative; cursor: pointer;"
-                            @click="mostrandoOpcoesAvatar = !mostrandoOpcoesAvatar">
-                            <img :src="`https://api.dicebear.com/7.x/adventurer/svg?seed=${avatarSeed}`"
-                                style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid #fbd38d; background: #2d3748;" />
+                        style="display:flex; flex-direction:column; align-items:center; margin-top: 20px; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 20px; border: 1px solid #4a5568;">
+                        <h3 style="margin: 0 0 15px 0; font-family: 'Rowdies', cursive; color: #fbd38d;">🎨 Criador de
+                            Avatar</h3>
+
+                        <img :src="`https://api.dicebear.com/7.x/adventurer/svg?${avatarSeed.includes('=') ? avatarSeed : 'seed=' + avatarSeed}`"
+                            style="width: 120px; height: 120px; border-radius: 50%; border: 4px solid #fbd38d; background: #2d3748; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.3);" />
+
+                        <div style="width: 100%; display: flex; flex-direction: column; gap: 10px;">
+                            <!-- Controle de Cabelo -->
                             <div
-                                style="position: absolute; bottom: 5px; right: 5px; background: #fbd38d; color: #1a202c; width: 25px; height: 25px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; border: 2px solid #1a202c;">
-                                ✏️
+                                style="display: flex; justify-content: space-between; align-items: center; background: #2d3748; padding: 8px 12px; border-radius: 10px;">
+                                <span style="font-weight: bold; color: #a0aec0;">Cabelo</span>
+                                <div style="display: flex; gap: 15px; align-items: center;">
+                                    <button @click="trocarAvatar('hair', -1)"
+                                        style="background:none; border:none; color:#fbd38d; cursor:pointer; font-size:18px;">◀</button>
+                                    <span style="min-width: 60px; text-align: center; text-transform: capitalize;">{{
+                                        avatarConfig.hair }}</span>
+                                    <button @click="trocarAvatar('hair', 1)"
+                                        style="background:none; border:none; color:#fbd38d; cursor:pointer; font-size:18px;">▶</button>
+                                </div>
+                            </div>
+                            <!-- Controle de Olhos -->
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: center; background: #2d3748; padding: 8px 12px; border-radius: 10px;">
+                                <span style="font-weight: bold; color: #a0aec0;">Olhos</span>
+                                <div style="display: flex; gap: 15px; align-items: center;">
+                                    <button @click="trocarAvatar('eyes', -1)"
+                                        style="background:none; border:none; color:#fbd38d; cursor:pointer; font-size:18px;">◀</button>
+                                    <span style="min-width: 60px; text-align: center; text-transform: capitalize;">{{
+                                        avatarConfig.eyes }}</span>
+                                    <button @click="trocarAvatar('eyes', 1)"
+                                        style="background:none; border:none; color:#fbd38d; cursor:pointer; font-size:18px;">▶</button>
+                                </div>
+                            </div>
+                            <!-- Controle de Boca -->
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: center; background: #2d3748; padding: 8px 12px; border-radius: 10px;">
+                                <span style="font-weight: bold; color: #a0aec0;">Boca</span>
+                                <div style="display: flex; gap: 15px; align-items: center;">
+                                    <button @click="trocarAvatar('mouth', -1)"
+                                        style="background:none; border:none; color:#fbd38d; cursor:pointer; font-size:18px;">◀</button>
+                                    <span style="min-width: 60px; text-align: center; text-transform: capitalize;">{{
+                                        avatarConfig.mouth }}</span>
+                                    <button @click="trocarAvatar('mouth', 1)"
+                                        style="background:none; border:none; color:#fbd38d; cursor:pointer; font-size:18px;">▶</button>
+                                </div>
+                            </div>
+                            <!-- Controle de Cor da Pele -->
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: center; background: #2d3748; padding: 8px 12px; border-radius: 10px;">
+                                <span style="font-weight: bold; color: #a0aec0;">Pele</span>
+                                <div style="display: flex; gap: 8px; align-items: center;">
+                                    <div v-for="cor in avatarOptions.skinColor" :key="cor"
+                                        @click="avatarConfig.skinColor = cor; aplicarAvatar()"
+                                        :style="{ background: '#' + cor, border: avatarConfig.skinColor === cor ? '2px solid white' : '1px solid #000' }"
+                                        style="width: 20px; height: 20px; border-radius: 50%; cursor: pointer;"></div>
+                                </div>
                             </div>
                         </div>
-                        <p style="font-size: 12px; color: #a0aec0; margin-top: 5px;">Clique na foto para mudar seu
-                            desenho</p>
 
-                        <div v-if="mostrandoOpcoesAvatar"
-                            style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 20px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 12px; max-height: 200px; overflow-y: auto;">
-                            <img v-for="seed in avatarSeeds" :key="seed"
-                                :src="`https://api.dicebear.com/7.x/adventurer/svg?seed=${seed}`"
-                                @click="escolherAvatar(seed)"
-                                style="width: 50px; height: 50px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: 0.2s;"
-                                :style="{ borderColor: avatarSeed === seed ? '#fbd38d' : 'transparent' }"
-                                onmouseover="this.style.transform='scale(1.1)'"
-                                onmouseout="this.style.transform='scale(1.0)'" />
-                        </div>
+                        <button @click="salvarAvatarCustom"
+                            style="margin-top: 20px; background: linear-gradient(135deg, #48bb78, #2f855a); color: white; border: none; padding: 10px 25px; border-radius: 12px; font-weight: bold; cursor: pointer; width: 100%; box-shadow: 0 4px 10px rgba(72,187,120,0.3);">
+                            💾 Salvar Novo Visual
+                        </button>
                     </div>
                 </div>
 
@@ -1073,7 +1115,7 @@
                 <div class="oponentes">
                     <div v-for="op in getOponentes()" :key="op.id" :id="'oponente-' + op.id" class="oponente"
                         :class="{ 'oponente-ativo': op.id === turnoAtual, 'oponente-afetado': efeitosJogadores[op.id] }">
-                        <img :src="'https://api.dicebear.com/7.x/adventurer/svg?seed=' + encodeURIComponent(op.id)"
+                        <img :src="`https://api.dicebear.com/7.x/adventurer/svg?${(op.avatar_seed && op.avatar_seed.includes('=')) ? op.avatar_seed : 'seed=' + encodeURIComponent(op.id)}`"
                             style="width: 28px; height: 28px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); vertical-align: middle; margin-right: 5px; background: #2d3748;">
                         <span class="oponente-nome">{{ op.id }}</span>
                         <span class="oponente-cartas">🃏 {{ op.cartas }}</span>
@@ -1117,7 +1159,7 @@
                     style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 15px; position: relative;">
                     <!-- Avatar do Jogador Local -->
                     <div style="position: relative;">
-                        <img :src="'https://api.dicebear.com/7.x/adventurer/svg?seed=' + avatarSeed"
+                        <img :src="`https://api.dicebear.com/7.x/adventurer/svg?${avatarSeed.includes('=') ? avatarSeed : 'seed=' + avatarSeed}`"
                             style="width: 60px; height: 60px; border-radius: 50%; border: 3px solid #48bb78; background: #2d3748; box-shadow: 0 4px 10px rgba(0,0,0,0.5);" />
 
                         <!-- Efeito no Jogador Local -->
@@ -1190,7 +1232,7 @@
 
     <script>
         // CONFIGURAÇÃO DO BACKEND (Será atualizado automaticamente pelo script de túnel)
-        const BACKEND_URL = "https://a22588b9708f71be-138-97-145-148.serveousercontent.com"; // URL do Servidor (Serveo)
+        const BACKEND_URL = "https://e0df4053e4678ff3-138-97-145-148.serveousercontent.com"; // URL do Servidor (Serveo)
         const params = new URLSearchParams(window.location.search);
         const userIdUrl = params.get('user') || localStorage.getItem('usuario_id') || '';
         new Vue({
@@ -1249,7 +1291,18 @@
                 cartaCuringaIndex: null,
                 autoPlay: false,
                 ultimosGanhadores: [],
-                avatarSeeds: ['Loki', 'Sasha', 'Bear', 'Oliver', 'Toby', 'Abby', 'Simba', 'Shadow', 'Luna', 'Lucky', 'Leo', 'Milo', 'Cleo', 'Felix', 'Jasper', 'Bella', 'Daisy', 'Max', 'Rocky', 'Coco', 'Ruby', 'Zoe', 'Buster', 'Pepper', 'Cookie', 'Blue', 'Nala', 'Rex', 'Ginger', 'Marley', 'Patch', 'Sparky', 'Winnie', 'Gismo', 'Ziggy', 'Bandit', 'Penny', 'Rocco', 'Xena', 'Yoshi', 'Zelda'],
+                avatarOptions: {
+                    hair: ['bob', 'bun', 'curly', 'long', 'shaved', 'short', 'straight'],
+                    eyes: ['cry', 'default', 'eyeRoll', 'happy', 'hearts', 'side', 'squint', 'surprised', 'wink', 'xD'],
+                    mouth: ['bite', 'default', 'eating', 'frown', 'grimace', 'pout', 'smile', 'tongue'],
+                    skinColor: ['f2d3b1', 'ebbe9b', 'e7a877', 'a5694f', '633e31']
+                },
+                avatarConfig: {
+                    hair: 'short',
+                    eyes: 'default',
+                    mouth: 'default',
+                    skinColor: 'f2d3b1'
+                },
                 mostrandoOpcoesAvatar: false,
                 usuariosFakesDB: [],
                 ultimoUsoDB: {},
@@ -1292,6 +1345,7 @@
                         this.ultimoUsoDB[nomeFake] = 0;
                     }
                 }
+                this.parseAvatarSeed(this.avatarSeed);
             },
             mounted() {
                 localStorage.setItem('avatar_seed', this.avatarSeed);
@@ -1458,6 +1512,7 @@
                             if (res.avatar_seed) {
                                 this.avatarSeed = res.avatar_seed;
                                 localStorage.setItem('avatar_seed', this.avatarSeed);
+                                this.parseAvatarSeed(res.avatar_seed);
                             }
                             localStorage.setItem('usuario_id', this.usuarioId);
                             this.estado = 'MENU';
@@ -1539,6 +1594,7 @@
                             if (res.avatar_seed) {
                                 this.avatarSeed = res.avatar_seed;
                                 localStorage.setItem('avatar_seed', this.avatarSeed);
+                                this.parseAvatarSeed(res.avatar_seed);
                             }
                             localStorage.setItem('usuario_id', this.usuarioId);
 
@@ -1942,6 +1998,42 @@
                             alert("✅ Bot removido. Saldo devolvido com sucesso!");
                             this.saldo += bot.saldo;
                             this.carregarBots();
+                        }
+                    });
+                },
+                parseAvatarSeed(seed) {
+                    if (!seed || !seed.includes('=')) return;
+                    const parts = seed.split('&');
+                    parts.forEach(p => {
+                        const [key, val] = p.split('=');
+                        if (this.avatarConfig[key] !== undefined) {
+                            this.avatarConfig[key] = val;
+                        }
+                    });
+                },
+                trocarAvatar(key, direction) {
+                    const options = this.avatarOptions[key];
+                    let idx = options.indexOf(this.avatarConfig[key]);
+                    idx = (idx + direction + options.length) % options.length;
+                    this.avatarConfig[key] = options[idx];
+                    this.aplicarAvatar();
+                },
+                aplicarAvatar() {
+                    const c = this.avatarConfig;
+                    this.avatarSeed = `hair=${c.hair}&eyes=${c.eyes}&mouth=${c.mouth}&skinColor=${c.skinColor}`;
+                },
+                salvarAvatarCustom() {
+                    this.aplicarAvatar();
+                    localStorage.setItem('avatar_seed', this.avatarSeed);
+
+                    let baseUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
+                    fetch(baseUrl + '/api/perfil/atualizar-avatar', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ usuario_email: this.usuarioId, avatar_seed: this.avatarSeed })
+                    }).then(r => r.json()).then(res => {
+                        if (res.success) {
+                            this.addLog("Novo visual salvo com sucesso!");
                         }
                     });
                 }
