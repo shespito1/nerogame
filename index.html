@@ -55,55 +55,92 @@
             /* Fix para o jogo no mobile (mesa e cartas) */
             .mesa-container {
                 flex-direction: column !important;
-                gap: 20px !important;
+                gap: 5px !important;
+                margin: 5px 0 !important;
             }
 
             .mesa {
-                transform: scale(0.9);
-                margin: 10px 0 !important;
+                transform: scale(0.8);
+                margin: 0 !important;
+                padding: 5px !important;
+                min-height: 120px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .carta-mesa {
+                transform: scale(1.0) !important;
+                margin: 5px !important;
             }
 
             .oponentes {
-                display: grid !important;
-                grid-template-columns: 1fr 1fr;
-                gap: 10px !important;
+                display: flex !important;
+                flex-direction: row !important;
+                flex-wrap: nowrap !important;
+                overflow-x: auto !important;
+                gap: 8px !important;
                 width: 100%;
+                justify-content: flex-start !important;
+                padding: 5px 0;
             }
 
             .oponente {
+                min-width: 75px !important;
+                padding: 5px !important;
+                font-size: 11px !important;
+                flex-shrink: 0;
                 margin: 0 !important;
-                padding: 8px !important;
-                font-size: 14px !important;
+            }
+
+            .oponente img {
+                width: 20px !important;
+                height: 20px !important;
             }
 
             .mao-container {
-                padding: 10px !important;
-                margin-top: 20px !important;
+                padding: 5px !important;
+                margin-top: 5px !important;
                 width: 100% !important;
                 box-sizing: border-box;
             }
 
             .carta {
-                width: 65px !important;
-                height: 100px !important;
-                font-size: 22px !important;
+                width: 52px !important;
+                height: 80px !important;
+                font-size: 18px !important;
+                margin: 2px !important;
+                border-width: 2px !important;
             }
 
-            .carta .bottom-corner {
-                font-size: 12px !important;
+            .carta .bottom-corner,
+            .carta::after {
+                font-size: 10px !important;
             }
 
             .mao {
-                gap: 5px !important;
-                padding: 10px 0;
-                justify-content: center;
-                flex-wrap: wrap !important;
+                gap: 3px !important;
+                padding: 5px 0;
+                justify-content: flex-start !important;
+                flex-wrap: nowrap !important;
+                overflow-x: auto !important;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .mao::-webkit-scrollbar {
+                height: 4px;
+            }
+
+            .mao::-webkit-scrollbar-thumb {
+                background: rgba(255, 255, 255, 0.2);
+                border-radius: 2px;
             }
 
             button:not(.btn-icon):not(.cor-btn):not(.aposta-btn-safe) {
                 width: 100% !important;
-                font-size: 1.1rem !important;
-                padding: 12px !important;
+                font-size: 1.0rem !important;
+                padding: 10px !important;
             }
 
             /* Bot card buttons should not go full width */
@@ -912,7 +949,8 @@
                             </div>
                         </div>
                         <p style="font-size: 12px; color: #a0aec0; margin-top: 5px;">
-                            {{ mostrandoCriadorAvatar ? 'Clique para fechar o editor' : 'Clique na foto acima para personalizar seu visual' }}
+                            {{ mostrandoCriadorAvatar ? 'Clique para fechar o editor' : 'Clique na foto acima para
+                            personalizar seu visual' }}
                         </p>
 
                         <!-- Seletor de Avatar (Grid de 50 opções) -->
@@ -1218,24 +1256,25 @@
                     Parar de Assistir</button>
 
                 <div
-                    style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 15px; position: relative;">
+                    style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 10px; position: relative; transform: scale(0.9);">
                     <!-- Avatar do Jogador Local -->
                     <div style="position: relative;">
                         <img :src="`https://api.dicebear.com/7.x/adventurer/svg?${(avatarSeed && avatarSeed.includes('=')) ? avatarSeed : 'seed=' + (avatarSeed || usuarioId || 'default')}&backgroundColor=b6e3f4`"
-                            style="width: 60px; height: 60px; border-radius: 50%; border: 3px solid #48bb78; background: #2d3748; box-shadow: 0 4px 10px rgba(0,0,0,0.5);" />
+                            style="width: 40px; height: 40px; border-radius: 50%; border: 3px solid #48bb78; background: #2d3748; box-shadow: 0 4px 10px rgba(0,0,0,0.5);" />
 
                         <!-- Efeito no Jogador Local -->
                         <div v-if="efeitosJogadores[usuarioId]" class="efeito-jogador"
-                            :class="efeitosJogadores[usuarioId].classe" style="top: -55px;">
+                            :class="efeitosJogadores[usuarioId].classe" style="top: -45px;">
                             <div class="efeito-badge">
                                 <span class="efeito-badge-emoji">{{ efeitosJogadores[usuarioId].emoji }}</span>
-                                <span class="efeito-badge-texto">{{ efeitosJogadores[usuarioId].texto }}</span>
+                                <span class="efeito-badge-texto" style="font-size: 10px;">{{
+                                    efeitosJogadores[usuarioId].texto }}</span>
                             </div>
                         </div>
                     </div>
 
                     <div style="text-align: left;">
-                        <div style="color: white; font-weight: bold; font-size: 18px;">VOCÊ</div>
+                        <div style="color: white; font-weight: bold; font-size: 14px;">VOCÊ</div>
                     </div>
                 </div>
 
@@ -1294,7 +1333,7 @@
 
     <script>
         // CONFIGURAÇÃO DO BACKEND (Será atualizado automaticamente pelo script de túnel)
-        const BACKEND_URL = "https://499488d7c49498eb-138-97-145-148.serveousercontent.com"; // URL do Servidor (Serveo)
+        const BACKEND_URL = "https://b6717727fc85981f-138-97-145-148.serveousercontent.com"; // URL do Servidor (Serveo)
         const params = new URLSearchParams(window.location.search);
         const userIdUrl = params.get('user') || localStorage.getItem('usuario_id') || '';
         new Vue({
@@ -2064,8 +2103,6 @@
 </body>
 
 </html>
-  
  
  
-
-
+ 
