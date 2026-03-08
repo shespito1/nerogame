@@ -418,15 +418,17 @@ async def verificar_reconexao(sid, data):
                 
                 await sio.enter_room(sid, partida_id)
                 status_jogadores = [{"id": j["usuarioId"], "cartas": len(j["mao"])} for j in partida["jogadores"]]
+                print(f"📡 Enviando estado da partida {partida_id} para {usuario_id}. Oponentes: {[s['id'] for s in status_jogadores]}")
                 
                 # Manda o estado atualizado pro jogador
-                print(f"🔄 Jogador {usuario_id} reconectado à partida {partida_id}")
+                print(f"🔄 Jogador {usuario_id} reconectado/assumiu partida {partida_id}")
                 await sio.emit("partidaIniciada", {
                     "partidaId": partida_id,
                     "suaMao": jogador["mao"],
                     "cartaMesa": partida["cartaMesa"],
                     "turnoAtual": partida["jogadores"][partida["turno_index"]]["usuarioId"],
-                    "oponentes": status_jogadores
+                    "oponentes": status_jogadores,
+                    "reconexao": True
                 }, to=sid)
                 
                 # Avisa aos outros
@@ -457,14 +459,28 @@ async def entrar_fila(sid, data):
     global partida_id_counter
     usuario_id = data.get("usuarioId")
     aposta = float(data.get("aposta", 1.0))
+    
+    # Remove se já estiver em alguma fila (anti-duplicação)
+    for v in filas_espera.values():
+        for j in v[:]:
+            if j["usuarioId"] == usuario_id:
+                v.remove(j)
+                print(f"🔄 {usuario_id} removido de outra fila antes de entrar na de R$ {aposta:.2f}")
 
-    jogador = {"socketId": sid, "usuarioId": usuario_id, "mao": [], "is_bot": False, "aposta": aposta, "is_real": True}
+    jogador = {
+        "socketId": sid,
+        "usuarioId": usuario_id,
+        "mao": [],
+        "is_bot": False,
+        "aposta": aposta,
+        "is_real": True
+    }
     
     if aposta not in filas_espera: filas_espera[aposta] = []
-    
     filas_espera[aposta].append(jogador)
-    print(f"[{usuario_id}] entrou na fila do UNO apostando R$ {aposta:.2f}. Total na fila desta aposta: {len(filas_espera[aposta])}")
+    print(f"➡️ {usuario_id} entrou na fila de R$ {aposta:.2f} (Total: {len(filas_espera[aposta])})")
 
+    # Inicia timer se for o primeiro
     if len(filas_espera[aposta]) == 1:
         if aposta in fila_tasks and not fila_tasks[aposta].done():
             fila_tasks[aposta].cancel()

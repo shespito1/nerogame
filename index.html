@@ -1104,11 +1104,11 @@
             </div>
         </div>
 
-        <!-- BOT AUTO TOGGLE -->
-        <div v-if="estado === 'JOGO'"
+        <!-- BOT AUTO TOGGLE (Oculto se estiver apenas assistindo um bot) -->
+        <div v-if="estado === 'JOGO' && !assistindoBot"
             style="position: absolute; top: 10px; right: 20px; background: rgba(0,0,0,0.8); padding: 8px 12px; border-radius: 8px; z-index: 9999; border: 1px solid #4a5568;">
             <label
-                style="color: #63b3ed; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px;">
+                style="color: #63b3ed; font-weight:bold; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px;">
                 <input type="checkbox" v-model="autoPlay" style="width: 18px; height: 18px; cursor: pointer;" />
                 AUTO JOGAR
             </label>
@@ -1546,6 +1546,7 @@
                     // Muda para dados do bot
                     this.usuarioId = bot.nome + " (Bot)";
                     this.avatarSeed = encodeURIComponent(this.usuarioId);
+                    this.saldo = bot.saldo; // Sincroniza o saldo do bot para visualização
                     this.abaPerfilAtiva = null;
 
                     this.addLog("Iniciando modo de supervisão do bot: " + bot.nome);
@@ -1644,8 +1645,13 @@
                     this.socket.emit("forcarAutoPlay", { partidaId: this.partidaId });
                 },
                 getOponentes() {
-                    if (!this.oponentes) return [];
-                    return this.oponentes.filter(op => op.id && String(op.id).toLowerCase() !== String(this.usuarioId).toLowerCase());
+                    if (!this.oponentes || !this.usuarioId) return [];
+                    const meuIdLower = String(this.usuarioId).trim().toLowerCase();
+                    return this.oponentes.filter(op => {
+                        if (!op.id) return false;
+                        const opIdLower = String(op.id).trim().toLowerCase();
+                        return opIdLower !== meuIdLower;
+                    });
                 },
                 addLog(msg) {
                     const time = new Date().toLocaleTimeString();
