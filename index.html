@@ -687,7 +687,7 @@
                     Perfil</h2>
                 <h2 v-if="abaPerfilAtiva === 'bots'"
                     style="font-family: 'Rowdies', cursive; margin-top:0; color:#63b3ed;">🤖 Gerenciar Bots</h2>
-                <div v-if="abaPerfilAtiva === 'bots'"
+                <div v-if="abaPerfilAtiva === 'bots'" class="modal-scroll-hide"
                     style="font-size: 14px; width: 100%; overflow-y: auto; max-height: calc(95vh - 80px); padding-right: 5px;">
                     <p style="margin-bottom:12px; color:#a0aec0; text-align:center; font-size:16px; font-weight:600;">
                         Configure seu bot para jogar Uno automaticamente.</p>
@@ -778,7 +778,8 @@
 
                 <h2 v-if="abaPerfilAtiva === 'historico'" style="font-family: 'Rowdies', cursive; margin-top:0;">📜
                     Histórico de Apostas</h2>
-                <div v-if="abaPerfilAtiva === 'historico'" style="max-height: 50vh; overflow-y:auto;">
+                <div v-if="abaPerfilAtiva === 'historico'" class="modal-scroll-hide"
+                    style="max-height: 50vh; overflow-y:auto;">
 
                     <div v-if="partidaId"
                         style="background: linear-gradient(135deg, #dd6b20, #e53e3e); padding:10px; border-radius: 10px; margin-bottom: 15px; cursor:pointer; border: 2px solid #fbd38d; box-shadow: 0 4px 15px rgba(221,107,32,0.4);"
