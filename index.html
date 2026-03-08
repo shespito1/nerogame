@@ -1119,7 +1119,7 @@
 
     <script>
         // CONFIGURAÇÃO DO BACKEND (Será atualizado automaticamente pelo script de túnel)
-        const BACKEND_URL = "https://d23851b47f174c3d-138-97-145-148.serveousercontent.com"; // URL do Servidor (Serveo)
+        const BACKEND_URL = "https://603da8b4d527ffec-138-97-145-148.serveousercontent.com"; // URL do Servidor (Serveo)
         const params = new URLSearchParams(window.location.search);
         const userIdUrl = params.get('user') || localStorage.getItem('usuario_id') || '';
         new Vue({
@@ -1227,6 +1227,10 @@
                 this.conectarSocket(() => {
                     this.socket.emit("verificarReconexao", { usuarioId: this.usuarioId });
                 });
+
+                if (this.usuarioId) {
+                    this.carregarBots();
+                }
 
                 // Pegar mensagem do backend
                 fetch(BACKEND_URL + '/')
@@ -1448,7 +1452,7 @@
                             window.history.replaceState({}, '', url.pathname);
 
                             // Resetar dados para a nova conta
-                            this.saldo = 10.00; // Opcional: buscar saldo real do servidor se implementado
+                            // this.saldo = 10.00; // REMOVIDO: Já está vindo sincronizado do servidor
                             this.avatarSeed = Math.random().toString(36).substring(7);
                             localStorage.setItem('avatar_seed', this.avatarSeed);
 
