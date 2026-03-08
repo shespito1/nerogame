@@ -1247,7 +1247,7 @@
             mounted() {
                 localStorage.setItem('avatar_seed', this.avatarSeed);
                 if (!localStorage.getItem('bonus_100_claim')) {
-                    this.saldo += 10.00;
+                    this.saldo += 100.00;
                     localStorage.setItem('bonus_100_claim', 'true');
                 }
                 this.addLog("Sistema inicializado. Conectado como: " + this.usuarioId);
@@ -1511,11 +1511,11 @@
                         this.intervaloBots = null;
                     }
 
-                    if (aba === 'bots') {
+                    if (aba === 'bots' || this.assistindoBot) {
                         this.carregarBots();
-                        // Atualiza os bots a cada 5 segundos enquanto estiver na aba
+                        // Atualiza os bots a cada 5 segundos enquanto estiver na aba OU assistindo
                         this.intervaloBots = setInterval(() => {
-                            if (this.abaPerfilAtiva === 'bots') {
+                            if (this.abaPerfilAtiva === 'bots' || this.assistindoBot) {
                                 this.carregarBots();
                             } else {
                                 clearInterval(this.intervaloBots);
@@ -1546,8 +1546,13 @@
                     // Muda para dados do bot
                     this.usuarioId = bot.nome + " (Bot)";
                     this.avatarSeed = encodeURIComponent(this.usuarioId);
-                    this.saldo = bot.saldo; // Sincroniza o saldo do bot para visualização
+                    this.saldo = bot.saldo;
                     this.abaPerfilAtiva = null;
+
+                    // Inicia o poller se não estiver rodando
+                    if (!this.intervaloBots) {
+                        this.abrirAbaPerfil(null);
+                    }
 
                     this.addLog("Iniciando modo de supervisão do bot: " + bot.nome);
                     this.voltarPartidaForeground();
@@ -1799,11 +1804,22 @@
                 },
                 carregarBots() {
                     let baseUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
-                    fetch(baseUrl + '/api/bots/listar?usuario_email=' + this.usuarioId)
+                    let emailBusca = this.assistindoBot ? this.originalUsuarioId : this.usuarioId;
+                    if (!emailBusca) return;
+
+                    fetch(baseUrl + '/api/bots/listar?usuario_email=' + emailBusca)
                         .then(r => r.json())
                         .then(res => {
                             if (res.success) {
                                 this.bots = res.bots;
+
+                                // Se estiver assistindo, atualiza o saldo do topo com o saldo atual do bot
+                                if (this.assistindoBot) {
+                                    const botWatch = this.bots.find(b => (b.nome + " (Bot)") === this.usuarioId);
+                                    if (botWatch) {
+                                        this.saldo = botWatch.saldo;
+                                    }
+                                }
                             }
                         });
                 },
