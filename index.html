@@ -100,10 +100,31 @@
                 flex-wrap: wrap !important;
             }
 
-            button:not(.btn-icon) {
+            button:not(.btn-icon):not(.cor-btn):not(.aposta-btn-safe) {
                 width: 100% !important;
                 font-size: 1.1rem !important;
                 padding: 12px !important;
+            }
+
+            /* Bot card buttons should not go full width */
+            .bot-card-animado button {
+                width: auto !important;
+                font-size: 13px !important;
+                padding: 8px 16px !important;
+            }
+
+            /* Avatar editor nav buttons */
+            div[style*="gap: 15px"]>button[style*="background:none"],
+            div[style*="gap: 8px"]>div[style*="border-radius: 50%"] {
+                width: auto !important;
+                padding: 4px !important;
+            }
+
+            /* Color picker buttons */
+            .cor-btn {
+                width: 50px !important;
+                height: 50px !important;
+                padding: 0 !important;
             }
 
             input {
@@ -118,6 +139,48 @@
                 width: 98vw !important;
                 max-height: 90vh;
                 overflow-y: auto !important;
+            }
+
+            /* Game menu card on mobile */
+            .card-menu>div[style*="width: 320px"] {
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+
+            /* Fix profile menu position on mobile */
+            div[style*="position: absolute; top: 15px; right: 20px"] {
+                top: 8px !important;
+                right: 8px !important;
+            }
+
+            /* Bot card grid fix */
+            .bot-card-animado {
+                min-width: 0 !important;
+                max-width: 100% !important;
+                width: 100% !important;
+            }
+
+            /* Game auto-play toggle box */
+            div[style*="position: absolute; top: 10px; right: 20px; background: rgba(0,0,0,0.8)"] {
+                top: 5px !important;
+                right: 5px !important;
+                padding: 5px 8px !important;
+                max-width: 130px;
+            }
+
+            /* Aposta buttons - keep them compact */
+            .aposta-btn-safe {
+                width: auto !important;
+                min-width: 90px;
+                padding: 12px 18px !important;
+                font-size: 16px !important;
+            }
+
+            /* Stats bar adjustments */
+            .stats {
+                font-size: 13px !important;
+                padding: 8px 10px !important;
+                word-break: break-word;
             }
         }
 
@@ -805,22 +868,24 @@
                                 ⚠️ {{ bot.motivo_status }}
                             </div>
                             <div style="margin-top:12px; display:flex; gap:8px;">
-                                <button v-if="!bot.editando" @click="playBot(bot)"
+                                <button class="btn-icon" v-if="!bot.editando" @click="playBot(bot)"
                                     style="background:linear-gradient(135deg,#68d391 0%,#48bb78 100%); color:white; border:none; padding:10px 24px; border-radius:10px; font-weight:bold; font-size:16px; cursor:pointer; box-shadow:0 2px 8px #68d39133;">{{
                                     bot.status === 'Ativo' ? '⏸️ Parar' : '▶️ Play' }}</button>
-                                <button v-else @click="salvarBot(bot)"
+                                <button class="btn-icon" v-else @click="salvarBot(bot)"
                                     style="background:linear-gradient(135deg,#48bb78 0%,#2f855a 100%); color:white; border:none; padding:10px 24px; border-radius:10px; font-weight:bold; font-size:16px; cursor:pointer;">💾
                                     Salvar</button>
 
-                                <button v-if="bot.partida_id && !bot.editando" @click="assistirBot(bot)"
+                                <button class="btn-icon" v-if="bot.partida_id && !bot.editando"
+                                    @click="assistirBot(bot)"
                                     style="background:linear-gradient(135deg,#63b3ed 0%,#4299e1 100%); color:white; border:none; padding:10px 18px; border-radius:10px; font-weight:bold; font-size:14px; cursor:pointer;">📺
                                     ASSISTIR</button>
                             </div>
                             <div style="display:flex; gap:8px; margin-top:8px;">
-                                <button v-if="bot.status === 'Parado'" @click="bot.editando = !bot.editando"
+                                <button class="btn-icon" v-if="bot.status === 'Parado'"
+                                    @click="bot.editando = !bot.editando"
                                     style="background:rgba(255,255,255,0.1); color:white; border:1px solid #63b3ed; padding:6px 15px; border-radius:10px; font-weight:bold; font-size:12px; cursor:pointer;">{{
                                     bot.editando ? '❌ Cancelar' : '⚙️ Editar' }}</button>
-                                <button @click="excluirBot(bot)"
+                                <button class="btn-icon" @click="excluirBot(bot)"
                                     style="background:linear-gradient(135deg,#fc8181 0%,#e53e3e 100%); color:white; border:none; padding:6px 15px; border-radius:10px; font-weight:bold; font-size:12px; cursor:pointer; box-shadow:0 2px 8px #fc818133;">🗑️
                                     Excluir</button>
                             </div>
@@ -864,13 +929,13 @@
                                     style="display: flex; justify-content: space-between; align-items: center; background: #2d3748; padding: 8px 12px; border-radius: 10px;">
                                     <span style="font-weight: bold; color: #a0aec0;">Cabelo</span>
                                     <div style="display: flex; gap: 15px; align-items: center;">
-                                        <button @click="trocarAvatar('hair', -1)"
-                                            style="background:none; border:none; color:#fbd38d; cursor:pointer; font-size:18px;">◀</button>
+                                        <button class="btn-icon" @click="trocarAvatar('hair', -1)"
+                                            style="background:none; border:none; color:#fbd38d; cursor:pointer; font-size:18px; width:auto; padding:4px 8px;">◀</button>
                                         <span
                                             style="min-width: 60px; text-align: center; text-transform: capitalize; color: white;">{{
                                             avatarConfig.hair }}</span>
-                                        <button @click="trocarAvatar('hair', 1)"
-                                            style="background:none; border:none; color:#fbd38d; cursor:pointer; font-size:18px;">▶</button>
+                                        <button class="btn-icon" @click="trocarAvatar('hair', 1)"
+                                            style="background:none; border:none; color:#fbd38d; cursor:pointer; font-size:18px; width:auto; padding:4px 8px;">▶</button>
                                     </div>
                                 </div>
                                 <!-- Controle de Olhos -->
@@ -878,13 +943,13 @@
                                     style="display: flex; justify-content: space-between; align-items: center; background: #2d3748; padding: 8px 12px; border-radius: 10px;">
                                     <span style="font-weight: bold; color: #a0aec0;">Olhos</span>
                                     <div style="display: flex; gap: 15px; align-items: center;">
-                                        <button @click="trocarAvatar('eyes', -1)"
-                                            style="background:none; border:none; color:#fbd38d; cursor:pointer; font-size:18px;">◀</button>
+                                        <button class="btn-icon" @click="trocarAvatar('eyes', -1)"
+                                            style="background:none; border:none; color:#fbd38d; cursor:pointer; font-size:18px; width:auto; padding:4px 8px;">◀</button>
                                         <span
                                             style="min-width: 60px; text-align: center; text-transform: capitalize; color: white;">{{
                                             avatarConfig.eyes }}</span>
-                                        <button @click="trocarAvatar('eyes', 1)"
-                                            style="background:none; border:none; color:#fbd38d; cursor:pointer; font-size:18px;">▶</button>
+                                        <button class="btn-icon" @click="trocarAvatar('eyes', 1)"
+                                            style="background:none; border:none; color:#fbd38d; cursor:pointer; font-size:18px; width:auto; padding:4px 8px;">▶</button>
                                     </div>
                                 </div>
                                 <!-- Controle de Boca -->
@@ -892,13 +957,13 @@
                                     style="display: flex; justify-content: space-between; align-items: center; background: #2d3748; padding: 8px 12px; border-radius: 10px;">
                                     <span style="font-weight: bold; color: #a0aec0;">Boca</span>
                                     <div style="display: flex; gap: 15px; align-items: center;">
-                                        <button @click="trocarAvatar('mouth', -1)"
-                                            style="background:none; border:none; color:#fbd38d; cursor:pointer; font-size:18px;">◀</button>
+                                        <button class="btn-icon" @click="trocarAvatar('mouth', -1)"
+                                            style="background:none; border:none; color:#fbd38d; cursor:pointer; font-size:18px; width:auto; padding:4px 8px;">◀</button>
                                         <span
                                             style="min-width: 60px; text-align: center; text-transform: capitalize; color: white;">{{
                                             avatarConfig.mouth }}</span>
-                                        <button @click="trocarAvatar('mouth', 1)"
-                                            style="background:none; border:none; color:#fbd38d; cursor:pointer; font-size:18px;">▶</button>
+                                        <button class="btn-icon" @click="trocarAvatar('mouth', 1)"
+                                            style="background:none; border:none; color:#fbd38d; cursor:pointer; font-size:18px; width:auto; padding:4px 8px;">▶</button>
                                     </div>
                                 </div>
                                 <!-- Controle de Cor da Pele -->
@@ -1049,7 +1114,7 @@
             <div style="display: flex; gap: 30px; justify-content: center; flex-wrap: wrap; margin-top: 30px;">
 
                 <div @click="estado = 'ESCOLHER_APOSTA'"
-                    style="background: radial-gradient(circle at top, #f56565 0%, #9b2c2c 80%, #742a2a 100%); border: 6px solid #fbd38d; padding: 40px 20px 30px; border-radius: 25px; cursor: pointer; width: 320px; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.6), inset 0 0 20px rgba(0,0,0,0.5); position: relative; overflow: hidden;"
+                    style="background: radial-gradient(circle at top, #f56565 0%, #9b2c2c 80%, #742a2a 100%); border: 6px solid #fbd38d; padding: 40px 20px 30px; border-radius: 25px; cursor: pointer; width: 320px; max-width: 95vw; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.6), inset 0 0 20px rgba(0,0,0,0.5); position: relative; overflow: hidden; box-sizing: border-box;"
                     onmouseover="this.style.transform='scale(1.08) translateY(-10px)'; this.style.boxShadow='0 20px 50px rgba(251, 211, 141, 0.4), inset 0 0 20px rgba(0,0,0,0.5)';"
                     onmouseout="this.style.transform='scale(1.0) translateY(0)'; this.style.boxShadow='0 15px 35px rgba(0,0,0,0.6), inset 0 0 20px rgba(0,0,0,0.5)';">
 
@@ -1191,7 +1256,7 @@
                     style="color: #a0aec0; margin-bottom: 5px; font-size: 16px; text-transform: uppercase; font-weight: bold;">
                     Aguarde a sua vez...</p>
 
-                <button v-if="assistindoBot" @click="pararAssistir"
+                <button class="btn-icon" v-if="assistindoBot" @click="pararAssistir"
                     style="background: #e53e3e; margin-bottom: 10px; width: auto; padding: 10px 20px; font-weight: bold; border-radius: 10px;">🏃
                     Parar de Assistir</button>
 
@@ -1217,7 +1282,7 @@
                     </div>
                 </div>
 
-                <button v-if="usuarioId === turnoAtual" @click="comprarCarta"
+                <button class="btn-icon" v-if="usuarioId === turnoAtual" @click="comprarCarta"
                     style="margin-bottom: 15px; background: #e53e3e; padding: 12px 25px; font-size: 16px; width: auto; display: inline-block;">🤷‍♂️
                     Nenhuma carta serve? Comprar e Passar Vez</button>
                 <p style="color: #a0aec0; margin-bottom: 5px; font-size: 16px; text-transform: uppercase;">Suas Cartas
