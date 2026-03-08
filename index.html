@@ -14,26 +14,26 @@
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Baloo+2&wght@500;700;800&family=Rowdies:wght@400;700&display=swap');
-        /* Novo Bloco Responsivo Consolidado */
         @media (max-width: 600px) {
             .container {
-                padding: 10px;
+                padding: 10px 5px;
                 min-height: 100vh;
                 display: flex;
                 flex-direction: column;
-                justify-content: center;
-                /* Centraliza conteúdo curto */
+                justify-content: flex-start;
+                /* Removido o center para não quebrar layouts altos no celular */
             }
 
             .card,
             .card-menu,
             .login-card {
-                width: 95vw !important;
-                max-width: 95vw !important;
-                margin: 20px auto !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 10px 0 !important;
                 padding: 15px 10px !important;
                 box-sizing: border-box !important;
                 font-size: 16px !important;
+                border-radius: 12px !important;
             }
 
             h1 {
@@ -694,10 +694,10 @@
                 <button class="btn-icon" @click="abaPerfilAtiva = null"
                     style="position: absolute; top: 10px; right: 10px; background: #e53e3e; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-weight:bold; width: auto; font-size: 16px;">X</button>
 
-                <h2 v-if="abaPerfilAtiva === 'perfil'" style="font-family: 'Rowdies', cursive; margin-top:0;">👤 Seu
+                <h2 v-if="abaPerfilAtiva === 'perfil'" style="font-family: 'Rowdies', cursive; margin-top:20px;">👤 Seu
                     Perfil</h2>
                 <h2 v-if="abaPerfilAtiva === 'bots'"
-                    style="font-family: 'Rowdies', cursive; margin-top:0; color:#63b3ed;">🤖 Gerenciar Bots</h2>
+                    style="font-family: 'Rowdies', cursive; margin-top:20px; color:#63b3ed;">🤖 Gerenciar Bots</h2>
                 <div v-if="abaPerfilAtiva === 'bots'" class="modal-scroll-hide"
                     style="font-size: 14px; width: 100%; overflow-y: auto; max-height: calc(95vh - 80px); padding-right: 5px;">
                     <p style="margin-bottom:12px; color:#a0aec0; text-align:center; font-size:16px; font-weight:600;">
@@ -1124,11 +1124,12 @@
         </div>
 
 
-        <div class="card-menu" v-if="estado === 'ESCOLHER_APOSTA'" style="position: relative;">
+        <div class="card-menu" v-if="estado === 'ESCOLHER_APOSTA'"
+            style="position: relative; padding-top: 55px !important;">
             <button class="btn-icon"
                 style="position: absolute; top: 15px; left: 15px; padding: 8px 15px; font-size: 14px; margin: 0; width: auto; background: #4a5568; color: white; border-radius: 6px; border: none; cursor: pointer;"
                 @click="estado = 'MENU'">⬅️ Voltar</button>
-            <h2>🃏 UNO Royale - Selecione a Aposta</h2>
+            <h2 style="margin-top: 0;">🃏 UNO Royale - Selecione a Aposta</h2>
             <p style="color: #a0aec0; font-size: 18px;">Vencedor ganha 3.8x o valor apostado!</p>
             <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 25px;">
 
@@ -1240,7 +1241,7 @@
                 <input type="checkbox" v-model="autoPlay" style="width: 18px; height: 18px; cursor: pointer;" />
                 AUTO JOGAR
             </label>
-            <button @click="minimizarPartida"
+            <button class="btn-icon" @click="minimizarPartida"
                 style="margin-top: 10px; width: 100%; padding: 6px; background: #e53e3e; color: white; border: none; border-radius: 6px; font-size: 11px; cursor: pointer; font-weight: bold; text-transform: uppercase;"
                 onmouseover="this.style.background='#c53030'" onmouseout="this.style.background='#e53e3e'">
                 Sair (Deixar Bot)
