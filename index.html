@@ -904,7 +904,7 @@
                         <!-- Avatar Atual com Botão de Editar -->
                         <div style="position: relative; cursor: pointer;"
                             @click="mostrandoCriadorAvatar = !mostrandoCriadorAvatar">
-                            <img :src="`https://api.dicebear.com/7.x/adventurer/svg?${(avatarSeed && avatarSeed.includes('=')) ? avatarSeed : 'seed=' + (avatarSeed || usuarioId || 'default')}&backgroundColor=b6e3f4`"
+                            <img :src="`https://api.dicebear.com/7.x/${(avatarSeed && avatarSeed.includes('/')) ? avatarSeed : 'adventurer/svg?seed=' + (avatarSeed || usuarioId || 'default')}&backgroundColor=b6e3f4`"
                                 style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid #fbd38d; background: #2d3748; box-shadow: 0 4px 10px rgba(0,0,0,0.5);" />
                             <div
                                 style="position: absolute; bottom: 5px; right: 5px; background: #fbd38d; color: #1a202c; width: 25px; height: 25px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; border: 2px solid #1a202c;">
@@ -912,77 +912,36 @@
                             </div>
                         </div>
                         <p style="font-size: 12px; color: #a0aec0; margin-top: 5px;">
-                            {{ mostrandoCriadorAvatar ? 'Clique para fechar o editor' : 'Clique na foto acima para personalizar seu visual' }}
+                            {{ mostrandoCriadorAvatar ? 'Clique para fechar o editor' : 'Clique na foto acima para
+                            personalizar seu visual' }}
                         </p>
 
-                        <!-- Criador de Avatar (Oculto até clicar no lapiz) -->
+                        <!-- Seletor de Avatar (Grid de 50 opções) -->
                         <div v-if="mostrandoCriadorAvatar"
                             style="width: 100%; margin-top: 20px; background: rgba(0,0,0,0.25); padding: 15px; border-radius: 20px; border: 1px solid #4a5568;">
                             <h3
                                 style="margin: 0 0 15px 0; font-family: 'Rowdies', cursive; color: #fbd38d; text-align: center;">
-                                🎨 Criador de Avatar</h3>
+                                🎨 Escolha seu Avatar</h3>
 
-                            <div style="width: 100%; display: flex; flex-direction: column; gap: 10px;">
-                                <!-- Controle de Cabelo -->
-                                <div
-                                    style="display: flex; justify-content: space-between; align-items: center; background: #2d3748; padding: 8px 12px; border-radius: 10px;">
-                                    <span style="font-weight: bold; color: #a0aec0;">Cabelo</span>
-                                    <div style="display: flex; gap: 15px; align-items: center;">
-                                        <button class="btn-icon" @click="trocarAvatar('hair', -1)"
-                                            style="background:none; border:none; color:#fbd38d; cursor:pointer; font-size:18px; width:auto; padding:4px 8px;">◀</button>
-                                        <span
-                                            style="min-width: 60px; text-align: center; text-transform: capitalize; color: white;">{{
-                                            avatarConfig.hair }}</span>
-                                        <button class="btn-icon" @click="trocarAvatar('hair', 1)"
-                                            style="background:none; border:none; color:#fbd38d; cursor:pointer; font-size:18px; width:auto; padding:4px 8px;">▶</button>
-                                    </div>
-                                </div>
-                                <!-- Controle de Olhos -->
-                                <div
-                                    style="display: flex; justify-content: space-between; align-items: center; background: #2d3748; padding: 8px 12px; border-radius: 10px;">
-                                    <span style="font-weight: bold; color: #a0aec0;">Olhos</span>
-                                    <div style="display: flex; gap: 15px; align-items: center;">
-                                        <button class="btn-icon" @click="trocarAvatar('eyes', -1)"
-                                            style="background:none; border:none; color:#fbd38d; cursor:pointer; font-size:18px; width:auto; padding:4px 8px;">◀</button>
-                                        <span
-                                            style="min-width: 60px; text-align: center; text-transform: capitalize; color: white;">{{
-                                            avatarConfig.eyes }}</span>
-                                        <button class="btn-icon" @click="trocarAvatar('eyes', 1)"
-                                            style="background:none; border:none; color:#fbd38d; cursor:pointer; font-size:18px; width:auto; padding:4px 8px;">▶</button>
-                                    </div>
-                                </div>
-                                <!-- Controle de Boca -->
-                                <div
-                                    style="display: flex; justify-content: space-between; align-items: center; background: #2d3748; padding: 8px 12px; border-radius: 10px;">
-                                    <span style="font-weight: bold; color: #a0aec0;">Boca</span>
-                                    <div style="display: flex; gap: 15px; align-items: center;">
-                                        <button class="btn-icon" @click="trocarAvatar('mouth', -1)"
-                                            style="background:none; border:none; color:#fbd38d; cursor:pointer; font-size:18px; width:auto; padding:4px 8px;">◀</button>
-                                        <span
-                                            style="min-width: 60px; text-align: center; text-transform: capitalize; color: white;">{{
-                                            avatarConfig.mouth }}</span>
-                                        <button class="btn-icon" @click="trocarAvatar('mouth', 1)"
-                                            style="background:none; border:none; color:#fbd38d; cursor:pointer; font-size:18px; width:auto; padding:4px 8px;">▶</button>
-                                    </div>
-                                </div>
-                                <!-- Controle de Cor da Pele -->
-                                <div
-                                    style="display: flex; justify-content: space-between; align-items: center; background: #2d3748; padding: 8px 12px; border-radius: 10px;">
-                                    <span style="font-weight: bold; color: #a0aec0;">Pele</span>
-                                    <div style="display: flex; gap: 8px; align-items: center;">
-                                        <div v-for="cor in avatarOptions.skinColor" :key="cor"
-                                            @click="avatarConfig.skinColor = cor; aplicarAvatar()"
-                                            :style="{ background: '#' + cor, border: avatarConfig.skinColor === cor ? '2px solid white' : '1px solid #000' }"
-                                            style="width: 20px; height: 20px; border-radius: 50%; cursor: pointer;">
-                                        </div>
+                            <div class="modal-scroll-hide"
+                                style="display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 10px; max-height: 250px; overflow-y: auto; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 12px;">
+                                <div v-for="seed in listaAvatares" :key="seed" @click="escolherAvatar(seed)"
+                                    style="cursor: pointer; position: relative; transition: 0.2s;"
+                                    onmouseover="this.style.transform='scale(1.1)'"
+                                    onmouseout="this.style.transform='scale(1.0)'">
+                                    <img :src="`https://api.dicebear.com/7.x/${seed}&backgroundColor=b6e3f4`"
+                                        :style="{ border: avatarSeed === seed ? '3px solid #fbd38d' : '2px solid transparent' }"
+                                        style="width: 100%; border-radius: 10px; background: #2d3748; box-shadow: 0 2px 5px rgba(0,0,0,0.3);" />
+                                    <div v-if="avatarSeed === seed"
+                                        style="position: absolute; top: -5px; right: -5px; background: #48bb78; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: white;">
+                                        ✅
                                     </div>
                                 </div>
                             </div>
 
-                            <button @click="salvarAvatarCustom"
-                                style="margin-top: 20px; background: linear-gradient(135deg, #48bb78, #2f855a); color: white; border: none; padding: 10px 25px; border-radius: 12px; font-weight: bold; cursor: pointer; width: 100%; box-shadow: 0 4px 10px rgba(72,187,120,0.3);">
-                                💾 Salvar Novo Visual
-                            </button>
+                            <p style="font-size: 12px; color: #a0aec0; margin-top: 15px; text-align: center;">
+                                Selecione uma imagem para atualizar seu perfil instantaneamente.
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -1395,20 +1354,9 @@
                 cartaCuringaIndex: null,
                 autoPlay: false,
                 ultimosGanhadores: [],
-                avatarOptions: {
-                    hair: ['bob', 'bun', 'curly', 'long', 'shaved', 'short', 'straight'],
-                    eyes: ['cry', 'default', 'eyeRoll', 'happy', 'hearts', 'side', 'squint', 'surprised', 'wink', 'xD'],
-                    mouth: ['bite', 'default', 'eating', 'frown', 'grimace', 'pout', 'smile', 'tongue'],
-                    skinColor: ['f2d3b1', 'ebbe9b', 'e7a877', 'a5694f', '633e31']
-                },
-                avatarConfig: {
-                    hair: 'short',
-                    eyes: 'default',
-                    mouth: 'default',
-                    skinColor: 'f2d3b1'
-                },
                 mostrandoOpcoesAvatar: false,
                 mostrandoCriadorAvatar: false,
+                listaAvatares: [], // Lista de 50 sementes fixas para escolha
                 usuariosFakesDB: [],
                 ultimoUsoDB: {},
                 opcoesAposta: (() => {
@@ -1450,7 +1398,14 @@
                         this.ultimoUsoDB[nomeFake] = 0;
                     }
                 }
-                this.parseAvatarSeed(this.avatarSeed);
+
+                // Gerar as 50 opções de avatar muito distintas (Humanos, Robôs, Pixel Art, etc.)
+                const estilos = ['adventurer', 'avataaars', 'bottts', 'pixel-art', 'lorelei', 'notionists', 'miniavs', 'big-smile'];
+                for (let i = 1; i <= 50; i++) {
+                    const estilo = estilos[i % estilos.length];
+                    const seedStr = `${estilo}/svg?seed=${i * 137 + 42}`;
+                    this.listaAvatares.push(seedStr);
+                }
             },
             mounted() {
                 localStorage.setItem('avatar_seed', this.avatarSeed);
@@ -1699,7 +1654,6 @@
                             if (res.avatar_seed) {
                                 this.avatarSeed = res.avatar_seed;
                                 localStorage.setItem('avatar_seed', this.avatarSeed);
-                                this.parseAvatarSeed(res.avatar_seed);
                             }
                             localStorage.setItem('usuario_id', this.usuarioId);
 
@@ -1774,24 +1728,7 @@
                     this.addLog("Iniciando modo de supervisão do bot: " + bot.nome);
                     this.voltarPartidaForeground();
                 },
-                pararAssistir() {
-                    if (!this.assistindoBot) return;
 
-                    // Avisa servidor que usuário saiu (bot assume de volta)
-                    this.socket.emit("deixarPartidaEmBackground", { usuarioId: this.usuarioId });
-
-                    // Restaura dados originais
-                    this.usuarioId = this.originalUsuarioId;
-                    this.avatarSeed = this.originalAvatarSeed;
-                    this.saldo = this.originalSaldo;
-                    this.assistindoBot = false;
-                    this.originalUsuarioId = null;
-                    this.originalAvatarSeed = null;
-                    this.originalSaldo = null;
-
-                    this.estado = 'MENU';
-                    this.addLog("Você saiu do modo de supervisão.");
-                },
                 async carregarGanhadores() {
                     let baseUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
 
@@ -2106,41 +2043,23 @@
                         }
                     });
                 },
-                parseAvatarSeed(seed) {
-                    if (!seed || !seed.includes('=')) return;
-                    const parts = seed.split('&');
-                    parts.forEach(p => {
-                        const [key, val] = p.split('=');
-                        if (this.avatarConfig[key] !== undefined) {
-                            this.avatarConfig[key] = val;
-                        }
-                    });
-                },
-                trocarAvatar(key, direction) {
-                    const options = this.avatarOptions[key];
-                    let idx = options.indexOf(this.avatarConfig[key]);
-                    idx = (idx + direction + options.length) % options.length;
-                    this.avatarConfig[key] = options[idx];
-                    this.aplicarAvatar();
-                },
-                aplicarAvatar() {
-                    const c = this.avatarConfig;
-                    this.avatarSeed = `hair=${c.hair}&eyes=${c.eyes}&mouth=${c.mouth}&skinColor=${c.skinColor}`;
-                },
-                salvarAvatarCustom() {
-                    this.aplicarAvatar();
-                    localStorage.setItem('avatar_seed', this.avatarSeed);
+                pararAssistir() {
+                    if (!this.assistindoBot) return;
 
-                    let baseUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
-                    fetch(baseUrl + '/api/perfil/atualizar-avatar', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ usuario_email: this.usuarioId, avatar_seed: this.avatarSeed })
-                    }).then(r => r.json()).then(res => {
-                        if (res.success) {
-                            this.addLog("Novo visual salvo com sucesso!");
-                        }
-                    });
+                    // Avisa servidor que usuário saiu (bot assume de volta)
+                    this.socket.emit("deixarPartidaEmBackground", { usuarioId: this.usuarioId });
+
+                    // Restaura dados originais
+                    this.usuarioId = this.originalUsuarioId;
+                    this.avatarSeed = this.originalAvatarSeed;
+                    this.saldo = this.originalSaldo;
+                    this.assistindoBot = false;
+                    this.originalUsuarioId = null;
+                    this.originalAvatarSeed = null;
+                    this.originalSaldo = null;
+
+                    this.estado = 'MENU';
+                    this.addLog("Você saiu do modo de supervisão.");
                 }
             }
         });
