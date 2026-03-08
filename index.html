@@ -1107,8 +1107,7 @@
 
     <script>
         // CONFIGURAÇÃO DO BACKEND (Será atualizado automaticamente pelo script de túnel)
-        const BACKEND_URL = 'https://d23851b47f174c3d-138-97-145-148.serveousercontent.com';
-
+        const BACKEND_URL = "https://d23851b47f174c3d-138-97-145-148.serveousercontent.com"; // URL do Servidor (Serveo)
         const params = new URLSearchParams(window.location.search);
         const userIdUrl = params.get('user') || localStorage.getItem('usuario_id') || '';
         new Vue({
