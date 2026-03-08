@@ -1398,11 +1398,9 @@
                     }
                 }
 
-                // Gerar as 50 opções de avatar muito distintas (Humanos, Robôs, Pixel Art, etc.)
-                const estilos = ['adventurer', 'avataaars', 'bottts', 'pixel-art', 'lorelei', 'notionists', 'miniavs', 'big-smile'];
+                // Gerar as 50 opções de avatar do estilo adventure
                 for (let i = 1; i <= 50; i++) {
-                    const estilo = estilos[i % estilos.length];
-                    const seedStr = `${estilo}/svg?seed=${i * 137 + 42}`;
+                    const seedStr = `adventurer/svg?seed=${i * 137 + 42}`;
                     this.listaAvatares.push(seedStr);
                 }
             },
@@ -2066,6 +2064,8 @@
 </body>
 
 </html>
-   
+  
  
+ 
+
 
