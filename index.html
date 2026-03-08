@@ -1307,10 +1307,21 @@
             methods: {
                 deslogar() {
                     localStorage.removeItem('usuario_id');
+                    localStorage.removeItem('saldo_uno');
+                    localStorage.removeItem('avatar_seed');
                     this.usuarioId = '';
                     this.loginEmail = '';
                     this.loginSenha = '';
+                    this.saldo = 10.00;
+                    this.mao = [];
+                    this.oponentes = [];
                     this.estado = 'LOGIN';
+
+                    // Limpar a URL (remover ?userId=...) sem recarregar a página
+                    const url = new URL(window.location);
+                    url.searchParams.delete('userId');
+                    window.history.replaceState({}, '', url.pathname);
+
                     if (this.socket) {
                         this.socket.disconnect();
                         this.socket = null;
@@ -1414,6 +1425,17 @@
                         if (res.success) {
                             this.usuarioId = this.loginEmail;
                             localStorage.setItem('usuario_id', this.usuarioId);
+
+                            // Limpar a URL após login bem sucedido
+                            const url = new URL(window.location);
+                            url.searchParams.delete('userId');
+                            window.history.replaceState({}, '', url.pathname);
+
+                            // Resetar dados para a nova conta
+                            this.saldo = 10.00; // Opcional: buscar saldo real do servidor se implementado
+                            this.avatarSeed = Math.random().toString(36).substring(7);
+                            localStorage.setItem('avatar_seed', this.avatarSeed);
+
                             this.estado = 'MENU';
                         } else {
                             alert("❌ " + (res.detail || "Erro desconhecido."));
