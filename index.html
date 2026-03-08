@@ -754,10 +754,24 @@
                                     style="font-weight:bold; font-size:14px;">
                                     📈 Lucro: R$ {{ bot.lucro >= 0 ? '+' : '' }}{{ bot.lucro.toFixed(2) }}
                                 </span>
-                                <span style="color:#fc8181; font-weight:bold; font-size:14px;">🛑 Stop Loss: R$ {{
-                                    bot.stop_loss }}</span>
-                                <span style="color:#68d391; font-weight:bold; font-size:14px;">🏆 Stop Win: R$ {{
-                                    bot.stop_win }}</span>
+                                <div v-if="!bot.editando">
+                                    <span style="color:#fc8181; font-weight:bold; font-size:14px; display:block;">🛑
+                                        Stop Loss: R$ {{
+                                        bot.stop_loss }}</span>
+                                    <span style="color:#68d391; font-weight:bold; font-size:14px; display:block;">🏆
+                                        Stop Win: R$ {{
+                                        bot.stop_win }}</span>
+                                </div>
+                                <div v-else style="width: 100%; gap: 5px; display: flex; flex-direction: column;">
+                                    <label style="color:#fc8181; font-size:11px; font-weight:bold;">Novo Stop
+                                        Loss:</label>
+                                    <input type="number" v-model.number="bot.stop_loss"
+                                        style="width:100%; background:#2d3748; color:white; border:1px solid #fc8181; border-radius:4px; padding:2px 5px;">
+                                    <label style="color:#68d391; font-size:11px; font-weight:bold;">Novo Stop
+                                        Win:</label>
+                                    <input type="number" v-model.number="bot.stop_win"
+                                        style="width:100%; background:#2d3748; color:white; border:1px solid #68d391; border-radius:4px; padding:2px 5px;">
+                                </div>
                                 <span style="color:#fbd38d; font-weight:bold; font-size:14px;">🃏 Aposta Base: R$ {{
                                     bot.valor_aposta.toFixed(2) }}</span>
                             </div>
@@ -767,18 +781,30 @@
                                     :style="{color: bot.status === 'Ativo' ? '#68d391' : '#fc8181', background: bot.status === 'Ativo' ? '#253e2e' : '#3a2323', padding: '3px 12px', borderRadius: '8px', marginLeft: '8px', fontWeight: 'bold', letterSpacing: '0.5px', fontSize:'14px', boxShadow:'0 2px 8px #0002'}">{{
                                     bot.status }}</span>
                             </div>
+                            <div v-if="bot.motivo_status"
+                                style="margin-top: 5px; font-size: 12px; color: #fc8181; font-style: italic; font-weight: bold;">
+                                ⚠️ {{ bot.motivo_status }}
+                            </div>
                             <div style="margin-top:12px; display:flex; gap:8px;">
-                                <button @click="playBot(bot)"
+                                <button v-if="!bot.editando" @click="playBot(bot)"
                                     style="background:linear-gradient(135deg,#68d391 0%,#48bb78 100%); color:white; border:none; padding:10px 24px; border-radius:10px; font-weight:bold; font-size:16px; cursor:pointer; box-shadow:0 2px 8px #68d39133;">{{
-                                    bot.status === 'Ativo' ? '⏸️ Stop' : '▶️ Play' }}</button>
+                                    bot.status === 'Ativo' ? '⏸️ Parar' : '▶️ Play' }}</button>
+                                <button v-else @click="salvarBot(bot)"
+                                    style="background:linear-gradient(135deg,#48bb78 0%,#2f855a 100%); color:white; border:none; padding:10px 24px; border-radius:10px; font-weight:bold; font-size:16px; cursor:pointer;">💾
+                                    Salvar</button>
 
-                                <button v-if="bot.partida_id" @click="assistirBot(bot)"
+                                <button v-if="bot.partida_id && !bot.editando" @click="assistirBot(bot)"
                                     style="background:linear-gradient(135deg,#63b3ed 0%,#4299e1 100%); color:white; border:none; padding:10px 18px; border-radius:10px; font-weight:bold; font-size:14px; cursor:pointer;">📺
                                     ASSISTIR</button>
                             </div>
-                            <button @click="excluirBot(bot)"
-                                style="margin-top:8px; background:linear-gradient(135deg,#fc8181 0%,#e53e3e 100%); color:white; border:none; padding:8px 20px; border-radius:10px; font-weight:bold; font-size:14px; cursor:pointer; box-shadow:0 2px 8px #fc818133;">🗑️
-                                Excluir</button>
+                            <div style="display:flex; gap:8px; margin-top:8px;">
+                                <button v-if="bot.status === 'Parado'" @click="bot.editando = !bot.editando"
+                                    style="background:rgba(255,255,255,0.1); color:white; border:1px solid #63b3ed; padding:6px 15px; border-radius:10px; font-weight:bold; font-size:12px; cursor:pointer;">{{
+                                    bot.editando ? '❌ Cancelar' : '⚙️ Editar' }}</button>
+                                <button @click="excluirBot(bot)"
+                                    style="background:linear-gradient(135deg,#fc8181 0%,#e53e3e 100%); color:white; border:none; padding:6px 15px; border-radius:10px; font-weight:bold; font-size:12px; cursor:pointer; box-shadow:0 2px 8px #fc818133;">🗑️
+                                    Excluir</button>
+                            </div>
                         </div>
                     </div>
                     <div
@@ -1833,6 +1859,28 @@
                         if (res.success) {
                             bot.status = res.novo_status;
                             this.carregarBots();
+                        } else {
+                            alert(res.detail || "Não foi possível alterar o status do bot.");
+                        }
+                    });
+                },
+                salvarBot(bot) {
+                    let baseUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
+                    fetch(baseUrl + '/api/bots/editar', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            usuario_email: this.usuarioId,
+                            bot_id: bot.id,
+                            stop_loss: bot.stop_loss,
+                            stop_win: bot.stop_win
+                        })
+                    }).then(r => r.json()).then(res => {
+                        if (res.success) {
+                            bot.editando = false;
+                            this.carregarBots();
+                        } else {
+                            alert(res.detail || "Erro ao salvar bot.");
                         }
                     });
                 },

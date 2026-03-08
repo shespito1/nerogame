@@ -740,10 +740,11 @@ async def monitorar_bots_usuarios():
 
                 # Verifica Stop Loss / Stop Win
                 if bot['saldo'] <= bot['stop_loss'] or bot['saldo'] >= bot['stop_win']:
-                    print(f"🛑 Bot {bot['nome']} atingiu limites (Saldo: {bot['saldo']}). Parando...")
+                    motivo = "Stop Loss atingido" if bot['saldo'] <= bot['stop_loss'] else "Stop Win atingido"
+                    print(f"🛑 Bot {bot['nome']} atingiu limites (Saldo: {bot['saldo']}). Motivo: {motivo}")
                     conn = get_db()
                     cursor = conn.cursor()
-                    cursor.execute("UPDATE bots SET status = 'Parado' WHERE id = ?", (bot['id'],))
+                    cursor.execute("UPDATE bots SET status = 'Parado', motivo_status = ? WHERE id = ?", (motivo, bot['id']))
                     conn.commit()
                     conn.close()
                     continue

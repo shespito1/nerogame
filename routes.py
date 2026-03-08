@@ -106,8 +106,18 @@ async def ativar_bot(request: BotAtivarRequest):
         conn.close()
         return {"success": False, "detail": "Bot não encontrado para este usuário."}
 
-    novo_status = "Ativo" if bot['status'] == "Parado" else "Parado"
-    cursor.execute("UPDATE bots SET status = ? WHERE id = ?", (novo_status, request.bot_id))
+    if bot['status'] == "Parado":
+        # Antes de ativar, verifica se o saldo já não está fora dos limites
+        if bot['saldo'] <= bot['stop_loss'] or bot['saldo'] >= bot['stop_win']:
+            limite_atingido = "Stop Loss" if bot['saldo'] <= bot['stop_loss'] else "Stop Win"
+            conn.close()
+            return {"success": False, "detail": f"Não é possível iniciar: {limite_atingido} já atingido. Ajuste o bot."}
+        
+        novo_status = "Ativo"
+        cursor.execute("UPDATE bots SET status = ?, motivo_status = NULL WHERE id = ?", (novo_status, request.bot_id))
+    else:
+        novo_status = "Parado"
+        cursor.execute("UPDATE bots SET status = ? WHERE id = ?", (novo_status, request.bot_id))
     conn.commit()
     conn.close()
     return {"success": True, "novo_status": novo_status}
@@ -133,6 +143,22 @@ async def listar_bots(usuario_email: str):
         bots.append(d)
     conn.close()
     return {"success": True, "bots": bots}
+
+class BotEditRequest(BaseModel):
+    usuario_email: str
+    bot_id: int
+    stop_loss: float
+    stop_win: float
+
+@router.post("/api/bots/editar")
+async def editar_bot(request: BotEditRequest):
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE bots SET stop_loss = ?, stop_win = ?, motivo_status = NULL WHERE id = ? AND usuario_email = ?", 
+                   (request.stop_loss, request.stop_win, request.bot_id, request.usuario_email))
+    conn.commit()
+    conn.close()
+    return {"success": True}
 
 class BotDeleteRequest(BaseModel):
     usuario_email: str
