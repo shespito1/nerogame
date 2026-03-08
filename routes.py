@@ -10,9 +10,14 @@ from pydantic import BaseModel
 
 router = APIRouter()
 
+# Tenta carregar partidas do socket_handler para monitoramento
+try:
+    import socket_handler
+except ImportError:
+    socket_handler = None
+
 @router.get("/")
 async def root():
-    print("GET / root endpoint hit")
     return {"message": "NeroCoin Farm Game API Online"}
 
 # Endpoint para encerrar (excluir) bot e transferir saldo para usuário
@@ -115,11 +120,16 @@ async def listar_bots(usuario_email: str):
     bots = []
     for row in cursor.fetchall():
         d = dict(row)
-        # O lucro real é o saldo atual menos o que ele custou (no criar_bot, tiramos saldo do usuário)
-        # Se o usuário quer saber o histórico de ganhos, podemos usar (saldo atual - saldo inicial)
-        d['lucro'] = d['saldo'] - (d['stop_loss'] + 5.0) # Aproximação ou apenas saldo - stop_loss se saldo_incital não for salvo
-        # Melhor: apenas retornar saldo e deixar o front comparar se quiser, mas vamos mandar um campo lucro
-        # Como não salvamos saldo_original, vamos assumir que o bot começa com o valor que o user definiu
+        d['lucro'] = d['saldo'] - (d['stop_loss'] + 5.0)
+        
+        # Procura se este bot está em alguma partida ativa agora
+        d['partida_id'] = None
+        if socket_handler and hasattr(socket_handler, 'partidas'):
+            for pid, p in socket_handler.partidas.items():
+                if any(j.get("bot_id") == d['id'] for j in p["jogadores"]):
+                    d['partida_id'] = pid
+                    break
+        
         bots.append(d)
     conn.close()
     return {"success": True, "bots": bots}
@@ -163,7 +173,7 @@ class BotCreateRequest(BaseModel):
     saldo: float
     stop_loss: float
     stop_win: float
-    valor_aposta: float
+    valor_aposta: float = 1.0
 
 @router.post("/api/bots/criar")
 async def criar_bot(request: BotCreateRequest):

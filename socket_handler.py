@@ -726,7 +726,7 @@ async def monitorar_bots_usuarios():
                     continue
 
                 # Tenta entrar na fila se tiver saldo para aposta
-                custo_aposta = 1.0 # Valor fixo da aposta por enquanto
+                custo_aposta = float(bot.get('valor_aposta', 1.0))
                 if bot['saldo'] >= custo_aposta:
                     conn = get_db()
                     cursor = conn.cursor()
