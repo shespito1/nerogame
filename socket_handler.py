@@ -366,7 +366,52 @@ async def iniciar_partida_pronta(aposta):
     import random
     import asyncio
     fila = filas_espera.get(aposta, [])
-    jogadores_da_vez = [fila.pop(0) for _ in range(4)]
+    
+    # Nova lógica: Evitar bots do mesmo dono na mesma partida
+    jogadores_da_vez = []
+    donos_na_partida = set()
+    
+    indices_para_remover = []
+    for i, jog in enumerate(fila):
+        dono = jog.get("owner_email")
+        # Se for bot do sistema (is_real=False e nao tem is_user_bot), dono é None
+        # Permitimos vários bots do sistema na mesma partida
+        if dono and dono in donos_na_partida:
+            continue # Pula este bot pq o dono já tem um na mesa
+            
+        jogadores_da_vez.append(jog)
+        if dono: donos_na_partida.add(dono)
+        indices_para_remover.append(i)
+        
+        if len(jogadores_da_vez) >= 4:
+            break
+
+    # Remove da fila os que entraram na partida (de trás pra frente para não errar index)
+    for i in sorted(indices_para_remover, reverse=True):
+        fila.pop(i)
+
+    # Se não conseguimos 4 (devido à restrição de dono), mas a fila tinha gente, 
+    # o timer do check_matchmaking_timeout vai acabar preenchendo com bots do sistema depois.
+    # Mas se chamamos iniciar_partida_pronta MANUALMENTE (pq len >= 4), 
+    # e agora temos < 4 por causa do filtro, precisamos completar com bots do sistema agora
+    # para não travar a partida.
+    if len(jogadores_da_vez) < 4:
+        falta = 4 - len(jogadores_da_vez)
+        print(f"Matchmaking: Filtrado por dono, faltam {falta} jogadores. Completando com bots do sistema...")
+        # (Reutilizando a lógica de nomes de bots do timeout se possível, mas aqui faremos direto)
+        for _ in range(falta):
+            bot_id = f"SYS_BOT_{random.randint(1000, 9999)}"
+            nome_bot = f"Bot_{random.randint(10, 99)}" 
+            jogadores_da_vez.append({
+                "socketId": bot_id, 
+                "usuarioId": nome_bot, 
+                "mao": [], 
+                "is_bot": True, 
+                "aposta": aposta, 
+                "is_real": False,
+                "owner_email": None # Bots do sistema não têm dono
+            })
+
     random.shuffle(jogadores_da_vez)
     partida_id = f"partida_{partida_id_counter}"
     partida_id_counter += 1
@@ -479,7 +524,8 @@ async def entrar_fila(sid, data):
         "mao": [],
         "is_bot": False,
         "aposta": aposta,
-        "is_real": True
+        "is_real": True,
+        "owner_email": usuario_id # Jogador real é dono de si mesmo
     }
     
     if aposta not in filas_espera: filas_espera[aposta] = []
