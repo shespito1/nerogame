@@ -657,7 +657,7 @@
 
         <!-- Top Right Profile -->
         <div style="position: absolute; top: 15px; right: 20px; z-index: 10000; text-align: right;">
-            <img :src="`https://api.dicebear.com/7.x/adventurer/svg?${avatarSeed.includes('=') ? avatarSeed : 'seed=' + avatarSeed}&backgroundColor=b6e3f4`"
+            <img :src="`https://api.dicebear.com/7.x/adventurer/svg?${(avatarSeed && avatarSeed.includes('=')) ? avatarSeed : 'seed=' + (avatarSeed || usuarioId || 'default')}&backgroundColor=b6e3f4`"
                 v-if="estado === 'MENU'" @click="menuPerfilAberto = !menuPerfilAberto"
                 style="width: 50px; height: 50px; border-radius: 50%; border: 3px solid #fbd38d; cursor: pointer; background: #2d3748; box-shadow: 0 4px 6px rgba(0,0,0,0.5);" />
 
@@ -820,7 +820,7 @@
                         <!-- Avatar Atual com Botão de Editar -->
                         <div style="position: relative; cursor: pointer;"
                             @click="mostrandoCriadorAvatar = !mostrandoCriadorAvatar">
-                            <img :src="`https://api.dicebear.com/7.x/adventurer/svg?${avatarSeed.includes('=') ? avatarSeed : 'seed=' + (avatarSeed || usuarioId)}&backgroundColor=b6e3f4`"
+                            <img :src="`https://api.dicebear.com/7.x/adventurer/svg?${(avatarSeed && avatarSeed.includes('=')) ? avatarSeed : 'seed=' + (avatarSeed || usuarioId || 'default')}&backgroundColor=b6e3f4`"
                                 style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid #fbd38d; background: #2d3748; box-shadow: 0 4px 10px rgba(0,0,0,0.5);" />
                             <div
                                 style="position: absolute; bottom: 5px; right: 5px; background: #fbd38d; color: #1a202c; width: 25px; height: 25px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; border: 2px solid #1a202c;">
@@ -1179,7 +1179,7 @@
                     style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 15px; position: relative;">
                     <!-- Avatar do Jogador Local -->
                     <div style="position: relative;">
-                        <img :src="`https://api.dicebear.com/7.x/adventurer/svg?${avatarSeed.includes('=') ? avatarSeed : 'seed=' + avatarSeed}&backgroundColor=b6e3f4`"
+                        <img :src="`https://api.dicebear.com/7.x/adventurer/svg?${(avatarSeed && avatarSeed.includes('=')) ? avatarSeed : 'seed=' + (avatarSeed || usuarioId || 'default')}&backgroundColor=b6e3f4`"
                             style="width: 60px; height: 60px; border-radius: 50%; border: 3px solid #48bb78; background: #2d3748; box-shadow: 0 4px 10px rgba(0,0,0,0.5);" />
 
                         <!-- Efeito no Jogador Local -->
@@ -1252,7 +1252,7 @@
 
     <script>
         // CONFIGURAÇÃO DO BACKEND (Será atualizado automaticamente pelo script de túnel)
-        const BACKEND_URL = "https://cc1b0622c4225c9e-138-97-145-148.serveousercontent.com"; // URL do Servidor (Serveo)
+        const BACKEND_URL = "https://2f31b294a20e54cf-138-97-145-148.serveousercontent.com"; // URL do Servidor (Serveo)
         const params = new URLSearchParams(window.location.search);
         const userIdUrl = params.get('user') || localStorage.getItem('usuario_id') || '';
         new Vue({
