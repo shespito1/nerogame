@@ -366,10 +366,11 @@ async def login_game(request: LoginRequest):
     cursor.execute("SELECT item_name, quantity FROM inventory WHERE email = ?", (email_limpo,))
     inventory = {row['item_name']: row['quantity'] for row in cursor.fetchall()}
 
-    # Pega o saldo da tabela usuarios (Uno)
-    cursor.execute("SELECT saldo FROM usuarios WHERE email = ?", (email_limpo,))
+    # Pega o saldo e avatar da tabela usuarios (Uno)
+    cursor.execute("SELECT saldo, avatar_seed FROM usuarios WHERE email = ?", (email_limpo,))
     uno_user = cursor.fetchone()
     uno_saldo = uno_user['saldo'] if uno_user else 100.00 # Padrão se não existir
+    avatar_seed = uno_user['avatar_seed'] if uno_user else None
 
     conn.close()
 
@@ -381,6 +382,7 @@ async def login_game(request: LoginRequest):
         "success": True,
         "player_data": player_data,
         "uno_saldo": uno_saldo,
+        "avatar_seed": avatar_seed,
         "farmers": farmers,
         "inventory": inventory
     }
@@ -425,10 +427,11 @@ async def login_google(request: GoogleLoginRequest):
 
         cursor.execute("SELECT item_name, quantity FROM inventory WHERE email = ?", (email_limpo,))
         inventory = {row['item_name']: row['quantity'] for row in cursor.fetchall()}
-        # Pega o saldo da tabela usuarios (Uno)
-        cursor.execute("SELECT saldo FROM usuarios WHERE email = ?", (email_limpo,))
+        # Pega o saldo e avatar da tabela usuarios (Uno)
+        cursor.execute("SELECT saldo, avatar_seed FROM usuarios WHERE email = ?", (email_limpo,))
         uno_user = cursor.fetchone()
         uno_saldo = uno_user['saldo'] if uno_user else 100.00 # Padrão
+        avatar_seed = uno_user['avatar_seed'] if uno_user else None
         
         conn.close()
 
@@ -440,6 +443,7 @@ async def login_google(request: GoogleLoginRequest):
             "success": True,
             "player_data": player_data,
             "uno_saldo": uno_saldo,
+            "avatar_seed": avatar_seed,
             "farmers": farmers,
             "inventory": inventory
         }
@@ -464,14 +468,16 @@ async def cobrar_entrada(request: CobrarEntradaRequest):
     
     # Busca o usuário (se não existir, cria com 10 reais para teste)
     cursor.execute("SELECT id, saldo FROM usuarios WHERE email = ?", (usuario_id,))
+    cursor.execute("SELECT id, saldo, avatar_seed FROM usuarios WHERE email = ?", (usuario_id,))
     user = cursor.fetchone()
     
     if not user:
         cursor.execute("INSERT INTO usuarios (nome, email, senha, saldo) VALUES (?, ?, '123', 100.00)", (usuario_id, usuario_id))
         conn.commit()
-        cursor.execute("SELECT id, saldo FROM usuarios WHERE email = ?", (usuario_id,))
+        cursor.execute("SELECT id, saldo, avatar_seed FROM usuarios WHERE email = ?", (usuario_id,))
         user = cursor.fetchone()
-
+    
+    avatar_seed = user['avatar_seed']
     saldo_atual = user['saldo']
 
     if saldo_atual >= 1.00:
@@ -485,8 +491,22 @@ async def cobrar_entrada(request: CobrarEntradaRequest):
         return {
             "sucesso": True,
             "mensagem": f"Entrada cobrada com sucesso. Saldo restante: R$ {novo_saldo:.2f}",
-            "ticketWs": f"ticket-valido-{usuario_id}"
+            "ticketWs": f"ticket-valido-{usuario_id}",
+            "avatar_seed": avatar_seed
         }
     else:
         conn.close()
         return {"sucesso": False, "erro": "Saldo insuficiente para jogar."}
+
+class AvatarUpdateRequest(BaseModel):
+    usuario_email: str
+    avatar_seed: str
+
+@router.post("/api/perfil/atualizar-avatar")
+async def atualizar_avatar(request: AvatarUpdateRequest):
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE usuarios SET avatar_seed = ? WHERE email = ?", (request.avatar_seed, request.usuario_email))
+    conn.commit()
+    conn.close()
+    return {"success": True}

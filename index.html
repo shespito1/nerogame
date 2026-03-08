@@ -815,9 +815,30 @@
                     <p><strong>Nome:</strong> {{ gameUsername || loginNome }}</p>
                     <p><strong>Email:</strong> {{ usuarioId }}</p>
                     <p><strong>Saldo Atual:</strong> R$ {{ saldo.toFixed(2).replace('.', ',') }}</p>
-                    <div style="display:flex; justify-content:center; margin-top: 15px;">
-                        <img :src="`https://api.dicebear.com/7.x/adventurer/svg?seed=${avatarSeed}`"
-                            style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid #fbd38d;" />
+                    <div
+                        style="display:flex; flex-direction:column; align-items:center; margin-top: 15px; position: relative;">
+                        <div style="position: relative; cursor: pointer;"
+                            @click="mostrandoOpcoesAvatar = !mostrandoOpcoesAvatar">
+                            <img :src="`https://api.dicebear.com/7.x/adventurer/svg?seed=${avatarSeed}`"
+                                style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid #fbd38d; background: #2d3748;" />
+                            <div
+                                style="position: absolute; bottom: 5px; right: 5px; background: #fbd38d; color: #1a202c; width: 25px; height: 25px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; border: 2px solid #1a202c;">
+                                ✏️
+                            </div>
+                        </div>
+                        <p style="font-size: 12px; color: #a0aec0; margin-top: 5px;">Clique na foto para mudar seu
+                            desenho</p>
+
+                        <div v-if="mostrandoOpcoesAvatar"
+                            style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 20px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 12px; max-height: 200px; overflow-y: auto;">
+                            <img v-for="seed in avatarSeeds" :key="seed"
+                                :src="`https://api.dicebear.com/7.x/adventurer/svg?seed=${seed}`"
+                                @click="escolherAvatar(seed)"
+                                style="width: 50px; height: 50px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: 0.2s;"
+                                :style="{ borderColor: avatarSeed === seed ? '#fbd38d' : 'transparent' }"
+                                onmouseover="this.style.transform='scale(1.1)'"
+                                onmouseout="this.style.transform='scale(1.0)'" />
+                        </div>
                     </div>
                 </div>
 
@@ -1228,6 +1249,8 @@
                 cartaCuringaIndex: null,
                 autoPlay: false,
                 ultimosGanhadores: [],
+                avatarSeeds: ['Loki', 'Sasha', 'Bear', 'Oliver', 'Toby', 'Abby', 'Simba', 'Shadow', 'Luna', 'Lucky', 'Leo', 'Milo', 'Cleo', 'Felix'],
+                mostrandoOpcoesAvatar: false,
                 usuariosFakesDB: [],
                 ultimoUsoDB: {},
                 opcoesAposta: (() => {
@@ -1432,6 +1455,10 @@
                         if (r.ok && res.success) {
                             this.usuarioId = res.player_data.email;
                             this.gameUsername = res.player_data.game_username || '';
+                            if (res.avatar_seed) {
+                                this.avatarSeed = res.avatar_seed;
+                                localStorage.setItem('avatar_seed', this.avatarSeed);
+                            }
                             localStorage.setItem('usuario_id', this.usuarioId);
                             this.estado = 'MENU';
                         } else {
@@ -1509,8 +1536,11 @@
 
                             // Resetar dados para a nova conta
                             // this.saldo = 10.00; // REMOVIDO: Já está vindo sincronizado do servidor
-                            this.avatarSeed = Math.random().toString(36).substring(7);
-                            localStorage.setItem('avatar_seed', this.avatarSeed);
+                            if (res.avatar_seed) {
+                                this.avatarSeed = res.avatar_seed;
+                                localStorage.setItem('avatar_seed', this.avatarSeed);
+                            }
+                            localStorage.setItem('usuario_id', this.usuarioId);
 
                             this.estado = 'MENU';
                         } else {
@@ -1766,7 +1796,7 @@
                 pagarEEntrarNaFila(valorAposta) {
                     if (this.saldo < valorAposta) { alert("Você não tem saldo suficiente (R$ " + valorAposta.toFixed(2) + ")!"); return; }
                     this.saldo -= valorAposta; this.ultimaAposta = valorAposta; this.estado = "FILA";
-                    this.conectarSocket(() => { this.addLog("💳 Pagamento de R$ " + valorAposta.toFixed(2) + " confirmado. Entrando na fila..."); this.socket.emit("entrarFila", { usuarioId: this.usuarioId, aposta: valorAposta }); });
+                    this.conectarSocket(() => { this.addLog("💳 Pagamento de R$ " + valorAposta.toFixed(2) + " confirmado. Entrando na fila..."); this.socket.emit("entrarFila", { usuarioId: this.usuarioId, aposta: valorAposta, avatarSeed: this.avatarSeed }); });
                 },
                 jogarCarta(index) {
                     if (!this.socket) return;
@@ -1861,6 +1891,22 @@
                             this.carregarBots();
                         } else {
                             alert(res.detail || "Não foi possível alterar o status do bot.");
+                        }
+                    });
+                },
+                escolherAvatar(seed) {
+                    this.avatarSeed = seed;
+                    localStorage.setItem('avatar_seed', seed);
+                    this.mostrandoOpcoesAvatar = false;
+
+                    let baseUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
+                    fetch(baseUrl + '/api/perfil/atualizar-avatar', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ usuario_email: this.usuarioId, avatar_seed: seed })
+                    }).then(r => r.json()).then(res => {
+                        if (res.success) {
+                            this.addLog("Avatar atualizado com sucesso!");
                         }
                     });
                 },

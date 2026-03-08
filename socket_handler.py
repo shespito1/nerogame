@@ -294,7 +294,9 @@ async def check_matchmaking_timeout(aposta):
                     nome_bot = f"{random.choice(prefixos)}{numero}"
 
                 bot_id = f"BOT_{random.randint(1000, 9999)}"
-                bot_jogador = {"socketId": bot_id, "usuarioId": nome_bot, "mao": [], "is_bot": True, "aposta": aposta, "is_real": False}
+                # Bot do sistema tem avatar fixo pelo nome dele
+                avatar_bot = f"sys_bot_{nome_bot}"
+                bot_jogador = {"socketId": bot_id, "usuarioId": nome_bot, "mao": [], "is_bot": True, "aposta": aposta, "is_real": False, "avatar_seed": avatar_bot}
                 fila.append(bot_jogador)
 
             await iniciar_partida_pronta(aposta)
@@ -409,7 +411,8 @@ async def iniciar_partida_pronta(aposta):
                 "is_bot": True, 
                 "aposta": aposta, 
                 "is_real": False,
-                "owner_email": None # Bots do sistema não têm dono
+                "owner_email": None, # Bots do sistema não têm dono
+                "avatar_seed": f"sys_bot_{nome_bot}"
             })
 
     random.shuffle(jogadores_da_vez)
@@ -435,7 +438,7 @@ async def iniciar_partida_pronta(aposta):
         "ultimo_turno_horario": time.time()
     }
 
-    status_jogadores = [{"id": j["usuarioId"], "cartas": len(j["mao"])} for j in jogadores_da_vez]
+    status_jogadores = [{"id": j["usuarioId"], "cartas": len(j["mao"]), "avatar_seed": j.get("avatar_seed")} for j in jogadores_da_vez]
     
     for jog in jogadores_da_vez:
         if not jog.get("is_bot", False):
@@ -468,7 +471,7 @@ async def verificar_reconexao(sid, data):
                 jogador["is_bot"] = False  # Recupera o controle para o humano!
                 
                 await sio.enter_room(sid, partida_id)
-                status_jogadores = [{"id": j["usuarioId"], "cartas": len(j["mao"])} for j in partida["jogadores"]]
+                status_jogadores = [{"id": j["usuarioId"], "cartas": len(j["mao"]), "avatar_seed": j.get("avatar_seed")} for j in partida["jogadores"]]
                 print(f"📡 Enviando estado da partida {partida_id} para {usuario_id}. Oponentes: {[s['id'] for s in status_jogadores]}")
                 
                 # Manda o estado atualizado pro jogador
@@ -525,7 +528,8 @@ async def entrar_fila(sid, data):
         "is_bot": False,
         "aposta": aposta,
         "is_real": True,
-        "owner_email": usuario_id # Jogador real é dono de si mesmo
+        "owner_email": usuario_id, # Jogador real é dono de si mesmo
+        "avatar_seed": data.get("avatarSeed")
     }
     
     if aposta not in filas_espera: filas_espera[aposta] = []
@@ -815,7 +819,8 @@ async def monitorar_bots_usuarios():
                         "owner_email": bot['usuario_email'],
                         "bot_id": bot['id'],
                         "aposta": custo_aposta,
-                        "is_real": False
+                        "is_real": False,
+                        "avatar_seed": f"user_bot_{bot['nome']}" # Pode ser diferente
                     }
                     
                     if custo_aposta not in filas_espera: filas_espera[custo_aposta] = []
