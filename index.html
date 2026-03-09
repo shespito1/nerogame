@@ -1992,7 +1992,7 @@
                         cfg = { classe: 'efeito-mais2', emoji: '💥+2', texto: 'TOMOU!' };
                     } else if (val === '+4') {
                         alvoId = this.turnoAtual;
-                        cfg = { classe: 'efeito-mais4', emoji: '🌈💣+4', texto: 'FALECERAS!' };
+                        cfg = { classe: 'efeito-mais4', emoji: '🌈💣+4', texto: 'TOMOU +4!' };
                     }
 
                     if (!alvoId || !cfg) return;
@@ -2043,9 +2043,9 @@
                             this.penalidadeAcumulada = data.penalidade_acumulada || 0;
                             if (penalidadeAnterior > 0 && (data.carta.valor === '+2' || data.carta.valor === '+4')) {
                                 this.dispararEfeitoDefesa(data.jogador);
+                            } else {
+                                this.dispararEfeitoEspecial(data.carta, data.jogador);
                             }
-                            // Disparar animação de carta especial
-                            this.dispararEfeitoEspecial(data.carta, data.jogador);
                         });
                         this.socket.on("jogadaInvalida", (data) => {
                             this.esperandoResposta = false; alert("Atenção: " + data.mensagem); this.addLog("❌ Jogada Inválida: " + data.mensagem);
