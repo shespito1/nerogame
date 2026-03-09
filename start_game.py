@@ -31,47 +31,17 @@ def github_push():
 def get_tunnel_url():
     """Tenta localtunnel primeiro, depois serveo.net."""
     
-    # --- Tentativa 1: localtunnel ---
-    print("🌐 Tentando localtunnel...")
-    # Skipping public IP retrieval to avoid showing tunnel IP/password
-    # (localtunnel will work without this prompt)
-    pass
-        pass
-
-    proc = subprocess.Popen(
-        "lt --port 8000",
-        shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True
-    )
+    # Skipping localtunnel; using serveo.net fallback only
+    print("🔄 Usando serveo.net como fallback (sem localtunnel)")
     
-    result = []
-    import threading
-    def read_lines():
-        if proc.stdout:
-            for line in proc.stdout:
-                line = line.strip()
-                print(f"  [lt] {line}")
-                m = re.search(r'(https://[a-zA-Z0-9-]+\.loca\.lt)', line)
-                if m and not result:
-                    result.append(m.group(1))
-    
-    t = threading.Thread(target=read_lines, daemon=True)
-    t.start()
-    
-    for _ in range(15):
-        if result:
-            return result[0], proc
-        time.sleep(1)
-    
-    proc.terminate()
-    
-    # --- Tentativa 2: serveo.net (Fallback) ---
-    print("🔄 Tentando serveo.net como fallback...")
+    # --- Tentativa 1: serveo.net (agora primário) ---
     proc_sv = subprocess.Popen(
         "ssh -o StrictHostKeyChecking=no -R 80:127.0.0.1:8000 serveo.net",
         shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True
     )
     
     result_sv = []
+    import threading
     def read_lines_sv():
         if proc_sv.stdout:
             for line in proc_sv.stdout:
@@ -85,7 +55,9 @@ def get_tunnel_url():
     
     for _ in range(15):
         if result_sv:
-            return result_sv[0], proc_sv
+            # Convert to plain HTTP to avoid Chrome's invalid‑cert warning
+            url = result_sv[0].replace('https://', 'http://')
+            return url, proc_sv
         time.sleep(1)
     
     proc_sv.terminate()
