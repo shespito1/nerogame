@@ -121,11 +121,16 @@
 
             .mao {
                 gap: 3px !important;
-                padding: 5px 0;
+                padding: 10px 0;
                 justify-content: flex-start !important;
                 flex-wrap: nowrap !important;
                 overflow-x: auto !important;
                 -webkit-overflow-scrolling: touch;
+                scroll-snap-type: x mandatory;
+            }
+
+            .carta-animada {
+                scroll-snap-align: center;
             }
 
             .mao::-webkit-scrollbar {
@@ -429,8 +434,46 @@
             border-radius: 12px;
         }
 
-        .meu-turno {
-            border: 2px dashed #48bb78;
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.02);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            75% {
+                transform: translateX(5px);
+            }
+        }
+
+        .shake {
+            animation: shake 0.3s;
+        }
+
+        .mao-container.meu-turno {
+            border-top: 3px solid #48bb78;
+            box-shadow: 0 -10px 30px rgba(72, 187, 120, 0.2) inset;
             background: rgba(72, 187, 120, 0.1);
         }
 
@@ -1215,7 +1258,7 @@
                 <div class="oponentes">
                     <div v-for="op in getOponentes()" :key="op.id" :id="'oponente-' + op.id" class="oponente"
                         :class="{ 'oponente-ativo': op.id === turnoAtual, 'oponente-afetado': efeitosJogadores[op.id] }">
-                        <img :src="`https://api.dicebear.com/7.x/adventurer/svg?${(op.avatar_seed && op.avatar_seed.includes('=')) ? op.avatar_seed : 'seed=' + encodeURIComponent(op.id)}&backgroundColor=b6e3f4`"
+                        <img :src="`https://api.dicebear.com/7.x/adventurer/svg?${(op.avatar_seed && typeof op.avatar_seed === 'string' && op.avatar_seed.includes('=')) ? op.avatar_seed : 'seed=' + encodeURIComponent(op.id)}&backgroundColor=b6e3f4`"
                             style="width: 28px; height: 28px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); vertical-align: middle; margin-right: 5px; background: #2d3748;">
                         <span class="oponente-nome">{{ op.id }}</span>
                         <span class="oponente-cartas">🃏 {{ op.cartas }}</span>
@@ -1251,6 +1294,14 @@
                     style="color: #a0aec0; margin-bottom: 5px; font-size: 16px; text-transform: uppercase; font-weight: bold;">
                     Aguarde a sua vez...</p>
 
+                <div v-if="penalidadeAcumulada > 0"
+                    style="background: rgba(229, 62, 62, 0.2); border: 2px solid #e53e3e; padding: 10px; border-radius: 10px; margin-bottom: 10px; animation: pulse 1s infinite;">
+                    <span v-if="usuarioId === turnoAtual" style="color: #feb2b2; font-weight: bold; font-size: 18px;">🔥
+                        DEFENDA OU TOME +{{ penalidadeAcumulada }} CARTAS!</span>
+                    <span v-else style="color: #feb2b2; font-weight: bold; font-size: 16px;">⚠️ Penalidade Ativa: +{{
+                        penalidadeAcumulada }} cartas</span>
+                </div>
+
                 <button class="btn-icon" v-if="assistindoBot" @click="pararAssistir"
                     style="background: #e53e3e; margin-bottom: 10px; width: auto; padding: 10px 20px; font-weight: bold; border-radius: 10px;">🏃
                     Parar de Assistir</button>
@@ -1259,7 +1310,7 @@
                     style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 10px; position: relative; transform: scale(0.9);">
                     <!-- Avatar do Jogador Local -->
                     <div style="position: relative;">
-                        <img :src="`https://api.dicebear.com/7.x/adventurer/svg?${(avatarSeed && avatarSeed.includes('=')) ? avatarSeed : 'seed=' + (avatarSeed || usuarioId || 'default')}&backgroundColor=b6e3f4`"
+                        <img :src="`https://api.dicebear.com/7.x/adventurer/svg?${(avatarSeed && typeof avatarSeed === 'string' && avatarSeed.includes('=')) ? avatarSeed : 'seed=' + (avatarSeed || usuarioId || 'default')}&backgroundColor=b6e3f4`"
                             style="width: 40px; height: 40px; border-radius: 50%; border: 3px solid #48bb78; background: #2d3748; box-shadow: 0 4px 10px rgba(0,0,0,0.5);" />
 
                         <!-- Efeito no Jogador Local -->
@@ -1333,7 +1384,7 @@
 
     <script>
         // CONFIGURAÇÃO DO BACKEND (Será atualizado automaticamente pelo script de túnel)
-        const BACKEND_URL = "https://51c1e5bdc503ce72-138-97-145-148.serveousercontent.com"; // URL do Servidor (Serveo)
+        const BACKEND_URL = "https://676195d05e47d130-138-97-145-148.serveousercontent.com"; // URL do Servidor (Serveo)
         const params = new URLSearchParams(window.location.search);
         const userIdUrl = params.get('user') || localStorage.getItem('usuario_id') || '';
         new Vue({
@@ -1391,6 +1442,7 @@
                 escolhendoCor: false,
                 cartaCuringaIndex: null,
                 autoPlay: false,
+                penalidadeAcumulada: 0,
                 ultimosGanhadores: [],
                 mostrandoOpcoesAvatar: false,
                 mostrandoCriadorAvatar: false,
@@ -1895,11 +1947,13 @@
                         this.socket.on("partidaIniciada", (data) => {
                             this.addLog("🔥 A PARTIDA COMEÇOU!"); this.estado = "JOGO"; this.partidaId = data.partidaId;
                             this.mao = data.suaMao; this.cartaMesa = data.cartaMesa; this.turnoAtual = data.turnoAtual; this.oponentes = data.oponentes;
+                            this.penalidadeAcumulada = data.penalidade_acumulada || 0;
                         });
                         this.socket.on("atualizarMao", (data) => { this.mao = data.mao; });
                         this.socket.on("jogadaAceita", (data) => {
                             this.esperandoResposta = false; this.addLog(`⭐ ${data.jogador} jogou: ${data.carta.valor}`);
                             this.cartaMesa = data.carta; this.turnoAtual = data.proximoTurno; this.oponentes = data.oponentes || this.oponentes;
+                            this.penalidadeAcumulada = data.penalidade_acumulada || 0;
                             // Disparar animação de carta especial
                             this.dispararEfeitoEspecial(data.carta, data.jogador);
                         });
