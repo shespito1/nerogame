@@ -29,77 +29,66 @@ def github_push():
     print("✅ GitHub Pages atualizado!")
 
 def get_tunnel_url():
-    """Tenta serveo.net primeiro, depois localhost.run como fallback."""
+    """Tenta localtunnel primeiro, depois serveo.net."""
     
-    # --- Tentativa 1: serveo.net ---
-    print("🌐 Tentando serveo.net...")
-    for f in ["serveo.log", "tunnel.log"]:
-        try:
-            os.remove(f)
-        except OSError:
-            pass
-    
+    # --- Tentativa 1: localtunnel ---
+    print("🌐 Tentando localtunnel...")
+    # Skipping public IP retrieval to avoid showing tunnel IP/password
+    # (localtunnel will work without this prompt)
+    pass
+        pass
+
     proc = subprocess.Popen(
-        "ssh -o StrictHostKeyChecking=no -R 80:127.0.0.1:8000 serveo.net",
+        "lt --port 8000",
         shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True
     )
     
-    url = None
-    # Lê a saída linha por linha por até 20 segundos
-    import threading
     result = []
-    
+    import threading
     def read_lines():
         if proc.stdout:
             for line in proc.stdout:
-                print(f"  [serveo] {line}", end="")
-                m = re.search(r'(https://[a-zA-Z0-9-]+\.serveousercontent\.com)', line)
+                line = line.strip()
+                print(f"  [lt] {line}")
+                m = re.search(r'(https://[a-zA-Z0-9-]+\.loca\.lt)', line)
                 if m and not result:
                     result.append(m.group(1))
     
     t = threading.Thread(target=read_lines, daemon=True)
     t.start()
     
-    for _ in range(20):
+    for _ in range(15):
         if result:
-            break
+            return result[0], proc
         time.sleep(1)
     
-    if result:
-        return result[0], proc
-    
-    # Serveo falhou, matar e tentar alternativa
     proc.terminate()
     
-    # --- Tentativa 2: localhost.run ---
-    print("🔄 Tentando localhost.run...")
-    proc2 = subprocess.Popen(
-        "ssh -o StrictHostKeyChecking=no -R 80:127.0.0.1:8000 nokey@localhost.run",
+    # --- Tentativa 2: serveo.net (Fallback) ---
+    print("🔄 Tentando serveo.net como fallback...")
+    proc_sv = subprocess.Popen(
+        "ssh -o StrictHostKeyChecking=no -R 80:127.0.0.1:8000 serveo.net",
         shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True
     )
     
-    result2 = []
+    result_sv = []
+    def read_lines_sv():
+        if proc_sv.stdout:
+            for line in proc_sv.stdout:
+                print(f"  [serveo] {line}", end="")
+                m = re.search(r'(https://[a-zA-Z0-9-]+\.serveousercontent\.com)', line)
+                if m and not result_sv:
+                    result_sv.append(m.group(1))
     
-    def read_lines2():
-        if proc2.stdout:
-            for line in proc2.stdout:
-                print(f"  [localhost.run] {line}", end="")
-                m = re.search(r'(https://[a-zA-Z0-9-]+\.lhr\.life)', line)
-                if m and not result2:
-                    result2.append(m.group(1))
-    
-    t2 = threading.Thread(target=read_lines2, daemon=True)
-    t2.start()
+    t_sv = threading.Thread(target=read_lines_sv, daemon=True)
+    t_sv.start()
     
     for _ in range(15):
-        if result2:
-            break
+        if result_sv:
+            return result_sv[0], proc_sv
         time.sleep(1)
     
-    if result2:
-        return result2[0], proc2
-    
-    proc2.terminate()
+    proc_sv.terminate()
     return None, None
 
 def main():
