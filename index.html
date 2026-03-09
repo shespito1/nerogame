@@ -527,6 +527,275 @@
             text-transform: none;
         }
 
+        .freebet-shell {
+            position: relative;
+            padding: 78px 28px 30px !important;
+            overflow: hidden;
+            background:
+                radial-gradient(circle at top right, rgba(251, 191, 36, 0.18), transparent 26%),
+                radial-gradient(circle at bottom left, rgba(59, 130, 246, 0.12), transparent 28%),
+                linear-gradient(180deg, rgba(20, 17, 10, 0.97), rgba(10, 10, 8, 0.98));
+            border: 1px solid rgba(251, 191, 36, 0.18);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.42);
+        }
+
+        .freebet-header {
+            position: relative;
+            z-index: 1;
+            max-width: 920px;
+            margin: 0 auto 22px auto;
+            text-align: center;
+        }
+
+        .freebet-kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            border-radius: 999px;
+            background: rgba(251, 191, 36, 0.12);
+            border: 1px solid rgba(251, 191, 36, 0.25);
+            color: #fde68a;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .freebet-title {
+            margin: 14px 0 10px 0;
+            font-family: 'Rowdies', cursive;
+            font-size: clamp(30px, 5vw, 48px);
+            line-height: 1.05;
+            color: #fff7cc;
+            text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.45);
+        }
+
+        .freebet-subtitle {
+            margin: 0 auto;
+            max-width: 720px;
+            color: #f3f4f6;
+            font-size: 17px;
+            line-height: 1.55;
+            font-weight: 700;
+        }
+
+        .freebet-info-row {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 18px;
+        }
+
+        .freebet-pill {
+            padding: 12px 16px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #f8fafc;
+            font-weight: 800;
+        }
+
+        .freebet-pill strong {
+            color: #fde68a;
+        }
+
+        .freebet-grid {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(180px, 1fr));
+            gap: 18px;
+            max-width: 920px;
+            margin: 0 auto;
+        }
+
+        .freebet-bet-card {
+            border: none;
+            border-radius: 26px;
+            text-align: left;
+            min-height: 168px;
+            padding: 22px 20px !important;
+            box-shadow: 0 18px 34px rgba(0, 0, 0, 0.3);
+            transition: transform 0.22s ease, box-shadow 0.22s ease;
+        }
+
+        .freebet-bet-card:hover {
+            transform: translateY(-7px) scale(1.015);
+            box-shadow: 0 28px 42px rgba(0, 0, 0, 0.34);
+        }
+
+        .freebet-table {
+            position: relative;
+            overflow: hidden;
+            background:
+                radial-gradient(circle at center, rgba(36, 96, 64, 0.82) 0%, rgba(10, 32, 21, 0.95) 70%),
+                linear-gradient(180deg, rgba(7, 18, 12, 0.95), rgba(6, 10, 8, 0.98));
+            border: 2px solid rgba(251, 191, 36, 0.18);
+            box-shadow: 0 28px 60px rgba(0, 0, 0, 0.42);
+        }
+
+        .freebet-table::before {
+            content: '';
+            position: absolute;
+            inset: 18px;
+            border: 1px dashed rgba(251, 191, 36, 0.2);
+            border-radius: 28px;
+            pointer-events: none;
+        }
+
+        .freebet-dealer-area,
+        .freebet-player-area {
+            position: relative;
+            z-index: 1;
+            padding: 12px 10px;
+        }
+
+        .freebet-section-title {
+            text-align: center;
+            color: #fde68a;
+            font-family: 'Rowdies', cursive;
+            font-size: 24px;
+            margin: 0 0 14px 0;
+        }
+
+        .freebet-cards-row {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .freebet-card {
+            width: 88px;
+            height: 126px;
+            border-radius: 18px;
+            border: 3px solid rgba(255, 255, 255, 0.82);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(237, 242, 247, 0.96));
+            color: #111827;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Rowdies', cursive;
+            font-size: 28px;
+            box-shadow: 0 14px 24px rgba(0, 0, 0, 0.25);
+        }
+
+        .freebet-card.red {
+            color: #dc2626;
+        }
+
+        .freebet-card.hidden {
+            background: linear-gradient(180deg, #1f2937, #0f172a);
+            color: #f8fafc;
+        }
+
+        .freebet-hand-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+            margin-top: 18px;
+        }
+
+        .freebet-hand-card {
+            background: rgba(6, 18, 12, 0.58);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 22px;
+            padding: 16px;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .freebet-hand-card.active {
+            border-color: rgba(251, 191, 36, 0.75);
+            box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .freebet-hand-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .freebet-hand-title {
+            color: #f8fafc;
+            font-family: 'Rowdies', cursive;
+            font-size: 22px;
+        }
+
+        .freebet-hand-badge {
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #e5e7eb;
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .freebet-hand-total {
+            margin: 12px 0 0 0;
+            color: #fde68a;
+            font-weight: 800;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .freebet-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 18px;
+        }
+
+        .freebet-action-btn {
+            width: auto !important;
+            min-width: 150px;
+            padding: 14px 20px !important;
+            border-radius: 16px;
+            font-size: 16px !important;
+        }
+
+        .freebet-footer-box {
+            margin-top: 18px;
+            padding: 16px 18px;
+            border-radius: 18px;
+            background: rgba(0, 0, 0, 0.28);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #f8fafc;
+        }
+
+        .freebet-result-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+        }
+
+        .freebet-result-chip.vitoria,
+        .freebet-result-chip.blackjack {
+            background: rgba(34, 197, 94, 0.18);
+            color: #bbf7d0;
+        }
+
+        .freebet-result-chip.push {
+            background: rgba(251, 191, 36, 0.18);
+            color: #fde68a;
+        }
+
+        .freebet-result-chip.derrota {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fecaca;
+        }
+
         .regras-modal {
             position: fixed;
             inset: 0;
@@ -735,6 +1004,19 @@
 
             .aposta-card {
                 min-height: 140px;
+            }
+
+            .freebet-grid {
+                grid-template-columns: 1fr;
+                max-width: 430px;
+            }
+
+            .freebet-shell {
+                padding: 72px 16px 24px !important;
+            }
+
+            .freebet-table {
+                padding: 12px 8px !important;
             }
 
             .regras-grid {
@@ -1702,6 +1984,40 @@
                     </div>
                 </div>
 
+                <div @click="abrirFreeBetLobby()"
+                    style="background: radial-gradient(circle at top, #facc15 0%, #a16207 70%, #3f2b07 100%); border: 6px solid #fde68a; padding: 40px 20px 30px; border-radius: 25px; cursor: pointer; width: 320px; max-width: 95vw; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.6), inset 0 0 20px rgba(0,0,0,0.45); position: relative; overflow: hidden; box-sizing: border-box;"
+                    onmouseover="this.style.transform='scale(1.08) translateY(-10px)'; this.style.boxShadow='0 20px 50px rgba(253, 230, 138, 0.35), inset 0 0 20px rgba(0,0,0,0.45)';"
+                    onmouseout="this.style.transform='scale(1.0) translateY(0)'; this.style.boxShadow='0 15px 35px rgba(0,0,0,0.6), inset 0 0 20px rgba(0,0,0,0.45)';">
+
+                    <div
+                        style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); background: #111827; color: #fde68a; padding: 5px 30px; border-bottom-left-radius: 15px; border-bottom-right-radius: 15px; font-family: 'Baloo 2', cursive; font-weight: 800; font-size: 14px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); z-index: 10;">
+                        FREE DOUBLE + FREE SPLIT
+                    </div>
+
+                    <div style="position: relative; height: 160px; display: flex; justify-content: center; align-items: center; margin-bottom: 20px; pointer-events: none; z-index: 5;">
+                        <div style="position: absolute; transform: rotate(-16deg) translateX(-48px); width: 88px; height: 128px; border-radius: 18px; background: linear-gradient(180deg, #ffffff, #f3f4f6); border: 3px solid #fff; color: #111827; display:flex; align-items:center; justify-content:center; font-family:'Rowdies',cursive; font-size:32px; box-shadow:-8px 12px 20px rgba(0,0,0,0.45);">
+                            AS
+                        </div>
+                        <div style="position: absolute; transform: rotate(14deg) translateX(48px); width: 88px; height: 128px; border-radius: 18px; background: linear-gradient(180deg, #ffffff, #f3f4f6); border: 3px solid #fff; color: #dc2626; display:flex; align-items:center; justify-content:center; font-family:'Rowdies',cursive; font-size:32px; box-shadow:8px 12px 20px rgba(0,0,0,0.45);">
+                            10H
+                        </div>
+                        <div style="position:absolute; bottom:-4px; left:50%; transform:translateX(-50%); padding:8px 14px; border-radius:999px; background:rgba(17,24,39,0.88); color:#fde68a; font-weight:800; font-size:13px; letter-spacing:0.8px;">
+                            DEALER 22 EMPATA
+                        </div>
+                    </div>
+
+                    <div style="position: relative; z-index: 5; background: rgba(0,0,0,0.48); padding: 15px 10px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.18); backdrop-filter: blur(5px);">
+                        <h3 style="margin: 0; color: #111827; font-family: 'Rowdies', cursive; font-size: 42px; text-shadow: 1px 1px 0 rgba(255,255,255,0.35); line-height: 1;">
+                            FREE BET</h3>
+                        <h4 style="margin: 0; color: #fff7cc; font-family: 'Baloo 2', cursive; font-weight: 800; font-size: 24px; letter-spacing: 6px; text-shadow: 2px 2px 0 rgba(0,0,0,0.55);">
+                            21</h4>
+                    </div>
+
+                    <div style="margin-top: 25px; background: linear-gradient(to bottom, #111827, #030712); color: #fde68a; padding: 15px 30px; border-radius: 40px; font-family: 'Rowdies', cursive; font-size: 22px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); box-shadow: 0 8px 0 #000, 0 15px 20px rgba(0,0,0,0.35); display: inline-block; position: relative; z-index: 5;">
+                        ♠ ENTRAR NA MESA
+                    </div>
+                </div>
+
             </div>
         </div>
 
@@ -1745,6 +2061,96 @@
                         {{ ['Partida agil para entrar e girar saldo com velocidade.', 'Mesa intermediaria para quem quer premio mais pesado sem ir ao extremo.', 'Aposta premium para rodada grande e premio alto.'][index % 3] }}
                     </p>
                 </button>
+            </div>
+        </div>
+
+        <div class="card-menu freebet-shell" v-if="estado === 'FREEBET_APOSTA'">
+            <button class="btn-icon"
+                style="position: absolute; top: 15px; left: 15px; padding: 8px 15px; font-size: 14px; margin: 0; width: auto; background: #4a5568; color: white; border-radius: 6px; border: none; cursor: pointer;"
+                @click="estado = 'MENU'">⬅️ Voltar</button>
+            <div class="freebet-header">
+                <div class="freebet-kicker">
+                    <span>Blackjack inspirado em Free Bet</span>
+                </div>
+                <h2 class="freebet-title">♠ Free Bet 21</h2>
+                <p class="freebet-subtitle">Duplique de graca em maos fortes, divida pares sem pagar nova aposta e tente bater o dealer. Aqui o contra-ataque da casa vem quando o dealer fecha em 22 e segura empates.</p>
+                <div class="freebet-info-row">
+                    <div class="freebet-pill">Aposta base: <strong>uma vez</strong></div>
+                    <div class="freebet-pill">Duplo gratis: <strong>9, 10 ou 11</strong></div>
+                    <div class="freebet-pill">Split gratis: <strong>pares sem valor 10</strong></div>
+                </div>
+            </div>
+
+            <div class="freebet-grid">
+                <button v-for="(valor, index) in opcoesAposta" :key="'freebet-' + valor" class="freebet-bet-card"
+                    :style="{ background: ['linear-gradient(145deg, #1f2937, #111827)', 'linear-gradient(145deg, #92400e, #78350f)', 'linear-gradient(145deg, #14532d, #052e16)'][index % 3] }"
+                    @click="iniciarFreeBet(valor)">
+                    <span class="aposta-card-tag">{{ ['mesa curta', 'free double', 'high table'][index % 3] }}</span>
+                    <span class="aposta-card-valor">R$ {{ valor.toFixed(2).replace('.', ',') }}</span>
+                    <p class="aposta-card-texto">
+                        {{ ['Rodada rapida para sentir o ritmo do dealer.', 'Equilibrio bom para explorar split e double gratis.', 'Mesa pesada para buscar viradas grandes em um unico round.'][index % 3] }}
+                    </p>
+                </button>
+            </div>
+        </div>
+
+        <div class="card-menu freebet-table" v-if="estado === 'FREEBET_JOGO' && freeBetState">
+            <button class="btn-icon"
+                style="position: absolute; top: 15px; left: 15px; padding: 8px 15px; font-size: 14px; margin: 0; width: auto; background: #4a5568; color: white; border-radius: 6px; border: none; cursor: pointer; z-index: 3;"
+                @click="estado = 'MENU'">⬅️ Menu</button>
+
+            <div class="freebet-dealer-area">
+                <h2 class="freebet-section-title">Dealer</h2>
+                <div class="freebet-cards-row">
+                    <div v-for="(card, idx) in freeBetState.dealer.cards" :key="'dealer-' + idx" class="freebet-card"
+                        :class="card.color">
+                        {{ card.label }}
+                    </div>
+                </div>
+                <p class="freebet-hand-total">Total do dealer: {{ freeBetState.dealer.total }}</p>
+            </div>
+
+            <div class="freebet-player-area">
+                <h2 class="freebet-section-title">Suas maos</h2>
+                <div class="freebet-hand-grid">
+                    <div v-for="hand in freeBetState.hands" :key="'hand-' + hand.index" class="freebet-hand-card"
+                        :class="{ active: hand.active }">
+                        <div class="freebet-hand-top">
+                            <div class="freebet-hand-title">{{ hand.title }}</div>
+                            <div class="freebet-hand-badge">x{{ hand.bet_units }} aposta</div>
+                        </div>
+                        <div class="freebet-cards-row">
+                            <div v-for="(card, idx) in hand.cards" :key="'card-' + hand.index + '-' + idx" class="freebet-card"
+                                :class="card.color">
+                                {{ card.label }}
+                            </div>
+                        </div>
+                        <p class="freebet-hand-total">Total: {{ hand.total }}</p>
+                        <div v-if="hand.result" class="freebet-footer-box" style="text-align:center;">
+                            <span class="freebet-result-chip" :class="hand.result">{{ hand.result_text }}</span>
+                            <p style="margin: 10px 0 0 0; color: #e5e7eb; font-weight: 700;">Pagamento: R$ {{ hand.payout.toFixed(2) }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="freebet-actions" v-if="freeBetState.status === 'player_turn' && freeBetActiveHand">
+                    <button class="freebet-action-btn" style="background: linear-gradient(145deg, #3b82f6, #1d4ed8); color: white;" @click="executarAcaoFreeBet('hit', freeBetActiveHand.index)">Pedir Carta</button>
+                    <button class="freebet-action-btn" style="background: linear-gradient(145deg, #6b7280, #374151); color: white;" @click="executarAcaoFreeBet('stand', freeBetActiveHand.index)">Parar</button>
+                    <button v-if="freeBetActiveHand.can_double" class="freebet-action-btn" style="background: linear-gradient(145deg, #f59e0b, #b45309); color: #fff7cc;" @click="executarAcaoFreeBet('double', freeBetActiveHand.index)">Duplo Gratis</button>
+                    <button v-if="freeBetActiveHand.can_split" class="freebet-action-btn" style="background: linear-gradient(145deg, #22c55e, #15803d); color: white;" @click="executarAcaoFreeBet('split', freeBetActiveHand.index)">Split Gratis</button>
+                </div>
+
+                <div class="freebet-footer-box">
+                    <p style="margin: 0 0 8px 0; color: #fde68a; font-family: 'Rowdies', cursive; font-size: 24px;">Mesa</p>
+                    <p style="margin: 0; color: #f8fafc; font-weight: 700;">{{ freeBetState.message }}</p>
+                    <p style="margin: 10px 0 0 0; color: #d1fae5; font-weight: 800;">Aposta base: R$ {{ freeBetState.bet_amount.toFixed(2) }}</p>
+                    <p v-if="freeBetState.status === 'finished'" style="margin: 10px 0 0 0; color: #fde68a; font-weight: 800;">Resultado final: R$ {{ freeBetState.net_result.toFixed(2) }}</p>
+                    <p v-if="freeBetState.status === 'finished' && freeBetState.summary.length" style="margin: 10px 0 0 0; color: #e5e7eb; font-weight: 700;">{{ freeBetState.summary.join(' | ') }}</p>
+                </div>
+
+                <div class="freebet-actions" v-if="freeBetState.status === 'finished'">
+                    <button class="freebet-action-btn" style="background: linear-gradient(145deg, #22c55e, #15803d); color: white;" @click="estado = 'FREEBET_APOSTA'; freeBetState = null;">Nova Rodada</button>
+                </div>
             </div>
         </div>
 
@@ -2062,6 +2468,8 @@
                 penalidadeAcumulada: 0,
                 ultimosGanhadores: [],
                 mostrandoRegras: false,
+                freeBetState: null,
+                freeBetLoading: false,
                 mostrandoOpcoesAvatar: false,
                 mostrandoCriadorAvatar: false,
                 listaAvatares: [], // Lista de 50 sementes fixas para escolha
@@ -2129,6 +2537,7 @@
 
                 if (this.usuarioId) {
                     this.carregarBots();
+                    this.carregarEstadoFreeBet();
                 }
 
                 // Pegar mensagem do backend
@@ -2216,6 +2625,12 @@
                     if (newVal && this.turnoAtual === this.usuarioId && !this.esperandoResposta) {
                         this.tentarJogadaAutomatica();
                     }
+                }
+            },
+            computed: {
+                freeBetActiveHand() {
+                    if (!this.freeBetState || !this.freeBetState.hands) return null;
+                    return this.freeBetState.hands.find(hand => hand.active) || null;
                 }
             },
             methods: {
@@ -2378,6 +2793,80 @@
                     if (val === "Curinga") return "★";
                     if (val === "Curinga +4") return "+4";
                     return val;
+                },
+                abrirFreeBetLobby() {
+                    this.estado = 'FREEBET_APOSTA';
+                    this.carregarEstadoFreeBet();
+                },
+                async carregarEstadoFreeBet() {
+                    if (!this.usuarioId) return;
+                    let baseUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
+                    try {
+                        const res = await fetch(baseUrl + '/api/freebet/state?usuario_email=' + encodeURIComponent(this.usuarioId));
+                        const data = await res.json();
+                        if (data.success) {
+                            this.freeBetState = data.state;
+                            if (typeof data.saldo === 'number') this.saldo = data.saldo;
+                        }
+                    } catch (e) {
+                        console.error('Erro ao carregar estado do Free Bet 21:', e);
+                    }
+                },
+                async iniciarFreeBet(valorAposta) {
+                    if (!this.usuarioId) {
+                        alert('Faça login antes de abrir a mesa.');
+                        return;
+                    }
+                    this.freeBetLoading = true;
+                    let baseUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
+                    try {
+                        const res = await fetch(baseUrl + '/api/freebet/start', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ usuario_email: this.usuarioId, aposta: valorAposta })
+                        });
+                        const data = await res.json();
+                        if (!res.ok || !data.success) {
+                            alert(data.detail || 'Nao foi possivel iniciar a mesa de Free Bet 21.');
+                            if (typeof data.saldo === 'number') this.saldo = data.saldo;
+                            if (data.state) this.freeBetState = data.state;
+                            return;
+                        }
+                        this.freeBetState = data.state;
+                        if (typeof data.saldo === 'number') this.saldo = data.saldo;
+                        this.estado = 'FREEBET_JOGO';
+                    } catch (e) {
+                        console.error('Erro ao iniciar Free Bet 21:', e);
+                        alert('Erro de conexao ao iniciar o Free Bet 21.');
+                    } finally {
+                        this.freeBetLoading = false;
+                    }
+                },
+                async executarAcaoFreeBet(action, handIndex) {
+                    if (!this.usuarioId || !this.freeBetState) return;
+                    this.freeBetLoading = true;
+                    let baseUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
+                    try {
+                        const res = await fetch(baseUrl + '/api/freebet/action', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ usuario_email: this.usuarioId, action: action, hand_index: handIndex })
+                        });
+                        const data = await res.json();
+                        if (!res.ok || !data.success) {
+                            alert(data.detail || 'Acao nao permitida nessa rodada.');
+                            if (data.state) this.freeBetState = data.state;
+                            if (typeof data.saldo === 'number') this.saldo = data.saldo;
+                            return;
+                        }
+                        this.freeBetState = data.state;
+                        if (typeof data.saldo === 'number') this.saldo = data.saldo;
+                    } catch (e) {
+                        console.error('Erro ao executar acao no Free Bet 21:', e);
+                        alert('Erro de conexao na mesa de Free Bet 21.');
+                    } finally {
+                        this.freeBetLoading = false;
+                    }
                 },
                 abrirAbaPerfil(aba) {
                     this.abaPerfilAtiva = aba;

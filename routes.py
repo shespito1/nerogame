@@ -7,8 +7,12 @@ import re
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
 from pydantic import BaseModel
+from typing import Optional
+import random
 
 router = APIRouter()
+
+FREEBET_SESSIONS = {}
 
 # Tenta carregar partidas do socket_handler para monitoramento
 try:
@@ -510,3 +514,457 @@ async def atualizar_avatar(request: AvatarUpdateRequest):
     conn.commit()
     conn.close()
     return {"success": True}
+
+
+FREEBET_SUITS = [
+    {"key": "S", "symbol": "S", "color": "black"},
+    {"key": "H", "symbol": "H", "color": "red"},
+    {"key": "D", "symbol": "D", "color": "red"},
+    {"key": "C", "symbol": "C", "color": "black"},
+]
+FREEBET_RANKS = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"]
+FREEBET_TEN_RANKS = {"10", "J", "Q", "K"}
+
+
+class FreeBetStartRequest(BaseModel):
+    usuario_email: str
+    aposta: float
+
+
+class FreeBetActionRequest(BaseModel):
+    usuario_email: str
+    action: str
+    hand_index: Optional[int] = None
+
+
+def _freebet_ensure_user(cursor, email):
+    cursor.execute("SELECT id, saldo FROM usuarios WHERE email = ?", (email,))
+    user = cursor.fetchone()
+    if user:
+        return user
+
+    cursor.execute(
+        "INSERT INTO usuarios (nome, email, senha, saldo) VALUES (?, ?, '123', 100.00)",
+        (email, email),
+    )
+    cursor.connection.commit()
+    cursor.execute("SELECT id, saldo FROM usuarios WHERE email = ?", (email,))
+    return cursor.fetchone()
+
+
+def _freebet_get_balance(usuario_email):
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("SELECT saldo FROM usuarios WHERE email = ?", (usuario_email,))
+    user = cursor.fetchone()
+    conn.close()
+    return round(float(user["saldo"]), 2) if user else 0.0
+
+
+def _freebet_build_deck():
+    deck = []
+    for suit in FREEBET_SUITS:
+        for rank in FREEBET_RANKS:
+            deck.append({
+                "rank": rank,
+                "suit": suit["key"],
+                "symbol": suit["symbol"],
+                "color": suit["color"],
+            })
+    random.shuffle(deck)
+    return deck
+
+
+def _freebet_draw_card(session):
+    if not session["deck"]:
+        session["deck"] = _freebet_build_deck()
+    return session["deck"].pop()
+
+
+def _freebet_card_value(card):
+    if card["rank"] == "A":
+        return 1
+    if card["rank"] in FREEBET_TEN_RANKS:
+        return 10
+    return int(card["rank"])
+
+
+def _freebet_pair_value(card):
+    if card["rank"] == "A":
+        return 11
+    if card["rank"] in FREEBET_TEN_RANKS:
+        return 10
+    return int(card["rank"])
+
+
+def _freebet_hand_total(cards):
+    total = sum(_freebet_card_value(card) for card in cards)
+    aces = sum(1 for card in cards if card["rank"] == "A")
+    soft = False
+    while aces > 0 and total + 10 <= 21:
+        total += 10
+        aces -= 1
+        soft = True
+    return total, soft
+
+
+def _freebet_is_pair(cards):
+    return len(cards) == 2 and _freebet_pair_value(cards[0]) == _freebet_pair_value(cards[1])
+
+
+def _freebet_is_natural_blackjack(hand):
+    total, _ = _freebet_hand_total(hand["cards"])
+    return (
+        len(hand["cards"]) == 2
+        and total == 21
+        and not hand.get("split_hand", False)
+        and not hand.get("doubled", False)
+    )
+
+
+def _freebet_can_double(hand):
+    if hand.get("finished") or hand.get("busted") or hand.get("doubled"):
+        return False
+    if len(hand["cards"]) != 2:
+        return False
+    total, _ = _freebet_hand_total(hand["cards"])
+    return total in (9, 10, 11)
+
+
+def _freebet_can_split(hand, session):
+    if hand.get("finished") or hand.get("busted"):
+        return False
+    if len(session["hands"]) >= 2 or len(hand["cards"]) != 2:
+        return False
+    if not _freebet_is_pair(hand["cards"]):
+        return False
+    return _freebet_pair_value(hand["cards"][0]) != 10
+
+
+def _freebet_refresh_hand(hand, session):
+    total, soft = _freebet_hand_total(hand["cards"])
+    hand["total"] = total
+    hand["soft"] = soft
+    hand["busted"] = total > 21
+    hand["blackjack"] = _freebet_is_natural_blackjack(hand)
+
+
+def _freebet_current_hand_index(session):
+    for idx, hand in enumerate(session["hands"]):
+        if not hand.get("finished"):
+            return idx
+    return None
+
+
+def _freebet_resolve_hand(hand, dealer_total, dealer_blackjack):
+    aposta = hand["bet_amount"]
+    unidades = hand.get("bet_units", 1)
+
+    if hand["busted"]:
+        return "derrota", "Estourou", 0.0
+
+    if dealer_blackjack:
+        if hand["blackjack"]:
+            return "push", "Empate com blackjack", aposta
+        return "derrota", "Dealer fez blackjack", 0.0
+
+    if hand["blackjack"]:
+        return "blackjack", "Blackjack natural", aposta * 2.5
+
+    if dealer_total > 21:
+        if dealer_total == 22:
+            return "push", "Dealer 22 empata", aposta * unidades
+        return "vitoria", "Dealer estourou", aposta * unidades * 2
+
+    if hand["total"] > dealer_total:
+        return "vitoria", "Mao vencedora", aposta * unidades * 2
+    if hand["total"] == dealer_total:
+        return "push", "Empate", aposta * unidades
+    return "derrota", "Dealer venceu", 0.0
+
+
+def _freebet_finish_session(session):
+    dealer_total, dealer_soft = _freebet_hand_total(session["dealer_cards"])
+    dealer_blackjack = len(session["dealer_cards"]) == 2 and dealer_total == 21
+
+    session["status"] = "dealer_turn"
+    session["dealer_revealed"] = True
+
+    if not dealer_blackjack and any(not hand["busted"] and not hand["blackjack"] for hand in session["hands"]):
+        while True:
+            dealer_total, dealer_soft = _freebet_hand_total(session["dealer_cards"])
+            if dealer_total < 17 or (dealer_total == 17 and dealer_soft):
+                session["dealer_cards"].append(_freebet_draw_card(session))
+            else:
+                break
+
+    dealer_total, dealer_soft = _freebet_hand_total(session["dealer_cards"])
+    dealer_blackjack = len(session["dealer_cards"]) == 2 and dealer_total == 21
+
+    payout_total = 0.0
+    resultados = []
+    for idx, hand in enumerate(session["hands"], start=1):
+        _freebet_refresh_hand(hand, session)
+        result_key, result_text, payout = _freebet_resolve_hand(hand, dealer_total, dealer_blackjack)
+        hand["result"] = result_key
+        hand["result_text"] = result_text
+        hand["payout"] = round(payout, 2)
+        hand["finished"] = True
+        payout_total += payout
+        resultados.append(f"Mao {idx}: {result_text}")
+
+    if payout_total > 0:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute(
+            "UPDATE usuarios SET saldo = saldo + ? WHERE id = ?",
+            (round(payout_total, 2), session["user_id"]),
+        )
+        cursor.execute(
+            "INSERT INTO transacoes (usuario_id, valor, tipo) VALUES (?, ?, ?)",
+            (session["user_id"], round(payout_total, 2), "Premio"),
+        )
+        conn.commit()
+        conn.close()
+
+    session["dealer_total"] = dealer_total
+    session["dealer_soft"] = dealer_soft
+    session["status"] = "finished"
+    session["active_hand_index"] = None
+    session["payout_total"] = round(payout_total, 2)
+    session["net_result"] = round(payout_total - session["bet_amount"], 2)
+    session["summary"] = resultados
+
+
+def _freebet_serialize_card(card, hidden=False):
+    if hidden:
+        return {"rank": "?", "suit": "", "label": "?", "color": "hidden"}
+    return {
+        "rank": card["rank"],
+        "suit": card["suit"],
+        "label": f"{card['rank']}{card['symbol']}",
+        "color": card["color"],
+    }
+
+
+def _freebet_serialize_session(session):
+    dealer_hidden = session["status"] == "player_turn" and not session.get("dealer_revealed", False)
+    dealer_cards = []
+    for idx, card in enumerate(session["dealer_cards"]):
+        dealer_cards.append(_freebet_serialize_card(card, dealer_hidden and idx == 1))
+
+    dealer_total, _ = _freebet_hand_total(session["dealer_cards"])
+    active_index = session.get("active_hand_index")
+    hands = []
+    for idx, hand in enumerate(session["hands"]):
+        _freebet_refresh_hand(hand, session)
+        hands.append({
+            "index": idx,
+            "title": f"Mao {idx + 1}",
+            "cards": [_freebet_serialize_card(card) for card in hand["cards"]],
+            "total": hand["total"],
+            "soft": hand["soft"],
+            "busted": hand["busted"],
+            "blackjack": hand["blackjack"],
+            "finished": hand.get("finished", False),
+            "active": idx == active_index,
+            "bet_units": hand.get("bet_units", 1),
+            "can_hit": idx == active_index and session["status"] == "player_turn" and not hand.get("finished"),
+            "can_stand": idx == active_index and session["status"] == "player_turn" and not hand.get("finished"),
+            "can_double": idx == active_index and session["status"] == "player_turn" and _freebet_can_double(hand),
+            "can_split": idx == active_index and session["status"] == "player_turn" and _freebet_can_split(hand, session),
+            "result": hand.get("result"),
+            "result_text": hand.get("result_text", ""),
+            "payout": round(hand.get("payout", 0.0), 2),
+        })
+
+    return {
+        "bet_amount": round(session["bet_amount"], 2),
+        "status": session["status"],
+        "dealer": {
+            "cards": dealer_cards,
+            "total": "?" if dealer_hidden else dealer_total,
+        },
+        "hands": hands,
+        "active_hand_index": active_index,
+        "message": session.get("message", ""),
+        "payout_total": round(session.get("payout_total", 0.0), 2),
+        "net_result": round(session.get("net_result", 0.0), 2),
+        "summary": session.get("summary", []),
+    }
+
+
+def _freebet_create_session(usuario_email, user_id, aposta):
+    session = {
+        "user_email": usuario_email,
+        "user_id": user_id,
+        "bet_amount": round(aposta, 2),
+        "deck": _freebet_build_deck(),
+        "dealer_cards": [],
+        "hands": [],
+        "status": "player_turn",
+        "dealer_revealed": False,
+        "active_hand_index": 0,
+        "payout_total": 0.0,
+        "net_result": -round(aposta, 2),
+        "message": "Sua vez. Bata, pare, duplique gratis ou divida gratis.",
+        "summary": [],
+    }
+
+    player_hand = {
+        "cards": [_freebet_draw_card(session), _freebet_draw_card(session)],
+        "bet_units": 1,
+        "bet_amount": round(aposta, 2),
+        "finished": False,
+        "split_hand": False,
+        "doubled": False,
+        "result": None,
+        "result_text": "",
+        "payout": 0.0,
+    }
+    session["hands"].append(player_hand)
+    session["dealer_cards"] = [_freebet_draw_card(session), _freebet_draw_card(session)]
+    _freebet_refresh_hand(player_hand, session)
+
+    dealer_total, _ = _freebet_hand_total(session["dealer_cards"])
+    dealer_blackjack = len(session["dealer_cards"]) == 2 and dealer_total == 21
+    if player_hand["blackjack"] or dealer_blackjack:
+        _freebet_finish_session(session)
+    else:
+        session["active_hand_index"] = 0
+
+    return session
+
+
+@router.get("/api/freebet/state")
+async def get_freebet_state(usuario_email: str):
+    session = FREEBET_SESSIONS.get(usuario_email)
+    if not session:
+        return {"success": True, "state": None, "saldo": _freebet_get_balance(usuario_email)}
+    return {"success": True, "state": _freebet_serialize_session(session), "saldo": _freebet_get_balance(usuario_email)}
+
+
+@router.post("/api/freebet/start")
+async def start_freebet(request: FreeBetStartRequest):
+    usuario_email = request.usuario_email.lower().strip()
+    aposta = round(float(request.aposta), 2)
+    if aposta <= 0:
+        return {"success": False, "detail": "Aposta invalida."}
+
+    existing = FREEBET_SESSIONS.get(usuario_email)
+    if existing and existing.get("status") != "finished":
+        return {
+            "success": False,
+            "detail": "Voce ja tem uma rodada de Free Bet 21 em andamento.",
+            "state": _freebet_serialize_session(existing),
+            "saldo": _freebet_get_balance(usuario_email),
+        }
+
+    conn = get_db()
+    cursor = conn.cursor()
+    user = _freebet_ensure_user(cursor, usuario_email)
+    saldo_atual = float(user["saldo"])
+    if saldo_atual < aposta:
+        conn.close()
+        return {"success": False, "detail": f"Saldo insuficiente. Voce tem R$ {saldo_atual:.2f}"}
+
+    cursor.execute("UPDATE usuarios SET saldo = saldo - ? WHERE id = ?", (aposta, user["id"]))
+    cursor.execute(
+        "INSERT INTO transacoes (usuario_id, valor, tipo) VALUES (?, ?, ?)",
+        (user["id"], aposta, "Aposta"),
+    )
+    conn.commit()
+    conn.close()
+
+    session = _freebet_create_session(usuario_email, user["id"], aposta)
+    FREEBET_SESSIONS[usuario_email] = session
+    return {"success": True, "state": _freebet_serialize_session(session), "saldo": _freebet_get_balance(usuario_email)}
+
+
+@router.post("/api/freebet/action")
+async def freebet_action(request: FreeBetActionRequest):
+    usuario_email = request.usuario_email.lower().strip()
+    session = FREEBET_SESSIONS.get(usuario_email)
+    if not session:
+        return {"success": False, "detail": "Nenhuma rodada ativa de Free Bet 21.", "saldo": _freebet_get_balance(usuario_email)}
+    if session.get("status") != "player_turn":
+        return {"success": False, "detail": "Esta rodada ja foi encerrada.", "state": _freebet_serialize_session(session), "saldo": _freebet_get_balance(usuario_email)}
+
+    active_index = _freebet_current_hand_index(session)
+    if active_index is None:
+        _freebet_finish_session(session)
+        return {"success": True, "state": _freebet_serialize_session(session), "saldo": _freebet_get_balance(usuario_email)}
+
+    hand_index = active_index if request.hand_index is None else request.hand_index
+    if hand_index != active_index or hand_index < 0 or hand_index >= len(session["hands"]):
+        return {"success": False, "detail": "Essa nao e a mao ativa agora.", "state": _freebet_serialize_session(session), "saldo": _freebet_get_balance(usuario_email)}
+
+    hand = session["hands"][hand_index]
+    action = request.action.lower().strip()
+
+    if action == "hit":
+        hand["cards"].append(_freebet_draw_card(session))
+        _freebet_refresh_hand(hand, session)
+        session["message"] = f"Mao {hand_index + 1} recebeu uma carta."
+        if hand["busted"] or hand["total"] >= 21:
+            hand["finished"] = True
+
+    elif action == "stand":
+        hand["finished"] = True
+        session["message"] = f"Mao {hand_index + 1} parada em {hand['total']}."
+
+    elif action == "double":
+        if not _freebet_can_double(hand):
+            return {"success": False, "detail": "Duplo gratis indisponivel nessa mao.", "state": _freebet_serialize_session(session), "saldo": _freebet_get_balance(usuario_email)}
+        hand["bet_units"] = 2
+        hand["doubled"] = True
+        hand["cards"].append(_freebet_draw_card(session))
+        _freebet_refresh_hand(hand, session)
+        hand["finished"] = True
+        session["message"] = f"Mao {hand_index + 1} fez duplo gratis."
+
+    elif action == "split":
+        if not _freebet_can_split(hand, session):
+            return {"success": False, "detail": "Divisao gratis indisponivel nessa mao.", "state": _freebet_serialize_session(session), "saldo": _freebet_get_balance(usuario_email)}
+
+        primeira_carta, segunda_carta = hand["cards"]
+        primeira_mao = {
+            "cards": [primeira_carta, _freebet_draw_card(session)],
+            "bet_units": 1,
+            "bet_amount": hand["bet_amount"],
+            "finished": False,
+            "split_hand": True,
+            "doubled": False,
+            "result": None,
+            "result_text": "",
+            "payout": 0.0,
+        }
+        segunda_mao = {
+            "cards": [segunda_carta, _freebet_draw_card(session)],
+            "bet_units": 1,
+            "bet_amount": hand["bet_amount"],
+            "finished": False,
+            "split_hand": True,
+            "doubled": False,
+            "result": None,
+            "result_text": "",
+            "payout": 0.0,
+        }
+        session["hands"][hand_index] = primeira_mao
+        session["hands"].insert(hand_index + 1, segunda_mao)
+        _freebet_refresh_hand(primeira_mao, session)
+        _freebet_refresh_hand(segunda_mao, session)
+        session["message"] = "Divisao gratis feita. Agora jogue a primeira mao."
+
+    else:
+        return {"success": False, "detail": "Acao invalida.", "state": _freebet_serialize_session(session), "saldo": _freebet_get_balance(usuario_email)}
+
+    next_index = _freebet_current_hand_index(session)
+    if next_index is None:
+        _freebet_finish_session(session)
+    else:
+        session["active_hand_index"] = next_index
+        if session["status"] == "player_turn" and session["hands"][next_index].get("finished"):
+            _freebet_finish_session(session)
+
+    return {"success": True, "state": _freebet_serialize_session(session), "saldo": _freebet_get_balance(usuario_email)}
