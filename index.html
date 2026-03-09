@@ -363,6 +363,170 @@
             margin-bottom: 8px;
         }
 
+        .aposta-shell {
+            position: relative;
+            padding: 72px 28px 34px !important;
+            overflow: hidden;
+            background:
+                radial-gradient(circle at top left, rgba(72, 187, 120, 0.18), transparent 28%),
+                radial-gradient(circle at top right, rgba(251, 211, 141, 0.14), transparent 24%),
+                linear-gradient(180deg, rgba(10, 28, 19, 0.92), rgba(6, 17, 12, 0.94));
+            border: 1px solid rgba(111, 207, 151, 0.18);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+        }
+
+        .aposta-shell::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 28px 28px;
+            opacity: 0.16;
+            pointer-events: none;
+        }
+
+        .aposta-header {
+            position: relative;
+            z-index: 1;
+            max-width: 880px;
+            margin: 0 auto 26px auto;
+            text-align: center;
+        }
+
+        .aposta-kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 14px;
+            padding: 8px 14px;
+            border-radius: 999px;
+            background: rgba(251, 211, 141, 0.12);
+            border: 1px solid rgba(251, 211, 141, 0.28);
+            color: #fef3c7;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .aposta-titulo {
+            margin: 0;
+            color: #fff9db;
+            font-family: 'Rowdies', cursive;
+            font-size: clamp(30px, 5vw, 48px);
+            line-height: 1.05;
+            text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.42);
+        }
+
+        .aposta-subtitulo {
+            margin: 14px auto 0 auto;
+            max-width: 700px;
+            color: #ccebd8;
+            font-size: 18px;
+            line-height: 1.5;
+            font-weight: 700;
+        }
+
+        .aposta-topbar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            margin-top: 18px;
+        }
+
+        .aposta-info-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 18px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #e6fffa;
+            font-weight: 800;
+        }
+
+        .aposta-info-pill strong {
+            color: #fbd38d;
+        }
+
+        .aposta-grid {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(180px, 1fr));
+            gap: 18px;
+            max-width: 920px;
+            margin: 0 auto;
+        }
+
+        .aposta-card {
+            position: relative;
+            overflow: hidden;
+            border: none;
+            border-radius: 26px;
+            padding: 24px 20px 22px !important;
+            min-height: 164px;
+            text-align: left;
+            transition: transform 0.22s ease, box-shadow 0.22s ease, filter 0.22s ease;
+            box-shadow: 0 18px 34px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+        }
+
+        .aposta-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 28px 42px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+            filter: saturate(1.08);
+        }
+
+        .aposta-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0) 42%);
+            pointer-events: none;
+        }
+
+        .aposta-card-valor {
+            position: relative;
+            display: block;
+            margin-bottom: 12px;
+            color: #fff9db;
+            font-family: 'Rowdies', cursive;
+            font-size: 38px;
+            line-height: 1;
+            text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.32);
+        }
+
+        .aposta-card-tag {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 14px;
+            padding: 7px 12px;
+            border-radius: 999px;
+            background: rgba(0, 0, 0, 0.18);
+            color: rgba(255, 255, 255, 0.92);
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+
+        .aposta-card-texto {
+            position: relative;
+            margin: 0;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 15px;
+            line-height: 1.45;
+            font-weight: 700;
+            text-transform: none;
+        }
+
         .regras-modal {
             position: fixed;
             inset: 0;
@@ -554,6 +718,23 @@
         @media (max-width: 760px) {
             .titulo-aposta-row {
                 gap: 8px;
+            }
+
+            .aposta-shell {
+                padding: 70px 16px 22px !important;
+            }
+
+            .aposta-topbar {
+                flex-direction: column;
+            }
+
+            .aposta-grid {
+                grid-template-columns: 1fr;
+                max-width: 430px;
+            }
+
+            .aposta-card {
+                min-height: 140px;
             }
 
             .regras-grid {
@@ -1525,27 +1706,45 @@
         </div>
 
 
-        <div class="card-menu" v-if="estado === 'ESCOLHER_APOSTA'"
-            style="position: relative; padding-top: 55px !important;">
+        <div class="card-menu aposta-shell" v-if="estado === 'ESCOLHER_APOSTA'">
             <button class="btn-icon"
                 style="position: absolute; top: 15px; left: 15px; padding: 8px 15px; font-size: 14px; margin: 0; width: auto; background: #4a5568; color: white; border-radius: 6px; border: none; cursor: pointer;"
                 @click="estado = 'MENU'">⬅️ Voltar</button>
-            <div class="titulo-aposta-row">
-                <h2 style="margin: 0;">🃏 UNO Royale - Selecione a Aposta!</h2>
-                <div class="regras-chip" @click="mostrandoRegras = true">
-                    <span>!</span>
-                    <span>Ver Regras do Jogo</span>
+            <div class="aposta-header">
+                <div class="aposta-kicker">
+                    <span>UNO Royale</span>
+                    <span>mesa de apostas</span>
+                </div>
+                <div class="titulo-aposta-row">
+                    <h2 class="aposta-titulo">🃏 UNO Royale - Selecione a Aposta!</h2>
+                    <div class="regras-chip" @click="mostrandoRegras = true">
+                        <span>!</span>
+                        <span>Ver Regras</span>
+                    </div>
+                </div>
+                <p class="aposta-subtitulo">Escolha o valor da entrada para entrar em uma mesa valendo premio real dentro do jogo. Quanto maior a aposta, maior o impacto da rodada.</p>
+                <div class="aposta-topbar">
+                    <div class="aposta-info-pill">
+                        <span>Premio final</span>
+                        <strong>3.8x da aposta</strong>
+                    </div>
+                    <div class="aposta-info-pill">
+                        <span>Formato</span>
+                        <strong>4 jogadores por partida</strong>
+                    </div>
                 </div>
             </div>
-            <p style="color: #a0aec0; font-size: 18px;">Vencedor ganha 3.8x o valor apostado!</p>
-            <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 25px;">
 
-                <button v-for="(valor, index) in opcoesAposta" :key="valor" class="aposta-btn-safe"
-                    :style="{ background: ['linear-gradient(135deg, #f56565, #c53030)', 'linear-gradient(135deg, #4299e1, #2b6cb0)', 'linear-gradient(135deg, #48bb78, #2f855a)'][index % 3] }"
+            <div class="aposta-grid">
+                <button v-for="(valor, index) in opcoesAposta" :key="valor" class="aposta-btn-safe aposta-card"
+                    :style="{ background: ['linear-gradient(145deg, #ef4444, #b91c1c)', 'linear-gradient(145deg, #3b82f6, #1d4ed8)', 'linear-gradient(145deg, #22c55e, #15803d)'][index % 3] }"
                     @click="pagarEEntrarNaFila(valor)">
-                    R$ {{ valor.toFixed(2).replace('.', ',') }}
+                    <span class="aposta-card-tag">{{ ['entrada rapida', 'mesa forte', 'mesa high roller'][index % 3] }}</span>
+                    <span class="aposta-card-valor">R$ {{ valor.toFixed(2).replace('.', ',') }}</span>
+                    <p class="aposta-card-texto">
+                        {{ ['Partida agil para entrar e girar saldo com velocidade.', 'Mesa intermediaria para quem quer premio mais pesado sem ir ao extremo.', 'Aposta premium para rodada grande e premio alto.'][index % 3] }}
+                    </p>
                 </button>
-
             </div>
         </div>
 
