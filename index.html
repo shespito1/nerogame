@@ -1411,6 +1411,7 @@
                 avatarSeed: localStorage.getItem('avatar_seed') || Math.random().toString(36).substring(7),
                 historicoApostas: JSON.parse(localStorage.getItem('historico_apostas')) || [],
                 socket: null,
+                socketUrl: "",
                 partidaId: null,
                 cartaMesa: null,
                 mao: [],
@@ -1925,10 +1926,21 @@
                     }, 2200);
                 },
                 conectarSocket(callback) {
-                    if (!this.socket) {
+                    const serverUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
+                    const precisaRecriarSocket = !this.socket || this.socketUrl !== serverUrl || !this.socket.connected;
+
+                    if (precisaRecriarSocket) {
+                        if (this.socket) {
+                            try { this.socket.disconnect(); } catch (e) {}
+                        }
                         this.addLog("Conectando ao servidor...");
-                        let serverUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
-                        this.socket = io(serverUrl);
+                        this.socketUrl = serverUrl;
+                        this.socket = io(serverUrl, {
+                            transports: ["websocket", "polling"],
+                            reconnection: true,
+                            reconnectionAttempts: 10,
+                            timeout: 10000
+                        });
                         this.socket.on("connect", () => { this.addLog("✅ Conectado com sucesso!"); if (callback) callback(); });
                         this.socket.on("partidaIniciada", (data) => {
                             this.addLog("🔥 A PARTIDA COMEÇOU!"); this.estado = "JOGO"; this.partidaId = data.partidaId;
@@ -1964,6 +1976,7 @@
 
                             this.partidaId = null;
                         });
+                        this.socket.on("disconnect", () => { this.addLog("⚠️ Conexão com servidor foi perdida."); });
                         this.socket.on("connect_error", (err) => { this.addLog("❌ Erro de conexão com servidor!"); });
                     } else { if (callback) callback(); }
                 },
