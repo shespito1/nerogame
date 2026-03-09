@@ -343,7 +343,6 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            margin-top: 12px;
             padding: 10px 16px;
             border-radius: 999px;
             background: linear-gradient(135deg, rgba(251, 211, 141, 0.22), rgba(246, 173, 85, 0.28));
@@ -353,6 +352,15 @@
             cursor: pointer;
             text-transform: uppercase;
             letter-spacing: 0.8px;
+        }
+
+        .titulo-aposta-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
         }
 
         .regras-modal {
@@ -544,6 +552,10 @@
         }
 
         @media (max-width: 760px) {
+            .titulo-aposta-row {
+                gap: 8px;
+            }
+
             .regras-grid {
                 grid-template-columns: 1fr;
             }
@@ -1518,10 +1530,12 @@
             <button class="btn-icon"
                 style="position: absolute; top: 15px; left: 15px; padding: 8px 15px; font-size: 14px; margin: 0; width: auto; background: #4a5568; color: white; border-radius: 6px; border: none; cursor: pointer;"
                 @click="estado = 'MENU'">⬅️ Voltar</button>
-            <h2 style="margin-top: 0;">🃏 UNO Royale - Selecione a Aposta!</h2>
-            <div class="regras-chip" @click="mostrandoRegras = true">
-                <span>!</span>
-                <span>Ver Regras do Jogo</span>
+            <div class="titulo-aposta-row">
+                <h2 style="margin: 0;">🃏 UNO Royale - Selecione a Aposta!</h2>
+                <div class="regras-chip" @click="mostrandoRegras = true">
+                    <span>!</span>
+                    <span>Ver Regras do Jogo</span>
+                </div>
             </div>
             <p style="color: #a0aec0; font-size: 18px;">Vencedor ganha 3.8x o valor apostado!</p>
             <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 25px;">
@@ -1541,7 +1555,7 @@
                     <div>
                         <span class="regras-kicker">Manual Oficial da Mesa</span>
                         <h2 class="regras-titulo">Regras do UNO Royale</h2>
-                        <p class="regras-subtitulo">Aqui fica tudo o que manda na partida: como apostar, como ganhar, como se defender de penalidade, como os bots entram e como o pagamento funciona.</p>
+                        <p class="regras-subtitulo">Aqui fica tudo o que manda na partida: como apostar, como ganhar, como se defender de penalidade, como usar os bots dos usuarios e como o pagamento funciona.</p>
                     </div>
                     <button class="regras-fechar" @click="mostrandoRegras = false">Fechar</button>
                 </div>
@@ -1557,7 +1571,7 @@
                     </div>
                     <div class="regras-stat">
                         <span class="regras-stat-numero">10s</span>
-                        <span class="regras-stat-texto">Fila antes de completar com bots</span>
+                        <span class="regras-stat-texto">Tempo medio de espera</span>
                     </div>
                 </div>
 
@@ -1567,8 +1581,8 @@
                         <div class="regras-lista">
                             <div class="regras-item"><strong>Aposta:</strong> voce escolhe um valor e entra na fila dessa mesa.</div>
                             <div class="regras-item"><strong>Mesa cheia:</strong> a partida comeca quando houver 4 participantes.</div>
-                            <div class="regras-item"><strong>Fila incompleta:</strong> se faltar gente depois de 10 segundos, o sistema completa a mesa com bots.</div>
                             <div class="regras-item"><strong>Jogador em partida:</strong> quem ja estiver em jogo nao pode entrar em outra fila ao mesmo tempo.</div>
+                            <div class="regras-item"><strong>Objetivo:</strong> descarte todas as suas cartas antes dos outros tres jogadores.</div>
                         </div>
                     </div>
 
@@ -1627,10 +1641,10 @@
                     <div class="regras-card">
                         <h3>Como os bots funcionam</h3>
                         <div class="regras-lista">
-                            <div class="regras-item"><strong>Bots da mesa:</strong> entram automaticamente para completar fila vazia ou lenta.</div>
-                            <div class="regras-item"><strong>Bots do usuario:</strong> podem jogar por voce com saldo proprio, stop loss, stop win e valor de aposta.</div>
+                            <div class="regras-item"><strong>Bots do usuario:</strong> sao bots criados pelos proprios jogadores para apostar e jogar automaticamente.</div>
+                            <div class="regras-item"><strong>Configuracao:</strong> cada bot pode ter saldo proprio, stop loss, stop win e valor de aposta.</div>
                             <div class="regras-item"><strong>Supervisao:</strong> voce pode assistir e reassumir o controle de uma partida do seu bot.</div>
-                            <div class="regras-item"><strong>Fila protegida:</strong> o sistema evita colocar dois bots do mesmo dono na mesma mesa quando possivel.</div>
+                            <div class="regras-item"><strong>Controle:</strong> o bot pode ser ativado, pausado, editado e removido no painel de perfil.</div>
                         </div>
                     </div>
 

@@ -200,6 +200,7 @@ def validar_jogada(carta_jogador, carta_mesa, penalidade_acumulada=0):
         return False
 
     if carta_jogador['cor'] == 'Curinga': return True
+    if carta_jogador['valor'] == '+2': return True
     if carta_jogador['cor'] == carta_mesa['cor']: return True
     if str(carta_jogador['valor']) == str(carta_mesa['valor']): return True
     return False
