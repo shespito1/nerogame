@@ -984,7 +984,7 @@
                         <!-- Avatar Atual com Botão de Editar -->
                         <div style="position: relative; cursor: pointer;"
                             @click="mostrandoCriadorAvatar = !mostrandoCriadorAvatar">
-                            <img :src="`https://api.dicebear.com/7.x/${(avatarSeed && avatarSeed.includes('/')) ? avatarSeed : 'adventurer/svg?seed=' + (avatarSeed || usuarioId || 'default')}&backgroundColor=b6e3f4`"
+                            <img :src="`https://api.dicebear.com/7.x/${(avatarSeed && typeof avatarSeed === 'string' && avatarSeed.includes('/')) ? avatarSeed : 'adventurer/svg?seed=' + (avatarSeed || usuarioId || 'default')}&backgroundColor=b6e3f4`"
                                 style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid #fbd38d; background: #2d3748; box-shadow: 0 4px 10px rgba(0,0,0,0.5);" />
                             <div
                                 style="position: absolute; bottom: 5px; right: 5px; background: #fbd38d; color: #1a202c; width: 25px; height: 25px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; border: 2px solid #1a202c;">
@@ -1384,7 +1384,7 @@
 
     <script>
         // CONFIGURAÇÃO DO BACKEND (Será atualizado automaticamente pelo script de túnel)
-        const BACKEND_URL = "https://676195d05e47d130-138-97-145-148.serveousercontent.com"; // URL do Servidor (Serveo)
+        const BACKEND_URL = "https://some-bags-shave.loca.lt"; // URL do Servidor (Serveo)
         const params = new URLSearchParams(window.location.search);
         const userIdUrl = params.get('user') || localStorage.getItem('usuario_id') || '';
         new Vue({
