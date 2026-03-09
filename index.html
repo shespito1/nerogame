@@ -800,6 +800,12 @@
             box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
         }
 
+        .efeito-defesa .efeito-badge {
+            background: linear-gradient(135deg, rgba(72, 187, 120, 0.95), rgba(34, 197, 94, 0.95));
+            border: 2px solid #c6f6d5;
+            box-shadow: 0 0 18px rgba(72, 187, 120, 0.55);
+        }
+
         @keyframes emojiSpin {
             from {
                 transform: rotate(0deg);
@@ -1996,6 +2002,17 @@
                         this.$delete(this.efeitosJogadores, alvoId);
                     }, 2200);
                 },
+                dispararEfeitoDefesa(jogador) {
+                    if (!jogador) return;
+                    this.$set(this.efeitosJogadores, jogador, {
+                        classe: 'efeito-defesa',
+                        emoji: '🛡️',
+                        texto: 'SE DEFENDEU!'
+                    });
+                    setTimeout(() => {
+                        this.$delete(this.efeitosJogadores, jogador);
+                    }, 2200);
+                },
                 conectarSocket(callback) {
                     const serverUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
                     const precisaRecriarSocket = !this.socket || this.socketUrl !== serverUrl || !this.socket.connected;
@@ -2020,9 +2037,13 @@
                         });
                         this.socket.on("atualizarMao", (data) => { this.mao = data.mao; });
                         this.socket.on("jogadaAceita", (data) => {
+                            const penalidadeAnterior = this.penalidadeAcumulada || 0;
                             this.esperandoResposta = false; this.addLog(`⭐ ${data.jogador} jogou: ${data.carta.valor}`);
                             this.cartaMesa = data.carta; this.turnoAtual = data.proximoTurno; this.oponentes = data.oponentes || this.oponentes;
                             this.penalidadeAcumulada = data.penalidade_acumulada || 0;
+                            if (penalidadeAnterior > 0 && (data.carta.valor === '+2' || data.carta.valor === '+4')) {
+                                this.dispararEfeitoDefesa(data.jogador);
+                            }
                             // Disparar animação de carta especial
                             this.dispararEfeitoEspecial(data.carta, data.jogador);
                         });
