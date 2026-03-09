@@ -269,6 +269,76 @@
             overflow-x: hidden !important;
         }
 
+        .modal-cor {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.82);
+            backdrop-filter: blur(8px);
+            z-index: 20000;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .modal-cor-content {
+            width: min(420px, 100%);
+            background: linear-gradient(180deg, rgba(24, 34, 29, 0.98) 0%, rgba(10, 18, 14, 0.98) 100%);
+            border: 2px solid rgba(251, 211, 141, 0.7);
+            border-radius: 24px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.65);
+            padding: 28px 22px;
+            text-align: center;
+        }
+
+        .modal-cor-titulo {
+            margin: 0 0 8px 0;
+            color: #fbd38d;
+            font-family: 'Rowdies', cursive;
+            font-size: 30px;
+            text-shadow: 2px 2px 0 #000;
+        }
+
+        .modal-cor-texto {
+            margin: 0 0 20px 0;
+            color: #e2e8f0;
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .modal-cor-opcoes {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(110px, 1fr));
+            gap: 14px;
+        }
+
+        .modal-cor .cor-btn {
+            width: 100% !important;
+            height: 72px !important;
+            border-radius: 18px;
+            border: 3px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.35);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .modal-cor .cor-btn span {
+            position: relative;
+            z-index: 1;
+            color: white;
+            font-family: 'Rowdies', cursive;
+            font-size: 20px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+        }
+
+        .modal-cor .cor-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0));
+        }
+
         body {
             font-family: 'Baloo 2', display, sans-serif;
             background: radial-gradient(circle at center, #1b533a 0%, #0d2e1c 100%);
@@ -1348,12 +1418,13 @@
 
         <div v-if="escolhendoCor" class="modal-cor">
             <div class="modal-cor-content">
-                <h3>🎨</h3>
-                <div style="display: flex; gap: 15px; justify-content: center;">
-                    <button class="cor-btn Vermelho" @click="enviarCor('Vermelho')"></button>
-                    <button class="cor-btn Azul" @click="enviarCor('Azul')"></button>
-                    <button class="cor-btn Verde" @click="enviarCor('Verde')"></button>
-                    <button class="cor-btn Amarelo" @click="enviarCor('Amarelo')"></button>
+                <h3 class="modal-cor-titulo">Escolha a Cor</h3>
+                <p class="modal-cor-texto">Selecione a cor da sua carta curinga para continuar a jogada.</p>
+                <div class="modal-cor-opcoes">
+                    <button class="cor-btn Vermelho" @click="enviarCor('Vermelho')"><span>Vermelho</span></button>
+                    <button class="cor-btn Azul" @click="enviarCor('Azul')"><span>Azul</span></button>
+                    <button class="cor-btn Verde" @click="enviarCor('Verde')"><span>Verde</span></button>
+                    <button class="cor-btn Amarelo" @click="enviarCor('Amarelo')"><span>Amarelo</span></button>
                 </div>
             </div>
         </div>
