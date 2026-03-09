@@ -339,6 +339,228 @@
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0));
         }
 
+        .regras-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 12px;
+            padding: 10px 16px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, rgba(251, 211, 141, 0.22), rgba(246, 173, 85, 0.28));
+            border: 1px solid rgba(251, 211, 141, 0.6);
+            color: #fef3c7;
+            font-weight: 800;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .regras-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 25000;
+            background: rgba(4, 8, 6, 0.88);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+            box-sizing: border-box;
+        }
+
+        .regras-panel {
+            width: min(960px, 100%);
+            max-height: 92vh;
+            overflow-y: auto;
+            border-radius: 26px;
+            background:
+                radial-gradient(circle at top right, rgba(251, 211, 141, 0.16), transparent 25%),
+                radial-gradient(circle at top left, rgba(66, 153, 225, 0.14), transparent 30%),
+                linear-gradient(180deg, rgba(17, 24, 20, 0.98), rgba(7, 12, 10, 0.98));
+            border: 2px solid rgba(251, 211, 141, 0.45);
+            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.65);
+            padding: 28px;
+        }
+
+        .regras-topo {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 18px;
+            margin-bottom: 20px;
+        }
+
+        .regras-kicker {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: rgba(72, 187, 120, 0.18);
+            border: 1px solid rgba(72, 187, 120, 0.45);
+            color: #9ae6b4;
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .regras-titulo {
+            margin: 10px 0 8px 0;
+            color: #fbd38d;
+            font-family: 'Rowdies', cursive;
+            font-size: clamp(30px, 5vw, 46px);
+            line-height: 1;
+            text-shadow: 3px 3px 0 #000;
+        }
+
+        .regras-subtitulo {
+            margin: 0;
+            color: #d1fae5;
+            font-size: 17px;
+            font-weight: 700;
+            max-width: 640px;
+        }
+
+        .regras-fechar {
+            width: auto !important;
+            margin: 0 !important;
+            padding: 10px 14px !important;
+            background: #e53e3e;
+            color: white;
+            font-size: 15px !important;
+        }
+
+        .regras-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .regras-card {
+            background: rgba(15, 23, 19, 0.86);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 18px;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .regras-card.full {
+            grid-column: 1 / -1;
+        }
+
+        .regras-card h3 {
+            margin: 0 0 12px 0;
+            color: #fbd38d;
+            font-family: 'Rowdies', cursive;
+            font-size: 24px;
+        }
+
+        .regras-card p {
+            margin: 0 0 10px 0;
+            color: #e2e8f0;
+            line-height: 1.55;
+            font-weight: 600;
+        }
+
+        .regras-lista {
+            display: grid;
+            gap: 10px;
+        }
+
+        .regras-item {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 12px 14px;
+        }
+
+        .regras-item strong {
+            color: #fef3c7;
+        }
+
+        .regras-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .regras-mini-carta {
+            width: 88px;
+            min-height: 112px;
+            border-radius: 16px;
+            border: 3px solid white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Rowdies', cursive;
+            font-size: 24px;
+            color: white;
+            box-shadow: 0 10px 22px rgba(0, 0, 0, 0.35);
+            position: relative;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+        }
+
+        .regras-mini-carta-label {
+            position: absolute;
+            bottom: 8px;
+            left: 0;
+            right: 0;
+            font-size: 11px;
+            text-align: center;
+            font-family: 'Baloo 2', sans-serif;
+            font-weight: 800;
+            letter-spacing: 0.6px;
+        }
+
+        .regras-highlight {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .regras-stat {
+            border-radius: 16px;
+            padding: 14px;
+            text-align: center;
+            background: linear-gradient(180deg, rgba(251, 211, 141, 0.18), rgba(251, 211, 141, 0.05));
+            border: 1px solid rgba(251, 211, 141, 0.26);
+        }
+
+        .regras-stat-numero {
+            display: block;
+            font-family: 'Rowdies', cursive;
+            color: #fbd38d;
+            font-size: 28px;
+            margin-bottom: 4px;
+        }
+
+        .regras-stat-texto {
+            color: #fef3c7;
+            font-size: 13px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+
+        @media (max-width: 760px) {
+            .regras-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .regras-highlight {
+                grid-template-columns: 1fr;
+            }
+
+            .regras-topo {
+                flex-direction: column;
+            }
+
+            .regras-panel {
+                padding: 20px 16px;
+            }
+        }
+
         body {
             font-family: 'Baloo 2', display, sans-serif;
             background: radial-gradient(circle at center, #1b533a 0%, #0d2e1c 100%);
@@ -1296,7 +1518,11 @@
             <button class="btn-icon"
                 style="position: absolute; top: 15px; left: 15px; padding: 8px 15px; font-size: 14px; margin: 0; width: auto; background: #4a5568; color: white; border-radius: 6px; border: none; cursor: pointer;"
                 @click="estado = 'MENU'">⬅️ Voltar</button>
-            <h2 style="margin-top: 0;">🃏 UNO Royale - Selecione a Aposta</h2>
+            <h2 style="margin-top: 0;">🃏 UNO Royale - Selecione a Aposta!</h2>
+            <div class="regras-chip" @click="mostrandoRegras = true">
+                <span>!</span>
+                <span>Ver Regras do Jogo</span>
+            </div>
             <p style="color: #a0aec0; font-size: 18px;">Vencedor ganha 3.8x o valor apostado!</p>
             <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 25px;">
 
@@ -1306,6 +1532,120 @@
                     R$ {{ valor.toFixed(2).replace('.', ',') }}
                 </button>
 
+            </div>
+        </div>
+
+        <div v-if="mostrandoRegras" class="regras-modal" @click.self="mostrandoRegras = false">
+            <div class="regras-panel">
+                <div class="regras-topo">
+                    <div>
+                        <span class="regras-kicker">Manual Oficial da Mesa</span>
+                        <h2 class="regras-titulo">Regras do UNO Royale</h2>
+                        <p class="regras-subtitulo">Aqui fica tudo o que manda na partida: como apostar, como ganhar, como se defender de penalidade, como os bots entram e como o pagamento funciona.</p>
+                    </div>
+                    <button class="regras-fechar" @click="mostrandoRegras = false">Fechar</button>
+                </div>
+
+                <div class="regras-highlight">
+                    <div class="regras-stat">
+                        <span class="regras-stat-numero">4</span>
+                        <span class="regras-stat-texto">Jogadores por mesa</span>
+                    </div>
+                    <div class="regras-stat">
+                        <span class="regras-stat-numero">3.8x</span>
+                        <span class="regras-stat-texto">Pagamento ao vencedor</span>
+                    </div>
+                    <div class="regras-stat">
+                        <span class="regras-stat-numero">10s</span>
+                        <span class="regras-stat-texto">Fila antes de completar com bots</span>
+                    </div>
+                </div>
+
+                <div class="regras-grid" style="margin-top: 18px;">
+                    <div class="regras-card">
+                        <h3>Como a partida comeca</h3>
+                        <div class="regras-lista">
+                            <div class="regras-item"><strong>Aposta:</strong> voce escolhe um valor e entra na fila dessa mesa.</div>
+                            <div class="regras-item"><strong>Mesa cheia:</strong> a partida comeca quando houver 4 participantes.</div>
+                            <div class="regras-item"><strong>Fila incompleta:</strong> se faltar gente depois de 10 segundos, o sistema completa a mesa com bots.</div>
+                            <div class="regras-item"><strong>Jogador em partida:</strong> quem ja estiver em jogo nao pode entrar em outra fila ao mesmo tempo.</div>
+                        </div>
+                    </div>
+
+                    <div class="regras-card">
+                        <h3>Pagamento e premio</h3>
+                        <div class="regras-lista">
+                            <div class="regras-item"><strong>Entrada:</strong> o valor da aposta sai do seu saldo ao entrar na fila.</div>
+                            <div class="regras-item"><strong>Vencedor:</strong> quem zerar a mao primeiro recebe <strong>3.8x</strong> o valor da aposta da mesa.</div>
+                            <div class="regras-item"><strong>Exemplo:</strong> apostando R$ 2,00, o premio final fica em R$ 7,60.</div>
+                            <div class="regras-item"><strong>Derrota:</strong> quem perde nao recebe devolucao da aposta.</div>
+                        </div>
+                    </div>
+
+                    <div class="regras-card full">
+                        <h3>Cartas especiais</h3>
+                        <p>Cada carta muda o ritmo da mesa. As principais sao estas:</p>
+                        <div class="regras-cards">
+                            <div class="regras-mini-carta Vermelho">+2<div class="regras-mini-carta-label">Compra 2</div></div>
+                            <div class="regras-mini-carta Azul">Ø<div class="regras-mini-carta-label">Pular</div></div>
+                            <div class="regras-mini-carta Verde">⇆<div class="regras-mini-carta-label">Inverter</div></div>
+                            <div class="regras-mini-carta Curinga">★<div class="regras-mini-carta-label">Escolhe cor</div></div>
+                            <div class="regras-mini-carta Curinga">+4<div class="regras-mini-carta-label">Escolhe cor + compra</div></div>
+                        </div>
+                    </div>
+
+                    <div class="regras-card">
+                        <h3>Regras da defesa</h3>
+                        <div class="regras-lista">
+                            <div class="regras-item"><strong>Se tomou +2:</strong> pode responder com <strong>+2</strong> ou <strong>+4</strong>, mesmo fora da cor.</div>
+                            <div class="regras-item"><strong>Se tomou +4:</strong> so pode responder com <strong>outro +4</strong>.</div>
+                            <div class="regras-item"><strong>Se defendeu:</strong> a penalidade acumula e passa para o proximo jogador.</div>
+                            <div class="regras-item"><strong>Se nao defendeu:</strong> voce compra todas as cartas acumuladas e perde a vez.</div>
+                        </div>
+                    </div>
+
+                    <div class="regras-card">
+                        <h3>Regras das cores</h3>
+                        <div class="regras-lista">
+                            <div class="regras-item"><strong>Carta comum:</strong> joga por cor igual ou numero/simbolo igual.</div>
+                            <div class="regras-item"><strong>Curinga:</strong> sempre pode ser jogada e abre uma tela para escolher a nova cor.</div>
+                            <div class="regras-item"><strong>+4:</strong> alem da penalidade, tambem deixa voce escolher a proxima cor da mesa.</div>
+                            <div class="regras-item"><strong>+2 livre:</strong> nesta mesa, o +2 foi liberado para ser jogado em qualquer cor.</div>
+                        </div>
+                    </div>
+
+                    <div class="regras-card">
+                        <h3>Tempo e autojogo</h3>
+                        <div class="regras-lista">
+                            <div class="regras-item"><strong>Tempo do turno:</strong> se o jogador demorar demais, o sistema age sozinho.</div>
+                            <div class="regras-item"><strong>Timeout com penalidade:</strong> se houver cartas acumuladas, o sistema compra tudo e passa a vez.</div>
+                            <div class="regras-item"><strong>Timeout sem penalidade:</strong> o sistema compra uma carta e tenta usar se ela servir.</div>
+                            <div class="regras-item"><strong>Auto jogar:</strong> existe uma opcao no canto da mesa para acelerar suas jogadas.</div>
+                        </div>
+                    </div>
+
+                    <div class="regras-card">
+                        <h3>Como os bots funcionam</h3>
+                        <div class="regras-lista">
+                            <div class="regras-item"><strong>Bots da mesa:</strong> entram automaticamente para completar fila vazia ou lenta.</div>
+                            <div class="regras-item"><strong>Bots do usuario:</strong> podem jogar por voce com saldo proprio, stop loss, stop win e valor de aposta.</div>
+                            <div class="regras-item"><strong>Supervisao:</strong> voce pode assistir e reassumir o controle de uma partida do seu bot.</div>
+                            <div class="regras-item"><strong>Fila protegida:</strong> o sistema evita colocar dois bots do mesmo dono na mesma mesa quando possivel.</div>
+                        </div>
+                    </div>
+
+                    <div class="regras-card full">
+                        <h3>Fluxo rapido da rodada</h3>
+                        <div class="regras-lista">
+                            <div class="regras-item"><strong>1.</strong> Escolha a aposta e entre na fila.</div>
+                            <div class="regras-item"><strong>2.</strong> Quando a mesa fechar com 4 jogadores, cada um recebe a mao inicial.</div>
+                            <div class="regras-item"><strong>3.</strong> Jogue por cor, numero ou carta especial valida.</div>
+                            <div class="regras-item"><strong>4.</strong> Use Curinga ou +4 para escolher a nova cor numa janela central.</div>
+                            <div class="regras-item"><strong>5.</strong> Se houver penalidade acumulada, defenda ou compre tudo.</div>
+                            <div class="regras-item"><strong>6.</strong> Quem zerar a mao primeiro vence e recebe o premio.</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -1508,6 +1848,7 @@
                 autoPlay: false,
                 penalidadeAcumulada: 0,
                 ultimosGanhadores: [],
+                mostrandoRegras: false,
                 mostrandoOpcoesAvatar: false,
                 mostrandoCriadorAvatar: false,
                 listaAvatares: [], // Lista de 50 sementes fixas para escolha
