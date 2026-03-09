@@ -180,8 +180,8 @@ def gerar_baralho():
     return baralho
 
 
-def escolher_melhor_carta_index(mao, carta_mesa):
-    validas = [i for i, c in enumerate(mao) if validar_jogada(c, carta_mesa)]
+def escolher_melhor_carta_index(mao, carta_mesa, penalidade=0):
+    validas = [i for i, c in enumerate(mao) if validar_jogada(c, carta_mesa, penalidade)]
     if not validas: return None
     normais = [i for i in validas if mao[i]["cor"] != "Curinga"]
     if normais:
@@ -190,11 +190,20 @@ def escolher_melhor_carta_index(mao, carta_mesa):
         return normais[0]
     return validas[0]
 
-def validar_jogada(carta_jogador, carta_mesa):
+def validar_jogada(carta_jogador, carta_mesa, penalidade_acumulada=0):
+    if penalidade_acumulada > 0:
+        # Se tem penalidade acumulada, só pode jogar outra carta de compra para repassar ou aumentar
+        if carta_mesa['valor'] == '+2':
+            return carta_jogador['valor'] in ['+2', '+4']
+        if carta_mesa['valor'] == '+4':
+            return carta_jogador['valor'] == '+4'
+        return False
+
     if carta_jogador['cor'] == 'Curinga': return True
     if carta_jogador['cor'] == carta_mesa['cor']: return True
     if str(carta_jogador['valor']) == str(carta_mesa['valor']): return True
     return False
+
 
 async def bot_play_task(partida_id, bot_jogador):
     import time
@@ -219,16 +228,17 @@ async def bot_play_task(partida_id, bot_jogador):
 
         carta_mesa = partida["cartaMesa"]
         mao = bot_jogador["mao"]
+        penalidade = partida.get("penalidade_acumulada", 0)
 
         if len(mao) == 0: break
         
-        print(f"[{partida_id}] Turno do Mebot {bot_jogador['usuarioId']} - mesa: {carta_mesa}")
+        print(f"[{partida_id}] Turno do Mebot {bot_jogador['usuarioId']} - mesa: {carta_mesa} (Penalidade: {penalidade})")
 
         try:
-            cartas_validas = [i for i, c in enumerate(mao) if validar_jogada(c, carta_mesa)]
+            cartas_validas = [i for i, c in enumerate(mao) if validar_jogada(c, carta_mesa, penalidade)]
             if cartas_validas:
                 # O bot agora sempre escolhe a melhor jogada estratégica (escolher_melhor_carta_index)
-                carta_index = escolher_melhor_carta_index(mao, carta_mesa)
+                carta_index = escolher_melhor_carta_index(mao, carta_mesa, penalidade)
                 
                 cor_bot = random.choice(['Vermelho', 'Azul', 'Verde', 'Amarelo']) if mao[carta_index]['cor'] == 'Curinga' else None
                 # Delay reduzido para 1.5 a 3 segundos para o jogo fluir melhor
@@ -238,13 +248,23 @@ async def bot_play_task(partida_id, bot_jogador):
             else:
                 if len(partida["baralho"]) == 0:
                     partida["baralho"] = gerar_baralho()
-                nova_carta = partida["baralho"].pop()
-                bot_jogador["mao"].append(nova_carta)
+                
+                # Se tem penalidade, o bot come tudo e passa
+                if penalidade > 0:
+                    for _ in range(penalidade):
+                        if len(partida["baralho"]) == 0: partida["baralho"] = gerar_baralho()
+                        bot_jogador["mao"].append(partida["baralho"].pop())
+                    partida["penalidade_acumulada"] = 0
+                    await sio.emit("mensagem_jogo", {"msg": f"😢 {bot_jogador['usuarioId']} engoliu {penalidade} cartas!"}, room=partida_id)
+                else:
+                    # Compra normal
+                    nova_carta = partida["baralho"].pop()
+                    bot_jogador["mao"].append(nova_carta)
 
-                if validar_jogada(nova_carta, carta_mesa):
+                if penalidade == 0 and validar_jogada(bot_jogador["mao"][-1], carta_mesa, 0):
                     carta_index = len(bot_jogador["mao"]) - 1
                     await sio.emit("mensagem_jogo", {"msg": f"{bot_jogador['usuarioId']} comprou uma carta e a usou!"}, room=partida_id)
-                    cor_bot_nova = random.choice(['Vermelho', 'Azul', 'Verde', 'Amarelo']) if nova_carta['cor'] == 'Curinga' else None
+                    cor_bot_nova = random.choice(['Vermelho', 'Azul', 'Verde', 'Amarelo']) if bot_jogador["mao"][-1]['cor'] == 'Curinga' else None
                     await asyncio.sleep(1.5)  # Pequeno delay antes de jogar a carta comprada
                     await processar_jogada(partida_id, bot_jogador["socketId"], carta_index, cor_bot_nova)
                 else:
@@ -314,23 +334,34 @@ async def forcar_jogada_bot(partida_id, jogador):
     await sio.emit("mensagem_jogo", {"msg": f"⏳ Tempo esgotado para {jogador['usuarioId']}! O sistema jogou..."}, room=partida_id)
     carta_mesa = partida["cartaMesa"]
     mao = jogador["mao"]
+    penalidade = partida.get("penalidade_acumulada", 0)
     if not mao: return
 
-    carta_index = escolher_melhor_carta_index(mao, carta_mesa)
+    carta_index = escolher_melhor_carta_index(mao, carta_mesa, penalidade)
     if carta_index is not None:
         cor = random.choice(['Vermelho', 'Azul', 'Verde', 'Amarelo']) if mao[carta_index]['cor'] == 'Curinga' else None
         await processar_jogada(partida_id, jogador["socketId"], carta_index, cor)
     else:
         if len(partida["baralho"]) == 0:
             partida["baralho"] = gerar_baralho()
-        nova_carta = partida["baralho"].pop()
-        jogador["mao"].append(nova_carta)
-        if not jogador.get("is_bot", False):
-            await sio.emit("suaNovaCarta", {"carta": nova_carta}, to=jogador["socketId"])
         
-        if validar_jogada(nova_carta, carta_mesa):
+        if penalidade > 0:
+            for _ in range(penalidade):
+                if len(partida["baralho"]) == 0: partida["baralho"] = gerar_baralho()
+                jogador["mao"].append(partida["baralho"].pop())
+            partida["penalidade_acumulada"] = 0
+            if not jogador.get("is_bot", False):
+                await sio.emit("atualizarMao", {"mao": jogador["mao"]}, to=jogador["socketId"])
+            await sio.emit("mensagem_jogo", {"msg": f"😢 {jogador['usuarioId']} engoliu {penalidade} cartas por timeout!"}, room=partida_id)
+        else:
+            nova_carta = partida["baralho"].pop()
+            jogador["mao"].append(nova_carta)
+            if not jogador.get("is_bot", False):
+                await sio.emit("suaNovaCarta", {"carta": nova_carta}, to=jogador["socketId"])
+        
+        if penalidade == 0 and validar_jogada(jogador["mao"][-1], carta_mesa, 0):
             c_idx = len(jogador["mao"]) - 1
-            c_nova = random.choice(['Vermelho', 'Azul', 'Verde', 'Amarelo']) if nova_carta['cor'] == 'Curinga' else None
+            c_nova = random.choice(['Vermelho', 'Azul', 'Verde', 'Amarelo']) if jogador["mao"][-1]['cor'] == 'Curinga' else None
             await processar_jogada(partida_id, jogador["socketId"], c_idx, c_nova)
         else:
             partida["turno_index"] = (partida["turno_index"] + partida["sentido_jogo"]) % len(partida["jogadores"])
@@ -342,7 +373,8 @@ async def forcar_jogada_bot(partida_id, jogador):
                 "jogador": jogador["usuarioId"],
                 "carta": partida["cartaMesa"],
                 "proximoTurno": proximo_jogador,
-                "oponentes": status_jogadores
+                "oponentes": status_jogadores,
+                "penalidade_acumulada": 0 # Após timeout e engolir, zera
             }, room=partida_id)
 
 async def user_timeout_task(partida_id):
@@ -435,7 +467,8 @@ async def iniciar_partida_pronta(aposta):
         "cartaMesa": carta_mesa,
         "turno_index": 0,
         "sentido_jogo": 1,
-        "ultimo_turno_horario": time.time()
+        "ultimo_turno_horario": time.time(),
+        "penalidade_acumulada": 0
     }
 
     status_jogadores = [{"id": j["usuarioId"], "cartas": len(j["mao"]), "avatar_seed": j.get("avatar_seed")} for j in jogadores_da_vez]
@@ -448,7 +481,8 @@ async def iniciar_partida_pronta(aposta):
                 "suaMao": jog["mao"],
                 "cartaMesa": carta_mesa,
                 "turnoAtual": jogadores_da_vez[0]["usuarioId"],
-                "oponentes": status_jogadores
+                "oponentes": status_jogadores,
+                "penalidade_acumulada": 0
             }, to=jog["socketId"])
         
         # Inicia a inteligência do bot (seja do sistema ou do usuário)
@@ -482,7 +516,8 @@ async def verificar_reconexao(sid, data):
                     "cartaMesa": partida["cartaMesa"],
                     "turnoAtual": partida["jogadores"][partida["turno_index"]]["usuarioId"],
                     "oponentes": status_jogadores,
-                    "reconexao": True
+                    "reconexao": True,
+                    "penalidade_acumulada": partida.get("penalidade_acumulada", 0)
                 }, to=sid)
                 
                 # Avisa aos outros
@@ -514,12 +549,19 @@ async def entrar_fila(sid, data):
     usuario_id = data.get("usuarioId")
     aposta = float(data.get("aposta", 1.0))
     
-    # Remove se já estiver em alguma fila (anti-duplicação)
+    # Remove se já estiver em alguma fila ou partida ativa (anti-duplicação)
     for v in filas_espera.values():
         for j in v[:]:
             if j["usuarioId"] == usuario_id:
                 v.remove(j)
                 print(f"🔄 {usuario_id} removido de outra fila antes de entrar na de R$ {aposta:.2f}")
+
+    # Impede entrar na fila se já estiver em partida
+    for pid, p in partidas.items():
+        if any(jog["usuarioId"] == usuario_id for jog in p["jogadores"]):
+            print(f"⚠️ {usuario_id} já está em uma partida ativa ({pid}). Impedindo nova fila.")
+            await sio.emit("mensagem_jogo", {"msg": "Você já tem uma partida em andamento!"}, to=sid)
+            return
 
     jogador = {
         "socketId": sid,
@@ -562,12 +604,13 @@ async def processar_jogada(partida_id, socket_id, carta_index, cor_escolhida=Non
         return {"valida": False, "erro": "Não é a sua vez de jogar!"}
     
     carta_mesa = partida["cartaMesa"]
+    penalidade = partida.get("penalidade_acumulada", 0)
     try:
         carta_jogador = jogador["mao"][carta_index]
     except IndexError:
         return {"valida": False, "erro": "Índice de carta inválido."}
 
-    if validar_jogada(carta_jogador, carta_mesa):
+    if validar_jogada(carta_jogador, carta_mesa, penalidade):
         carta_removida = jogador["mao"][carta_index]
 
         is_curinga = (carta_removida['cor'] == 'Curinga')
@@ -599,25 +642,16 @@ async def processar_jogada(partida_id, socket_id, carta_index, cor_escolhida=Non
             if qtde_jogada % 2 != 0:
                 partida["sentido_jogo"] *= -1
 
+        # Lógica de Pular
         passo = 1 + qtde_jogada if carta_removida['valor'] == 'Pular' else 1
-
-        qtde_comprar = 0
-        if carta_removida['valor'] == '+2': qtde_comprar = 2 * qtde_jogada
-        elif carta_removida['valor'] == '+4': qtde_comprar = 4 * qtde_jogada
-
-        if qtde_comprar > 0:
-            vitima_index = (partida["turno_index"] + (1 * partida["sentido_jogo"])) % len(partida["jogadores"])
-            vitima = partida["jogadores"][vitima_index]
-            for _ in range(qtde_comprar):
-                if len(partida["baralho"]) == 0:
-                    partida["baralho"] = gerar_baralho()
-                nova_carta = partida["baralho"].pop()
-                vitima["mao"].append(nova_carta)
-                if not vitima.get("is_bot", False):
-                    await sio.emit("suaNovaCarta", {"carta": nova_carta}, to=vitima["socketId"])
-
-            await sio.emit("mensagem_jogo", {"msg": f"😢 {vitima['usuarioId']} engoliu {qtde_comprar} cartas da penalidade!"}, room=partida_id)
-            passo = 1 + qtde_jogada if carta_removida['valor'] in ['+2', '+4'] else passo
+        
+        # Lógica de Penalidade (+2 / +4) ACUMULATIVA
+        if carta_removida['valor'] == '+2': 
+            partida['penalidade_acumulada'] += (2 * qtde_jogada)
+            await sio.emit("mensagem_jogo", {"msg": f"⚠️ Penalidade acumulada: {partida['penalidade_acumulada']} cartas! Próximo defende ou come!"}, room=partida_id)
+        elif carta_removida['valor'] == '+4': 
+            partida['penalidade_acumulada'] += (4 * qtde_jogada)
+            await sio.emit("mensagem_jogo", {"msg": f"🌈 Penalidade BRUTAL: {partida['penalidade_acumulada']} cartas!"}, room=partida_id)
 
         partida["turno_index"] = (partida["turno_index"] + (passo * partida["sentido_jogo"])) % len(partida["jogadores"])
         partida["ultimo_turno_horario"] = time.time()
@@ -632,7 +666,8 @@ async def processar_jogada(partida_id, socket_id, carta_index, cor_escolhida=Non
                 "jogador": jogador["usuarioId"],
                 "carta": carta_removida,
                 "proximoTurno": proximo_jogador,
-                "oponentes": status_jogadores
+                "oponentes": status_jogadores,
+                "penalidade_acumulada": partida.get("penalidade_acumulada", 0)
             }, room=partida_id)
 
             await sio.emit("atualizarMao", {"mao": jogador["mao"]}, to=socket_id)
@@ -682,12 +717,25 @@ async def comprar_carta_aqui(sid, data):
         return
         
     baralho = partida["baralho"]
-    if len(baralho) == 0:
-        baralho = gerar_baralho()
-        partida["baralho"] = baralho
-        
-    nova_carta = baralho.pop()
-    jogador_da_vez["mao"].append(nova_carta)
+    penalidade = partida.get("penalidade_acumulada", 0)
+    
+    if penalidade > 0:
+        for _ in range(penalidade):
+            if len(baralho) == 0:
+                baralho = gerar_baralho()
+                partida["baralho"] = baralho
+            jogador_da_vez["mao"].append(baralho.pop())
+        partida["penalidade_acumulada"] = 0
+        await sio.emit("mensagem_jogo", {"msg": f"🤷‍♂️ {jogador_da_vez['usuarioId']} engoliu {penalidade} cartas e passou a vez."}, room=partida_id)
+        await sio.emit("atualizarMao", {"mao": jogador_da_vez["mao"]}, to=sid)
+    else:
+        if len(baralho) == 0:
+            baralho = gerar_baralho()
+            partida["baralho"] = baralho
+        nova_carta = baralho.pop()
+        jogador_da_vez["mao"].append(nova_carta)
+        await sio.emit("mensagem_jogo", {"msg": f"🤷‍♂️ {jogador_da_vez['usuarioId']} comprou uma carta e passou a vez."}, room=partida_id)
+        await sio.emit("suaNovaCarta", {"carta": nova_carta}, to=sid)
     
     # Passa o turno
     partida["turno_index"] = (partida["turno_index"] + partida["sentido_jogo"]) % len(partida["jogadores"])
@@ -695,16 +743,13 @@ async def comprar_carta_aqui(sid, data):
     proximo_jogador = partida["jogadores"][partida["turno_index"]]["usuarioId"]
     status_jogadores = [{"id": j["usuarioId"], "cartas": len(j["mao"])} for j in partida["jogadores"]]
 
-    await sio.emit("mensagem_jogo", {"msg": f"🤷‍♂️ {jogador_da_vez['usuarioId']} comprou uma carta e passou a vez."}, room=partida_id)
-    
     await sio.emit("jogadaAceita", {
         "jogador": jogador_da_vez["usuarioId"],
         "carta": partida["cartaMesa"],  # Mesa não muda
         "proximoTurno": proximo_jogador,
-        "oponentes": status_jogadores
+        "oponentes": status_jogadores,
+        "penalidade_acumulada": 0
     }, room=partida_id)
-    
-    await sio.emit("suaNovaCarta", {"carta": nova_carta}, to=sid)
 
 async def finalizar_partida(partida, jogador_vencedor):
     aposta_vencedor = float(jogador_vencedor.get("aposta", 1.0))
@@ -745,6 +790,14 @@ async def finalizar_partida(partida, jogador_vencedor):
         "premio_total": premio
     }, room=partida_id)
     
+    # Limpa a sala para evitar vazamento de memória e recepção de eventos de partidas antigas
+    for j in partida["jogadores"]:
+        if not j.get("is_bot", False):
+            try:
+                await sio.leave_room(j["socketId"], partida_id)
+            except:
+                pass
+
     partidas.pop(partida_id, None)
 @sio.on("forcarAutoPlay")
 async def force_autoplay(sid, data):
