@@ -2541,7 +2541,7 @@
                 }
 
                 // Pegar mensagem do backend
-                fetch(BACKEND_URL + '/')
+                this.apiFetch('/')
                     .then(res => res.json())
                     .then(data => {
                         this.backendMessage = data.message;
@@ -2634,6 +2634,21 @@
                 }
             },
             methods: {
+                apiBaseUrl() {
+                    return (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
+                },
+                apiHeaders(extraHeaders = {}) {
+                    const headers = Object.assign({}, extraHeaders);
+                    if (this.apiBaseUrl().includes('.ngrok-free.dev')) {
+                        headers['ngrok-skip-browser-warning'] = '1';
+                    }
+                    return headers;
+                },
+                apiFetch(path, options = {}) {
+                    const requestOptions = Object.assign({}, options);
+                    requestOptions.headers = this.apiHeaders(options.headers || {});
+                    return fetch(this.apiBaseUrl() + path, requestOptions);
+                },
                 deslogar() {
                     localStorage.removeItem('usuario_id');
                     localStorage.removeItem('saldo_uno');
@@ -2677,10 +2692,8 @@
                     google.accounts.id.prompt(); // Mostra o pop-up nativo
                 },
                 async handleGoogleCallback(response) {
-                    let baseUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
-
                     try {
-                        const r = await fetch(baseUrl + '/api/login/google', {
+                        const r = await this.apiFetch('/api/login/google', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ token: response.credential })
@@ -2712,11 +2725,10 @@
                         return;
                     }
 
-                    let baseUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
                     this.statusMsg = "⏳ Processando cadastro...";
                     this.statusColor = "#ecc94b";
 
-                    fetch(baseUrl + '/api/register', {
+                    this.apiFetch('/api/register', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ email: this.loginEmail, password: this.loginSenha, username: this.loginNome })
@@ -2742,10 +2754,9 @@
                     });
                 },
                 efetuarLogin() {
-                    let baseUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
-                    console.log("Tentando login em:", baseUrl + '/api/login');
+                    console.log("Tentando login em:", this.apiBaseUrl() + '/api/login');
 
-                    fetch(baseUrl + '/api/login', {
+                    this.apiFetch('/api/login', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ email: this.loginEmail, password: this.loginSenha })
@@ -2800,9 +2811,8 @@
                 },
                 async carregarEstadoFreeBet() {
                     if (!this.usuarioId) return;
-                    let baseUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
                     try {
-                        const res = await fetch(baseUrl + '/api/freebet/state?usuario_email=' + encodeURIComponent(this.usuarioId));
+                        const res = await this.apiFetch('/api/freebet/state?usuario_email=' + encodeURIComponent(this.usuarioId));
                         const data = await res.json();
                         if (data.success) {
                             this.freeBetState = data.state;
@@ -2818,9 +2828,8 @@
                         return;
                     }
                     this.freeBetLoading = true;
-                    let baseUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
                     try {
-                        const res = await fetch(baseUrl + '/api/freebet/start', {
+                        const res = await this.apiFetch('/api/freebet/start', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ usuario_email: this.usuarioId, aposta: valorAposta })
@@ -2845,9 +2854,8 @@
                 async executarAcaoFreeBet(action, handIndex) {
                     if (!this.usuarioId || !this.freeBetState) return;
                     this.freeBetLoading = true;
-                    let baseUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
                     try {
-                        const res = await fetch(baseUrl + '/api/freebet/action', {
+                        const res = await this.apiFetch('/api/freebet/action', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ usuario_email: this.usuarioId, action: action, hand_index: handIndex })
@@ -2925,8 +2933,6 @@
                 },
 
                 async carregarGanhadores() {
-                    let baseUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
-
                     // Primeiro preenchemos instantaneamente localmente sem esperar a rede
                     while (this.ultimosGanhadores.length < 25) {
                         const apostas = [0.50, 2.00, 8.00, 20.00, 50.00];
@@ -2942,7 +2948,7 @@
                     }
 
                     try {
-                        const res = await fetch(baseUrl + '/api/ultimos-ganhadores');
+                        const res = await this.apiFetch('/api/ultimos-ganhadores');
                         if (res.ok) {
                             const reais = await res.json();
 
@@ -3067,7 +3073,7 @@
                         this.addLog("Conectando ao servidor...");
                         this.socketUrl = serverUrl;
                         this.socket = io(serverUrl, {
-                            transports: ["websocket", "polling"],
+                            transports: ["websocket"],
                             reconnection: true,
                             reconnectionAttempts: 10,
                             timeout: 10000
@@ -3160,8 +3166,7 @@
                         stop_win: parseFloat(this.botNovo.stop_win) || 20,
                         valor_aposta: parseFloat(this.botNovo.valor_aposta) || 0.50
                     };
-                    let baseUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
-                    fetch(baseUrl + '/api/bots/criar', {
+                    this.apiFetch('/api/bots/criar', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(novoBot)
@@ -3181,11 +3186,10 @@
                     });
                 },
                 carregarBots() {
-                    let baseUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
                     let emailBusca = this.assistindoBot ? this.originalUsuarioId : this.usuarioId;
                     if (!emailBusca) return;
 
-                    fetch(baseUrl + '/api/bots/listar?usuario_email=' + emailBusca)
+                    this.apiFetch('/api/bots/listar?usuario_email=' + emailBusca)
                         .then(r => r.json())
                         .then(res => {
                             if (res.success) {
@@ -3202,8 +3206,7 @@
                         });
                 },
                 playBot(bot) {
-                    let baseUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
-                    fetch(baseUrl + '/api/bots/ativar', {
+                    this.apiFetch('/api/bots/ativar', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ usuario_email: this.usuarioId, bot_id: bot.id })
@@ -3221,8 +3224,7 @@
                     localStorage.setItem('avatar_seed', seed);
                     this.mostrandoOpcoesAvatar = false;
 
-                    let baseUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
-                    fetch(baseUrl + '/api/perfil/atualizar-avatar', {
+                    this.apiFetch('/api/perfil/atualizar-avatar', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ usuario_email: this.usuarioId, avatar_seed: seed })
@@ -3233,8 +3235,7 @@
                     });
                 },
                 salvarBot(bot) {
-                    let baseUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
-                    fetch(baseUrl + '/api/bots/editar', {
+                    this.apiFetch('/api/bots/editar', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -3254,8 +3255,7 @@
                 },
                 excluirBot(bot) {
                     if (!confirm("Deseja realmente excluir este bot e devolver o saldo de R$ " + bot.saldo.toFixed(2) + " para sua conta?")) return;
-                    let baseUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000' : BACKEND_URL;
-                    fetch(baseUrl + '/api/bots/deletar', {
+                    this.apiFetch('/api/bots/deletar', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ usuario_email: this.usuarioId, bot_id: bot.id })
