@@ -2599,30 +2599,26 @@
                     <p style="margin: 10px 0 0 0; color: #f8fafc; font-weight: 800;">Saldo: R$ {{ saldo.toFixed(2) }}</p>
                     <p style="margin: 8px 0 0 0; color: #d1fae5; font-weight: 700;">Fichas da proxima rodada: R$ {{ freeBetViewer.pending_bet.toFixed(2) }} | Em jogo agora: R$ {{ freeBetViewer.current_bet.toFixed(2) }}</p>
 
-                    <div class="freebet-chip-row" v-if="freeBetState.can_place_bets && freeBetViewer.pending_bet <= 0">
+                    <div class="freebet-chip-row" v-if="freeBetState.can_place_bets">
                         <button v-for="chip in freeBetState.chip_values" :key="'chip-' + chip" class="freebet-chip-btn"
                             :disabled="freeBetLoading" @click="apostarFichaFreeBet(chip)">
                             + R$ {{ chip.toFixed(2) }}
                         </button>
+                        <button class="freebet-chip-btn clear compact" :disabled="freeBetLoading || freeBetViewer.pending_bet <= 0"
+                            @click="limparApostaFreeBet()">Limpar</button>
                     </div>
 
-                    <div class="freebet-bet-ready" v-if="freeBetState.can_place_bets && freeBetViewer.pending_bet > 0">
-                        <span class="freebet-result-chip vitoria">Aposta confirmada: R$ {{ freeBetViewer.pending_bet.toFixed(2) }}</span>
-                        <button class="freebet-chip-btn clear compact" :disabled="freeBetLoading"
-                            @click="limparApostaFreeBet()">Trocar aposta</button>
-                    </div>
-
-                    <div class="freebet-actions" v-if="freeBetState.current_turn_player === usuarioId && freeBetActiveHand">
+                    <div class="freebet-actions" v-if="freeBetState.phase === 'player_turns' && freeBetActiveHand">
                         <button class="freebet-action-btn" style="background: linear-gradient(145deg, #3b82f6, #1d4ed8); color: white;"
-                            :disabled="freeBetLoading" @click="executarAcaoFreeBet('hit')">Pedir Carta</button>
+                            :disabled="freeBetLoading || freeBetState.turn_seconds_left <= 0" @click="executarAcaoFreeBet('hit')">Pedir Carta</button>
                         <button class="freebet-action-btn" style="background: linear-gradient(145deg, #6b7280, #374151); color: white;"
-                            :disabled="freeBetLoading" @click="executarAcaoFreeBet('stand')">Parar</button>
+                            :disabled="freeBetLoading || freeBetState.turn_seconds_left <= 0" @click="executarAcaoFreeBet('stand')">Parar</button>
                         <button v-if="freeBetActiveHand.can_double" class="freebet-action-btn"
                             style="background: linear-gradient(145deg, #f59e0b, #b45309); color: #fff7cc;"
-                            :disabled="freeBetLoading" @click="executarAcaoFreeBet('double')">Free Double</button>
+                            :disabled="freeBetLoading || freeBetState.turn_seconds_left <= 0" @click="executarAcaoFreeBet('double')">Free Double</button>
                         <button v-if="freeBetActiveHand.can_split" class="freebet-action-btn"
                             style="background: linear-gradient(145deg, #22c55e, #15803d); color: white;"
-                            :disabled="freeBetLoading" @click="executarAcaoFreeBet('split')">Free Split</button>
+                            :disabled="freeBetLoading || freeBetState.turn_seconds_left <= 0" @click="executarAcaoFreeBet('split')">Free Split</button>
                     </div>
                 </div>
 

@@ -88,8 +88,7 @@ def create_blackjack_table():
         "phase": "betting",
         "countdown_end": time.time() + BLACKJACK_BETTING_SECONDS,
         "turn_deadline": None,
-        "current_turn_player": None,
-        "current_turn_hand_index": None,
+        "shared_player_cards": [],
         "dealer_cards": [],
         "dealer_revealed": False,
         "deck": blackjack_build_deck(),
@@ -268,15 +267,37 @@ def blackjack_seconds_left(deadline):
     return max(0, int(deadline - time.time() + 0.999))
 
 
+def blackjack_active_hand_index(player):
+    for idx, hand in enumerate(player.get("hands", [])):
+        if not hand.get("finished", False):
+            return idx
+    return None
+
+
+def blackjack_all_active_hands_finished():
+    for player in blackjack_table["players"].values():
+        if player.get("current_bet", 0.0) <= 0:
+            continue
+        for hand in player.get("hands", []):
+            if not hand.get("finished", False):
+                return False
+    return True
+
+
 def blackjack_player_status(player, player_id):
-    if blackjack_table["phase"] == "betting":
+    phase = blackjack_table["phase"]
+    if phase == "betting":
         if player["pending_bet"] > 0:
             return "Apostando"
         if player["current_bet"] > 0 and player["hands"]:
             return "Resultado na mesa"
         return "Assistindo"
-    if blackjack_table["current_turn_player"] == player_id:
-        return "Decidindo"
+    if phase == "player_turns":
+        if player["current_bet"] > 0:
+            if blackjack_active_hand_index(player) is not None:
+                return "Decidindo"
+            return "Aguardando dealer"
+        return "Assistindo"
     if player["current_bet"] > 0:
         return "Na rodada"
     return "Assistindo"
@@ -284,7 +305,13 @@ def blackjack_player_status(player, player_id):
 
 def blackjack_serialize_state(viewer_id=None):
     viewer = blackjack_table["players"].get(viewer_id) if viewer_id else None
-    dealer_hidden = blackjack_table["phase"] == "player_turns" and not blackjack_table["dealer_revealed"]
+    phase = blackjack_table["phase"]
+    turn_open = (
+        phase == "player_turns"
+        and blackjack_table.get("turn_deadline")
+        and time.time() < blackjack_table["turn_deadline"]
+    )
+    dealer_hidden = phase == "player_turns" and not blackjack_table["dealer_revealed"]
     dealer_cards = []
     for idx, card in enumerate(blackjack_table["dealer_cards"]):
         dealer_cards.append(blackjack_serialize_card(card, dealer_hidden and idx == 1))
@@ -303,9 +330,11 @@ def blackjack_serialize_state(viewer_id=None):
         ):
             continue
 
+        active_index = blackjack_active_hand_index(player) if phase == "player_turns" and player.get("current_bet", 0.0) > 0 else None
         hands_payload = []
         for index, hand in enumerate(player["hands"]):
             blackjack_refresh_hand(hand)
+            hand_active = phase == "player_turns" and active_index is not None and index == active_index
             hands_payload.append({
                 "index": index,
                 "title": f"Mao {index + 1}",
@@ -315,10 +344,10 @@ def blackjack_serialize_state(viewer_id=None):
                 "busted": hand["busted"],
                 "blackjack": hand["blackjack"],
                 "finished": hand.get("finished", False),
-                "active": player_id == blackjack_table["current_turn_player"] and index == blackjack_table["current_turn_hand_index"],
+                "active": hand_active,
                 "bet_units": hand.get("bet_units", 1),
-                "can_double": player_id == blackjack_table["current_turn_player"] and index == blackjack_table["current_turn_hand_index"] and blackjack_table["phase"] == "player_turns" and blackjack_can_double(hand),
-                "can_split": player_id == blackjack_table["current_turn_player"] and index == blackjack_table["current_turn_hand_index"] and blackjack_table["phase"] == "player_turns" and blackjack_can_split(player, hand),
+                "can_double": hand_active and turn_open and blackjack_can_double(hand),
+                "can_split": hand_active and turn_open and blackjack_can_split(player, hand),
                 "result": hand.get("result"),
                 "result_text": hand.get("result_text", ""),
                 "payout": round(hand.get("payout", 0.0), 2),
@@ -329,7 +358,7 @@ def blackjack_serialize_state(viewer_id=None):
             "avatarSeed": player.get("avatarSeed"),
             "connected": player.get("connected", False),
             "is_viewer": player_id == viewer_id,
-            "is_turn": player_id == blackjack_table["current_turn_player"],
+            "is_turn": phase == "player_turns" and player.get("current_bet", 0.0) > 0 and active_index is not None,
             "pending_bet": round(player.get("pending_bet", 0.0), 2),
             "current_bet": round(player.get("current_bet", 0.0), 2),
             "display_bet": round(player.get("pending_bet", 0.0) if blackjack_table["phase"] == "betting" and player.get("pending_bet", 0.0) > 0 else player.get("current_bet", 0.0), 2),
@@ -341,7 +370,6 @@ def blackjack_serialize_state(viewer_id=None):
             "last_action": player.get("last_action", ""),
         })
 
-    phase = blackjack_table["phase"]
     phase_label_map = {
         "betting": "Apostas abertas",
         "player_turns": "Jogadores decidindo",
@@ -359,8 +387,8 @@ def blackjack_serialize_state(viewer_id=None):
             "total": "?" if dealer_hidden else dealer_total,
         },
         "players": players_payload,
-        "current_turn_player": blackjack_table["current_turn_player"],
-        "current_turn_hand_index": blackjack_table["current_turn_hand_index"],
+        "current_turn_player": None,
+        "current_turn_hand_index": None,
         "deck_left": len(blackjack_table["deck"]),
         "round_id": blackjack_table["round_id"],
         "viewer_balance": blackjack_get_balance(viewer_id) if viewer else None,
@@ -453,8 +481,6 @@ def blackjack_resolve_hand(hand, dealer_total, dealer_blackjack):
 async def blackjack_finish_round():
     blackjack_table["phase"] = "dealer_turn"
     blackjack_table["dealer_revealed"] = True
-    blackjack_table["current_turn_player"] = None
-    blackjack_table["current_turn_hand_index"] = None
     blackjack_table["turn_deadline"] = None
 
     dealer_total, dealer_soft = blackjack_hand_total(blackjack_table["dealer_cards"])
@@ -534,6 +560,7 @@ async def blackjack_start_round():
     blackjack_table["round_id"] += 1
     blackjack_table["dealer_cards"] = []
     blackjack_table["dealer_revealed"] = False
+    blackjack_table["shared_player_cards"] = [blackjack_draw_card(), blackjack_draw_card()]
 
     for player_id in blackjack_table["player_order"]:
         player = blackjack_table["players"].get(player_id)
@@ -549,7 +576,7 @@ async def blackjack_start_round():
         player["current_bet"] = pending_bet
         player["pending_bet"] = 0.0
         player["hands"] = [{
-            "cards": [blackjack_draw_card(), blackjack_draw_card()],
+            "cards": [dict(card) for card in blackjack_table["shared_player_cards"]],
             "bet_units": 1,
             "bet_amount": pending_bet,
             "finished": False,
@@ -575,33 +602,37 @@ async def blackjack_start_round():
         await blackjack_finish_round()
         return
 
-    next_player, next_hand = blackjack_find_next_actor()
-    if next_player is None:
+    if blackjack_all_active_hands_finished():
         blackjack_table["message"] = "So blackjacks naturais apareceram. Dealer vai resolver."
         await blackjack_finish_round()
         return
 
     blackjack_table["phase"] = "player_turns"
-    blackjack_table["current_turn_player"] = next_player
-    blackjack_table["current_turn_hand_index"] = next_hand
     blackjack_table["turn_deadline"] = time.time() + BLACKJACK_ACTION_SECONDS
-    blackjack_table["message"] = f"Rodada {blackjack_table['round_id']} valendo. Vez de {next_player}."
+    blackjack_table["message"] = f"Rodada {blackjack_table['round_id']} valendo. Jogadores decidindo."
     await blackjack_broadcast_message(f"Rodada {blackjack_table['round_id']} iniciada na mesa compartilhada.")
 
 
 async def blackjack_apply_action(player_id, action, auto=False):
     if blackjack_table["phase"] != "player_turns":
         return False, "A rodada nao esta aceitando decisoes agora."
-    if blackjack_table["current_turn_player"] != player_id:
-        return False, "Nao e a sua vez de decidir."
+
+    if (
+        not auto
+        and blackjack_table.get("turn_deadline")
+        and time.time() >= blackjack_table["turn_deadline"]
+    ):
+        return False, "Tempo de decisao encerrado. Aguarde a proxima rodada."
 
     player = blackjack_table["players"].get(player_id)
     if not player:
         return False, "Jogador nao encontrado na mesa."
+    if player.get("current_bet", 0.0) <= 0 or not player.get("hands"):
+        return False, "Voce nao esta jogando esta rodada."
 
-    hand_index = blackjack_table["current_turn_hand_index"]
-    if hand_index is None or hand_index >= len(player["hands"]):
-        return False, "Mao ativa invalida."
+    hand_index = blackjack_active_hand_index(player)
+    if hand_index is None:
+        return False, "Voce ja finalizou suas maos."
 
     hand = player["hands"][hand_index]
     action = (action or "").lower().strip()
@@ -670,15 +701,8 @@ async def blackjack_apply_action(player_id, action, auto=False):
         player["last_action"] = "Tempo esgotado. Mao travada automaticamente."
         blackjack_table["message"] = f"{player_id} ficou sem tempo e a mesa continuou."
 
-    next_player, next_hand = blackjack_find_next_actor()
-    if next_player is None:
+    if blackjack_all_active_hands_finished():
         await blackjack_finish_round()
-    else:
-        blackjack_table["current_turn_player"] = next_player
-        blackjack_table["current_turn_hand_index"] = next_hand
-        blackjack_table["turn_deadline"] = time.time() + BLACKJACK_ACTION_SECONDS
-        if blackjack_table["phase"] == "player_turns":
-            blackjack_table["message"] = f"{blackjack_table['message']} Agora {next_player} decide."
     return True, ""
 
 
@@ -711,9 +735,19 @@ async def blackjack_table_loop():
             elif blackjack_table["phase"] == "player_turns":
                 state_changed = True
                 if blackjack_table["turn_deadline"] and time.time() >= blackjack_table["turn_deadline"]:
-                    current_player = blackjack_table["current_turn_player"]
-                    if current_player:
-                        await blackjack_apply_action(current_player, "stand", auto=True)
+                    for player_id in blackjack_table["player_order"]:
+                        player = blackjack_table["players"].get(player_id)
+                        if not player or player.get("current_bet", 0.0) <= 0:
+                            continue
+                        had_unfinished = False
+                        for hand in player.get("hands", []):
+                            if not hand.get("finished", False):
+                                hand["finished"] = True
+                                had_unfinished = True
+                        if had_unfinished:
+                            player["last_action"] = "Tempo esgotado. Maos travadas automaticamente."
+                    blackjack_table["message"] = "Tempo esgotado. Dealer vai resolver a rodada."
+                    await blackjack_finish_round()
 
             if blackjack_table["player_order"]:
                 blackjack_prune_players()
