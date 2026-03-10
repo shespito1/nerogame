@@ -15,6 +15,9 @@ async def connect(sid, environ):
     if not hasattr(sio, 'bot_monitor_started'):
         sio.bot_monitor_started = True
         asyncio.create_task(monitorar_bots_usuarios())
+    if not hasattr(sio, 'blackjack_table_loop_started'):
+        sio.blackjack_table_loop_started = True
+        asyncio.create_task(blackjack_table_loop())
 
 @sio.event
 async def disconnect(sid):
@@ -30,6 +33,797 @@ async def disconnect(sid):
                 asyncio.create_task(sio.emit("mensagem_jogo", {"msg": f"🔌 {jogador['usuarioId']} caiu da partida e agora está no modo automático!"}, room=partida_id))
                 asyncio.create_task(bot_play_task(partida_id, jogador))
                 break
+    await blackjack_handle_disconnect(sid)
+
+# =======================================================
+# BLACKJACK MULTIPLAYER - MESA COMPARTILHADA
+# =======================================================
+
+BLACKJACK_ROOM = "BLACKJACK_SHARED_ROOM"
+BLACKJACK_BETTING_SECONDS = 10
+BLACKJACK_ACTION_SECONDS = 12
+BLACKJACK_CHIP_VALUES = [0.50, 2.00, 5.00, 10.00, 25.00]
+BLACKJACK_SUITS = [
+    {"key": "S", "symbol": "♠", "color": "black"},
+    {"key": "H", "symbol": "♥", "color": "red"},
+    {"key": "D", "symbol": "♦", "color": "red"},
+    {"key": "C", "symbol": "♣", "color": "black"},
+]
+BLACKJACK_RANKS = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"]
+BLACKJACK_TEN_RANKS = {"10", "J", "Q", "K"}
+
+
+def blackjack_build_deck():
+    deck = []
+    for suit in BLACKJACK_SUITS:
+        for rank in BLACKJACK_RANKS:
+            deck.append({
+                "rank": rank,
+                "suit": suit["key"],
+                "symbol": suit["symbol"],
+                "color": suit["color"],
+            })
+    random.shuffle(deck)
+    return deck
+
+
+def create_blackjack_table():
+    return {
+        "players": {},
+        "player_order": [],
+        "phase": "betting",
+        "countdown_end": time.time() + BLACKJACK_BETTING_SECONDS,
+        "turn_deadline": None,
+        "current_turn_player": None,
+        "current_turn_hand_index": None,
+        "dealer_cards": [],
+        "dealer_revealed": False,
+        "deck": blackjack_build_deck(),
+        "round_id": 0,
+        "message": "Mesa aberta. Escolha suas fichas para a proxima rodada.",
+    }
+
+
+blackjack_table = create_blackjack_table()
+
+
+def blackjack_draw_card():
+    if not blackjack_table["deck"]:
+        blackjack_table["deck"] = blackjack_build_deck()
+    return blackjack_table["deck"].pop()
+
+
+def blackjack_ensure_user(cursor, email):
+    cursor.execute("SELECT id, saldo FROM usuarios WHERE email = ?", (email,))
+    user = cursor.fetchone()
+    if user:
+        return user
+    cursor.execute(
+        "INSERT INTO usuarios (nome, email, senha, saldo) VALUES (?, ?, '123', 100.00)",
+        (email, email),
+    )
+    cursor.connection.commit()
+    cursor.execute("SELECT id, saldo FROM usuarios WHERE email = ?", (email,))
+    return cursor.fetchone()
+
+
+def blackjack_get_balance(usuario_email):
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("SELECT saldo FROM usuarios WHERE email = ?", (usuario_email,))
+    user = cursor.fetchone()
+    conn.close()
+    return round(float(user["saldo"]), 2) if user else 0.0
+
+
+def blackjack_reserve_bet(usuario_email, amount):
+    conn = get_db()
+    cursor = conn.cursor()
+    user = blackjack_ensure_user(cursor, usuario_email)
+    saldo_atual = round(float(user["saldo"]), 2)
+    if saldo_atual < amount:
+        conn.close()
+        return False, saldo_atual
+
+    cursor.execute("UPDATE usuarios SET saldo = saldo - ? WHERE id = ?", (amount, user["id"]))
+    cursor.execute(
+        "INSERT INTO transacoes (usuario_id, valor, tipo) VALUES (?, ?, ?)",
+        (user["id"], amount, "Aposta Free Bet 21"),
+    )
+    conn.commit()
+    conn.close()
+    return True, round(saldo_atual - amount, 2)
+
+
+def blackjack_refund_bet(usuario_email, amount):
+    if amount <= 0:
+        return blackjack_get_balance(usuario_email)
+
+    conn = get_db()
+    cursor = conn.cursor()
+    user = blackjack_ensure_user(cursor, usuario_email)
+    cursor.execute("UPDATE usuarios SET saldo = saldo + ? WHERE id = ?", (amount, user["id"]))
+    cursor.execute(
+        "INSERT INTO transacoes (usuario_id, valor, tipo) VALUES (?, ?, ?)",
+        (user["id"], amount, "Estorno Free Bet 21"),
+    )
+    conn.commit()
+    conn.close()
+    return blackjack_get_balance(usuario_email)
+
+
+def blackjack_credit_payout(usuario_email, amount):
+    if amount <= 0:
+        return blackjack_get_balance(usuario_email)
+
+    conn = get_db()
+    cursor = conn.cursor()
+    user = blackjack_ensure_user(cursor, usuario_email)
+    cursor.execute("UPDATE usuarios SET saldo = saldo + ? WHERE id = ?", (amount, user["id"]))
+    cursor.execute(
+        "INSERT INTO transacoes (usuario_id, valor, tipo) VALUES (?, ?, ?)",
+        (user["id"], amount, "Premio Free Bet 21"),
+    )
+    conn.commit()
+    conn.close()
+    return blackjack_get_balance(usuario_email)
+
+
+def blackjack_card_value(card):
+    if card["rank"] == "A":
+        return 1
+    if card["rank"] in BLACKJACK_TEN_RANKS:
+        return 10
+    return int(card["rank"])
+
+
+def blackjack_pair_value(card):
+    if card["rank"] == "A":
+        return 11
+    if card["rank"] in BLACKJACK_TEN_RANKS:
+        return 10
+    return int(card["rank"])
+
+
+def blackjack_hand_total(cards):
+    total = sum(blackjack_card_value(card) for card in cards)
+    aces = sum(1 for card in cards if card["rank"] == "A")
+    soft = False
+    while aces > 0 and total + 10 <= 21:
+        total += 10
+        aces -= 1
+        soft = True
+    return total, soft
+
+
+def blackjack_is_pair(cards):
+    return len(cards) == 2 and blackjack_pair_value(cards[0]) == blackjack_pair_value(cards[1])
+
+
+def blackjack_is_natural_blackjack(hand):
+    total, _ = blackjack_hand_total(hand["cards"])
+    return (
+        len(hand["cards"]) == 2
+        and total == 21
+        and not hand.get("split_hand", False)
+        and not hand.get("doubled", False)
+    )
+
+
+def blackjack_refresh_hand(hand):
+    total, soft = blackjack_hand_total(hand["cards"])
+    hand["total"] = total
+    hand["soft"] = soft
+    hand["busted"] = total > 21
+    hand["blackjack"] = blackjack_is_natural_blackjack(hand)
+
+
+def blackjack_can_double(hand):
+    if hand.get("finished") or hand.get("busted") or hand.get("doubled"):
+        return False
+    if len(hand["cards"]) != 2:
+        return False
+    total, _ = blackjack_hand_total(hand["cards"])
+    return total in (9, 10, 11)
+
+
+def blackjack_can_split(player, hand):
+    if hand.get("finished") or hand.get("busted"):
+        return False
+    if len(player["hands"]) >= 2 or len(hand["cards"]) != 2:
+        return False
+    if not blackjack_is_pair(hand["cards"]):
+        return False
+    return blackjack_pair_value(hand["cards"][0]) != 10
+
+
+def blackjack_serialize_card(card, hidden=False):
+    if hidden:
+        return {"rank": "?", "suit": "", "label": "?", "color": "hidden"}
+    return {
+        "rank": card["rank"],
+        "suit": card["suit"],
+        "label": f"{card['rank']}{card['symbol']}",
+        "color": card["color"],
+    }
+
+
+def blackjack_seconds_left(deadline):
+    if not deadline:
+        return 0
+    return max(0, int(deadline - time.time() + 0.999))
+
+
+def blackjack_player_status(player, player_id):
+    if blackjack_table["phase"] == "betting":
+        if player["pending_bet"] > 0:
+            return "Apostando"
+        if player["current_bet"] > 0 and player["hands"]:
+            return "Resultado na mesa"
+        return "Assistindo"
+    if blackjack_table["current_turn_player"] == player_id:
+        return "Decidindo"
+    if player["current_bet"] > 0:
+        return "Na rodada"
+    return "Assistindo"
+
+
+def blackjack_serialize_state(viewer_id=None):
+    viewer = blackjack_table["players"].get(viewer_id) if viewer_id else None
+    dealer_hidden = blackjack_table["phase"] == "player_turns" and not blackjack_table["dealer_revealed"]
+    dealer_cards = []
+    for idx, card in enumerate(blackjack_table["dealer_cards"]):
+        dealer_cards.append(blackjack_serialize_card(card, dealer_hidden and idx == 1))
+
+    dealer_total, _ = blackjack_hand_total(blackjack_table["dealer_cards"]) if blackjack_table["dealer_cards"] else (0, False)
+    players_payload = []
+    for player_id in blackjack_table["player_order"]:
+        player = blackjack_table["players"].get(player_id)
+        if not player:
+            continue
+        if (
+            not player.get("connected", False)
+            and player["pending_bet"] <= 0
+            and player["current_bet"] <= 0
+            and not player["hands"]
+        ):
+            continue
+
+        hands_payload = []
+        for index, hand in enumerate(player["hands"]):
+            blackjack_refresh_hand(hand)
+            hands_payload.append({
+                "index": index,
+                "title": f"Mao {index + 1}",
+                "cards": [blackjack_serialize_card(card) for card in hand["cards"]],
+                "total": hand["total"],
+                "soft": hand["soft"],
+                "busted": hand["busted"],
+                "blackjack": hand["blackjack"],
+                "finished": hand.get("finished", False),
+                "active": player_id == blackjack_table["current_turn_player"] and index == blackjack_table["current_turn_hand_index"],
+                "bet_units": hand.get("bet_units", 1),
+                "can_double": player_id == blackjack_table["current_turn_player"] and index == blackjack_table["current_turn_hand_index"] and blackjack_table["phase"] == "player_turns" and blackjack_can_double(hand),
+                "can_split": player_id == blackjack_table["current_turn_player"] and index == blackjack_table["current_turn_hand_index"] and blackjack_table["phase"] == "player_turns" and blackjack_can_split(player, hand),
+                "result": hand.get("result"),
+                "result_text": hand.get("result_text", ""),
+                "payout": round(hand.get("payout", 0.0), 2),
+            })
+
+        players_payload.append({
+            "usuarioId": player_id,
+            "avatarSeed": player.get("avatarSeed"),
+            "connected": player.get("connected", False),
+            "is_viewer": player_id == viewer_id,
+            "is_turn": player_id == blackjack_table["current_turn_player"],
+            "pending_bet": round(player.get("pending_bet", 0.0), 2),
+            "current_bet": round(player.get("current_bet", 0.0), 2),
+            "display_bet": round(player.get("pending_bet", 0.0) if blackjack_table["phase"] == "betting" and player.get("pending_bet", 0.0) > 0 else player.get("current_bet", 0.0), 2),
+            "hands": hands_payload,
+            "round_payout": round(player.get("round_payout", 0.0), 2),
+            "round_net": round(player.get("round_net", 0.0), 2),
+            "summary": player.get("summary", []),
+            "status": blackjack_player_status(player, player_id),
+            "last_action": player.get("last_action", ""),
+        })
+
+    phase = blackjack_table["phase"]
+    phase_label_map = {
+        "betting": "Apostas abertas",
+        "player_turns": "Jogadores decidindo",
+        "dealer_turn": "Dealer resolvendo",
+    }
+    return {
+        "phase": phase,
+        "phase_label": phase_label_map.get(phase, phase),
+        "message": blackjack_table["message"],
+        "countdown": blackjack_seconds_left(blackjack_table["countdown_end"]) if phase == "betting" else blackjack_seconds_left(blackjack_table["turn_deadline"]),
+        "betting_seconds_left": blackjack_seconds_left(blackjack_table["countdown_end"]) if phase == "betting" else 0,
+        "turn_seconds_left": blackjack_seconds_left(blackjack_table["turn_deadline"]) if phase == "player_turns" else 0,
+        "dealer": {
+            "cards": dealer_cards,
+            "total": "?" if dealer_hidden else dealer_total,
+        },
+        "players": players_payload,
+        "current_turn_player": blackjack_table["current_turn_player"],
+        "current_turn_hand_index": blackjack_table["current_turn_hand_index"],
+        "deck_left": len(blackjack_table["deck"]),
+        "round_id": blackjack_table["round_id"],
+        "viewer_balance": blackjack_get_balance(viewer_id) if viewer else None,
+        "viewer_pending_bet": round(viewer.get("pending_bet", 0.0), 2) if viewer else 0.0,
+        "viewer_current_bet": round(viewer.get("current_bet", 0.0), 2) if viewer else 0.0,
+        "chip_values": BLACKJACK_CHIP_VALUES,
+        "can_place_bets": phase == "betting",
+    }
+
+
+async def blackjack_emit_state(user_id):
+    player = blackjack_table["players"].get(user_id)
+    if not player or not player.get("connected") or not player.get("socketId"):
+        return
+    await sio.emit("blackjackMesaEstado", blackjack_serialize_state(user_id), to=player["socketId"])
+
+
+async def blackjack_broadcast_state():
+    for user_id in list(blackjack_table["player_order"]):
+        await blackjack_emit_state(user_id)
+
+
+async def blackjack_broadcast_message(msg):
+    await sio.emit("blackjackMensagem", {"msg": msg}, room=BLACKJACK_ROOM)
+
+
+def blackjack_clear_round_state(player):
+    player["current_bet"] = 0.0
+    player["hands"] = []
+    player["round_payout"] = 0.0
+    player["round_net"] = 0.0
+    player["summary"] = []
+    player["last_action"] = ""
+
+
+def blackjack_prune_players():
+    remove_ids = []
+    for player_id in blackjack_table["player_order"]:
+        player = blackjack_table["players"].get(player_id)
+        if not player:
+            continue
+        if player.get("connected"):
+            continue
+        if player["pending_bet"] <= 0 and player["current_bet"] <= 0 and not player["hands"]:
+            remove_ids.append(player_id)
+
+    for player_id in remove_ids:
+        blackjack_table["players"].pop(player_id, None)
+        blackjack_table["player_order"] = [pid for pid in blackjack_table["player_order"] if pid != player_id]
+
+
+def blackjack_find_next_actor():
+    for player_id in blackjack_table["player_order"]:
+        player = blackjack_table["players"].get(player_id)
+        if not player or player["current_bet"] <= 0:
+            continue
+        for hand_index, hand in enumerate(player["hands"]):
+            if not hand.get("finished", False):
+                return player_id, hand_index
+    return None, None
+
+
+def blackjack_resolve_hand(hand, dealer_total, dealer_blackjack):
+    aposta = hand["bet_amount"]
+    unidades = hand.get("bet_units", 1)
+
+    if hand["busted"]:
+        return "derrota", "Estourou", 0.0
+
+    if dealer_blackjack:
+        if hand["blackjack"]:
+            return "push", "Empate com blackjack", aposta
+        return "derrota", "Dealer fez blackjack", 0.0
+
+    if hand["blackjack"]:
+        return "blackjack", "Blackjack natural", aposta * 2.5
+
+    if dealer_total > 21:
+        if dealer_total == 22:
+            return "push", "Dealer 22 empata", aposta * unidades
+        return "vitoria", "Dealer estourou", aposta * unidades * 2
+
+    if hand["total"] > dealer_total:
+        return "vitoria", "Mao vencedora", aposta * unidades * 2
+    if hand["total"] == dealer_total:
+        return "push", "Empate", aposta * unidades
+    return "derrota", "Dealer venceu", 0.0
+
+
+async def blackjack_finish_round():
+    blackjack_table["phase"] = "dealer_turn"
+    blackjack_table["dealer_revealed"] = True
+    blackjack_table["current_turn_player"] = None
+    blackjack_table["current_turn_hand_index"] = None
+    blackjack_table["turn_deadline"] = None
+
+    dealer_total, dealer_soft = blackjack_hand_total(blackjack_table["dealer_cards"])
+    dealer_blackjack = len(blackjack_table["dealer_cards"]) == 2 and dealer_total == 21
+
+    if not dealer_blackjack and any(
+        player["current_bet"] > 0 and any(not hand.get("busted") and not hand.get("blackjack") for hand in player["hands"])
+        for player in blackjack_table["players"].values()
+    ):
+        while True:
+            dealer_total, dealer_soft = blackjack_hand_total(blackjack_table["dealer_cards"])
+            if dealer_total < 17 or (dealer_total == 17 and dealer_soft):
+                blackjack_table["dealer_cards"].append(blackjack_draw_card())
+            else:
+                break
+
+    dealer_total, _ = blackjack_hand_total(blackjack_table["dealer_cards"])
+    dealer_blackjack = len(blackjack_table["dealer_cards"]) == 2 and dealer_total == 21
+
+    for player_id in blackjack_table["player_order"]:
+        player = blackjack_table["players"].get(player_id)
+        if not player or player["current_bet"] <= 0:
+            continue
+
+        payout_total = 0.0
+        summary = []
+        for hand_index, hand in enumerate(player["hands"], start=1):
+            blackjack_refresh_hand(hand)
+            result_key, result_text, payout = blackjack_resolve_hand(hand, dealer_total, dealer_blackjack)
+            hand["result"] = result_key
+            hand["result_text"] = result_text
+            hand["payout"] = round(payout, 2)
+            hand["finished"] = True
+            payout_total += payout
+            summary.append(f"Mao {hand_index}: {result_text}")
+
+        player["round_payout"] = round(payout_total, 2)
+        player["round_net"] = round(payout_total - player["current_bet"], 2)
+        player["summary"] = summary
+        player["last_action"] = summary[-1] if summary else "Rodada encerrada."
+        if payout_total > 0:
+            blackjack_credit_payout(player_id, round(payout_total, 2))
+
+    blackjack_table["phase"] = "betting"
+    blackjack_table["countdown_end"] = time.time() + BLACKJACK_BETTING_SECONDS
+    blackjack_table["message"] = "Rodada resolvida. Apostas abertas para a proxima mao."
+    await blackjack_broadcast_message("Dealer fechou a rodada. Nova contagem iniciada.")
+    blackjack_prune_players()
+
+
+async def blackjack_start_round():
+    active_players = []
+
+    for player_id in list(blackjack_table["player_order"]):
+        player = blackjack_table["players"].get(player_id)
+        if not player:
+            continue
+        if player["pending_bet"] > 0 and not player.get("connected"):
+            blackjack_refund_bet(player_id, player["pending_bet"])
+            player["pending_bet"] = 0.0
+
+    for player_id in blackjack_table["player_order"]:
+        player = blackjack_table["players"].get(player_id)
+        if player and player["pending_bet"] > 0:
+            active_players.append(player_id)
+
+    if not active_players:
+        blackjack_table["phase"] = "betting"
+        blackjack_table["countdown_end"] = time.time() + BLACKJACK_BETTING_SECONDS
+        blackjack_table["message"] = "Mesa aberta. Escolha suas fichas para a proxima rodada."
+        blackjack_prune_players()
+        return
+
+    if len(blackjack_table["deck"]) < max(18, len(active_players) * 8):
+        blackjack_table["deck"] = blackjack_build_deck()
+
+    blackjack_table["round_id"] += 1
+    blackjack_table["dealer_cards"] = []
+    blackjack_table["dealer_revealed"] = False
+
+    for player_id in blackjack_table["player_order"]:
+        player = blackjack_table["players"].get(player_id)
+        if not player:
+            continue
+
+        pending_bet = round(player["pending_bet"], 2)
+        blackjack_clear_round_state(player)
+        if player_id not in active_players:
+            player["pending_bet"] = pending_bet if pending_bet > 0 else 0.0
+            continue
+
+        player["current_bet"] = pending_bet
+        player["pending_bet"] = 0.0
+        player["hands"] = [{
+            "cards": [blackjack_draw_card(), blackjack_draw_card()],
+            "bet_units": 1,
+            "bet_amount": pending_bet,
+            "finished": False,
+            "split_hand": False,
+            "doubled": False,
+            "result": None,
+            "result_text": "",
+            "payout": 0.0,
+        }]
+        blackjack_refresh_hand(player["hands"][0])
+        if player["hands"][0]["blackjack"]:
+            player["hands"][0]["finished"] = True
+        player["round_net"] = -pending_bet
+        player["last_action"] = "Recebeu as cartas iniciais."
+
+    blackjack_table["dealer_cards"] = [blackjack_draw_card(), blackjack_draw_card()]
+    dealer_total, _ = blackjack_hand_total(blackjack_table["dealer_cards"])
+    dealer_blackjack = len(blackjack_table["dealer_cards"]) == 2 and dealer_total == 21
+
+    if dealer_blackjack:
+        blackjack_table["message"] = "Dealer mostrou blackjack logo de cara."
+        await blackjack_broadcast_message("O dealer abriu forte nesta rodada.")
+        await blackjack_finish_round()
+        return
+
+    next_player, next_hand = blackjack_find_next_actor()
+    if next_player is None:
+        blackjack_table["message"] = "So blackjacks naturais apareceram. Dealer vai resolver."
+        await blackjack_finish_round()
+        return
+
+    blackjack_table["phase"] = "player_turns"
+    blackjack_table["current_turn_player"] = next_player
+    blackjack_table["current_turn_hand_index"] = next_hand
+    blackjack_table["turn_deadline"] = time.time() + BLACKJACK_ACTION_SECONDS
+    blackjack_table["message"] = f"Rodada {blackjack_table['round_id']} valendo. Vez de {next_player}."
+    await blackjack_broadcast_message(f"Rodada {blackjack_table['round_id']} iniciada na mesa compartilhada.")
+
+
+async def blackjack_apply_action(player_id, action, auto=False):
+    if blackjack_table["phase"] != "player_turns":
+        return False, "A rodada nao esta aceitando decisoes agora."
+    if blackjack_table["current_turn_player"] != player_id:
+        return False, "Nao e a sua vez de decidir."
+
+    player = blackjack_table["players"].get(player_id)
+    if not player:
+        return False, "Jogador nao encontrado na mesa."
+
+    hand_index = blackjack_table["current_turn_hand_index"]
+    if hand_index is None or hand_index >= len(player["hands"]):
+        return False, "Mao ativa invalida."
+
+    hand = player["hands"][hand_index]
+    action = (action or "").lower().strip()
+
+    if action == "hit":
+        hand["cards"].append(blackjack_draw_card())
+        blackjack_refresh_hand(hand)
+        player["last_action"] = "Pediu carta."
+        blackjack_table["message"] = f"{player_id} pediu mais uma carta."
+        if hand["busted"] or hand["total"] >= 21:
+            hand["finished"] = True
+
+    elif action == "stand":
+        hand["finished"] = True
+        player["last_action"] = "Parou a mao."
+        blackjack_table["message"] = f"{player_id} travou a mao em {hand['total']}."
+
+    elif action == "double":
+        if not blackjack_can_double(hand):
+            return False, "Duplo gratis indisponivel nessa mao."
+        hand["bet_units"] = 2
+        hand["doubled"] = True
+        hand["cards"].append(blackjack_draw_card())
+        blackjack_refresh_hand(hand)
+        hand["finished"] = True
+        player["last_action"] = "Fez free double."
+        blackjack_table["message"] = f"{player_id} ativou o free double."
+
+    elif action == "split":
+        if not blackjack_can_split(player, hand):
+            return False, "Split gratis indisponivel nessa mao."
+        primeira_carta, segunda_carta = hand["cards"]
+        primeira_mao = {
+            "cards": [primeira_carta, blackjack_draw_card()],
+            "bet_units": 1,
+            "bet_amount": hand["bet_amount"],
+            "finished": False,
+            "split_hand": True,
+            "doubled": False,
+            "result": None,
+            "result_text": "",
+            "payout": 0.0,
+        }
+        segunda_mao = {
+            "cards": [segunda_carta, blackjack_draw_card()],
+            "bet_units": 1,
+            "bet_amount": hand["bet_amount"],
+            "finished": False,
+            "split_hand": True,
+            "doubled": False,
+            "result": None,
+            "result_text": "",
+            "payout": 0.0,
+        }
+        blackjack_refresh_hand(primeira_mao)
+        blackjack_refresh_hand(segunda_mao)
+        player["hands"][hand_index] = primeira_mao
+        player["hands"].insert(hand_index + 1, segunda_mao)
+        player["last_action"] = "Abriu split gratis."
+        blackjack_table["message"] = f"{player_id} dividiu o par e abriu duas maos."
+
+    else:
+        return False, "Acao invalida."
+
+    if auto:
+        player["last_action"] = "Tempo esgotado. Mao travada automaticamente."
+        blackjack_table["message"] = f"{player_id} ficou sem tempo e a mesa continuou."
+
+    next_player, next_hand = blackjack_find_next_actor()
+    if next_player is None:
+        await blackjack_finish_round()
+    else:
+        blackjack_table["current_turn_player"] = next_player
+        blackjack_table["current_turn_hand_index"] = next_hand
+        blackjack_table["turn_deadline"] = time.time() + BLACKJACK_ACTION_SECONDS
+        if blackjack_table["phase"] == "player_turns":
+            blackjack_table["message"] = f"{blackjack_table['message']} Agora {next_player} decide."
+    return True, ""
+
+
+async def blackjack_handle_disconnect(sid):
+    for player_id, player in list(blackjack_table["players"].items()):
+        if player.get("socketId") != sid:
+            continue
+
+        player["connected"] = False
+        player["socketId"] = None
+        if blackjack_table["phase"] == "betting" and player["pending_bet"] > 0:
+            blackjack_refund_bet(player_id, player["pending_bet"])
+            player["pending_bet"] = 0.0
+        player["last_action"] = "Saiu da mesa."
+        blackjack_prune_players()
+        await blackjack_broadcast_state()
+        await blackjack_broadcast_message(f"{player_id} saiu da mesa de Free Bet 21.")
+        return
+
+
+async def blackjack_table_loop():
+    while True:
+        await asyncio.sleep(1)
+        try:
+            state_changed = False
+            if blackjack_table["phase"] == "betting":
+                state_changed = True
+                if time.time() >= blackjack_table["countdown_end"]:
+                    await blackjack_start_round()
+            elif blackjack_table["phase"] == "player_turns":
+                state_changed = True
+                if blackjack_table["turn_deadline"] and time.time() >= blackjack_table["turn_deadline"]:
+                    current_player = blackjack_table["current_turn_player"]
+                    if current_player:
+                        await blackjack_apply_action(current_player, "stand", auto=True)
+
+            if blackjack_table["player_order"]:
+                blackjack_prune_players()
+                if state_changed:
+                    await blackjack_broadcast_state()
+        except Exception as e:
+            print(f"Erro no loop da mesa de blackjack: {e}")
+
+
+@sio.on("entrarMesaBlackjack")
+async def entrar_mesa_blackjack(sid, data):
+    usuario_id = (data.get("usuarioId") or "").strip()
+    if not usuario_id:
+        await sio.emit("blackjackErro", {"mensagem": "Login necessario para entrar na mesa."}, to=sid)
+        return
+
+    avatar_seed = data.get("avatarSeed")
+    await sio.enter_room(sid, BLACKJACK_ROOM)
+
+    player = blackjack_table["players"].get(usuario_id)
+    if not player:
+        player = {
+            "usuarioId": usuario_id,
+            "socketId": sid,
+            "avatarSeed": avatar_seed,
+            "connected": True,
+            "pending_bet": 0.0,
+            "current_bet": 0.0,
+            "hands": [],
+            "round_payout": 0.0,
+            "round_net": 0.0,
+            "summary": [],
+            "last_action": "Sentou na mesa.",
+        }
+        blackjack_table["players"][usuario_id] = player
+        blackjack_table["player_order"].append(usuario_id)
+    else:
+        player["socketId"] = sid
+        player["avatarSeed"] = avatar_seed or player.get("avatarSeed")
+        player["connected"] = True
+        player["last_action"] = "Voltou para a mesa."
+
+    await blackjack_emit_state(usuario_id)
+    await blackjack_broadcast_state()
+    await blackjack_broadcast_message(f"{usuario_id} entrou na mesa compartilhada.")
+
+
+@sio.on("apostarFichaBlackjack")
+async def apostar_ficha_blackjack(sid, data):
+    usuario_id = (data.get("usuarioId") or "").strip()
+    valor = round(float(data.get("valor", 0)), 2)
+    if usuario_id not in blackjack_table["players"]:
+        await sio.emit("blackjackErro", {"mensagem": "Entre na mesa antes de apostar."}, to=sid)
+        return
+    if blackjack_table["phase"] != "betting":
+        await sio.emit("blackjackErro", {"mensagem": "Aposte apenas durante a contagem da mesa."}, to=sid)
+        return
+    if valor <= 0 or valor not in BLACKJACK_CHIP_VALUES:
+        await sio.emit("blackjackErro", {"mensagem": "Ficha invalida para esta mesa."}, to=sid)
+        return
+
+    ok, saldo = blackjack_reserve_bet(usuario_id, valor)
+    if not ok:
+        await sio.emit("blackjackErro", {"mensagem": f"Saldo insuficiente. Voce tem R$ {saldo:.2f}."}, to=sid)
+        return
+
+    player = blackjack_table["players"][usuario_id]
+    player["pending_bet"] = round(player["pending_bet"] + valor, 2)
+    player["last_action"] = f"Jogou ficha de R$ {valor:.2f}."
+    blackjack_table["message"] = f"{usuario_id} reforcou a aposta na mesa."
+    await blackjack_broadcast_state()
+
+
+@sio.on("limparApostaBlackjack")
+async def limpar_aposta_blackjack(sid, data):
+    usuario_id = (data.get("usuarioId") or "").strip()
+    player = blackjack_table["players"].get(usuario_id)
+    if not player:
+        await sio.emit("blackjackErro", {"mensagem": "Voce ainda nao esta nessa mesa."}, to=sid)
+        return
+    if blackjack_table["phase"] != "betting":
+        await sio.emit("blackjackErro", {"mensagem": "Nao da para limpar fichas com a rodada em andamento."}, to=sid)
+        return
+    if player["pending_bet"] <= 0:
+        return
+
+    blackjack_refund_bet(usuario_id, player["pending_bet"])
+    player["last_action"] = "Recolheu as fichas."
+    player["pending_bet"] = 0.0
+    blackjack_table["message"] = f"{usuario_id} limpou a area de aposta."
+    await blackjack_broadcast_state()
+
+
+@sio.on("acaoBlackjack")
+async def acao_blackjack(sid, data):
+    usuario_id = (data.get("usuarioId") or "").strip()
+    action = data.get("action")
+    ok, erro = await blackjack_apply_action(usuario_id, action)
+    if not ok:
+        await sio.emit("blackjackErro", {"mensagem": erro}, to=sid)
+        return
+    await blackjack_broadcast_state()
+
+
+@sio.on("sairMesaBlackjack")
+async def sair_mesa_blackjack(sid, data):
+    usuario_id = (data.get("usuarioId") or "").strip()
+    player = blackjack_table["players"].get(usuario_id)
+    if not player:
+        return
+
+    if blackjack_table["phase"] == "betting" and player["pending_bet"] > 0:
+        blackjack_refund_bet(usuario_id, player["pending_bet"])
+        player["pending_bet"] = 0.0
+
+    player["connected"] = False
+    player["socketId"] = None
+    player["last_action"] = "Deixou a mesa."
+    try:
+        await sio.leave_room(sid, BLACKJACK_ROOM)
+    except Exception:
+        pass
+    blackjack_prune_players()
+    await blackjack_broadcast_state()
 
 # =======================================================
 # LÓGICA AUTORITATIVA DE FARMING

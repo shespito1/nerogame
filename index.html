@@ -698,9 +698,129 @@
         .freebet-card-inner {
             position: absolute;
             inset: 0;
+        }
+
+        .freebet-card-stage {
+            position: absolute;
+            inset: 20px 12px;
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+
+        .freebet-card-panel {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border-radius: 6px;
+            border: 1px solid rgba(180, 168, 132, 0.95);
+            background:
+                linear-gradient(180deg, rgba(247, 242, 219, 0.98), rgba(234, 227, 197, 0.98));
+            box-shadow:
+                inset 0 0 0 1px rgba(255, 255, 255, 0.5),
+                inset 0 6px 12px rgba(255, 255, 255, 0.35);
+            overflow: hidden;
+        }
+
+        .freebet-card-panel.court {
+            background:
+                linear-gradient(180deg, rgba(246, 240, 214, 0.99), rgba(230, 220, 182, 0.99));
+        }
+
+        .freebet-card-panel.ace {
+            background:
+                linear-gradient(180deg, rgba(249, 244, 224, 0.99), rgba(237, 231, 204, 0.99));
+        }
+
+        .freebet-card-pip {
+            position: absolute;
+            font-size: 18px;
+            line-height: 1;
+            transform: translate(-50%, -50%);
+            text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45);
+        }
+
+        .freebet-card-pip.big {
+            font-size: 30px;
+        }
+
+        .freebet-card-pip.small {
+            font-size: 16px;
+        }
+
+        .freebet-card-face {
+            position: absolute;
+            left: 10px;
+            right: 10px;
+            top: 8px;
+            bottom: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            color: inherit;
+        }
+
+        .freebet-card-face-half {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .freebet-card-face-half.bottom {
+            transform: rotate(180deg);
+        }
+
+        .freebet-card-face-crown {
+            font-size: 14px;
+            line-height: 1;
+        }
+
+        .freebet-card-face-letter {
+            font-family: Georgia, serif;
+            font-size: 22px;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .freebet-card-face-suit {
+            font-size: 14px;
+            line-height: 1;
+        }
+
+        .freebet-card-face-plaque {
+            width: 44px;
+            height: 30px;
+            border-radius: 6px;
+            border: 1px solid rgba(126, 103, 45, 0.85);
+            background:
+                linear-gradient(145deg, rgba(255, 250, 230, 0.95), rgba(224, 209, 154, 0.98));
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: Georgia, serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: inherit;
+        }
+
+        .freebet-card-face-divider {
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(126, 103, 45, 0.32), transparent);
+        }
+
+        .freebet-card-face-title {
+            font-family: Georgia, serif;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            color: currentColor;
+            opacity: 0.72;
         }
 
         .freebet-card-corner {
@@ -710,7 +830,8 @@
             flex-direction: column;
             align-items: center;
             line-height: 0.95;
-            font-family: 'Rowdies', cursive;
+            font-family: Georgia, serif;
+            font-weight: 700;
             z-index: 1;
         }
 
@@ -735,8 +856,12 @@
         }
 
         .freebet-card-center {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
             font-size: 42px;
-            font-family: 'Rowdies', cursive;
+            font-family: Georgia, serif;
             opacity: 0.92;
             text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.35);
         }
@@ -869,6 +994,169 @@
         .freebet-result-chip.derrota {
             background: rgba(239, 68, 68, 0.2);
             color: #fecaca;
+        }
+
+        .freebet-status-band {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 20px auto 0 auto;
+            max-width: 980px;
+        }
+
+        .freebet-status-pill {
+            padding: 10px 16px;
+            border-radius: 999px;
+            background: rgba(0, 0, 0, 0.32);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #f8fafc;
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 0.4px;
+        }
+
+        .freebet-status-pill.strong {
+            background: linear-gradient(145deg, rgba(251, 191, 36, 0.32), rgba(180, 83, 9, 0.42));
+            color: #fff7cc;
+            border-color: rgba(253, 230, 138, 0.35);
+        }
+
+        .freebet-table-note {
+            margin: 14px 0 0 0;
+            color: #e5e7eb;
+            text-align: center;
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .freebet-chip-row {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        .freebet-chip-btn {
+            width: auto !important;
+            min-width: 108px;
+            padding: 12px 18px !important;
+            border-radius: 999px;
+            border: 1px solid rgba(253, 230, 138, 0.26);
+            background: linear-gradient(145deg, #f59e0b, #b45309);
+            color: #fff7cc;
+            font-family: 'Rowdies', cursive;
+            font-size: 15px !important;
+            box-shadow: 0 12px 22px rgba(0, 0, 0, 0.26);
+        }
+
+        .freebet-chip-btn.clear {
+            background: linear-gradient(145deg, #475569, #0f172a);
+            color: #e2e8f0;
+            border-color: rgba(148, 163, 184, 0.28);
+        }
+
+        .freebet-chip-btn:disabled,
+        .freebet-action-btn:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .freebet-seat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 18px;
+            margin-top: 20px;
+        }
+
+        .freebet-seat-card {
+            background: rgba(6, 18, 12, 0.62);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 18px;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 14px 28px rgba(0, 0, 0, 0.22);
+        }
+
+        .freebet-seat-card.viewer {
+            border-color: rgba(253, 230, 138, 0.68);
+            box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 18px 34px rgba(0, 0, 0, 0.28);
+        }
+
+        .freebet-seat-card.turn {
+            border-color: rgba(34, 197, 94, 0.72);
+            box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 18px 34px rgba(0, 0, 0, 0.28);
+        }
+
+        .freebet-seat-top {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 12px;
+        }
+
+        .freebet-seat-avatar {
+            width: 54px;
+            height: 54px;
+            border-radius: 18px;
+            border: 2px solid rgba(253, 230, 138, 0.36);
+            background: rgba(255, 255, 255, 0.08);
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .freebet-seat-name {
+            color: #f8fafc;
+            font-family: 'Rowdies', cursive;
+            font-size: 22px;
+            line-height: 1.05;
+        }
+
+        .freebet-seat-status {
+            margin-top: 4px;
+            color: #fde68a;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+
+        .freebet-seat-badges {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        .freebet-seat-note {
+            margin: 0 0 12px 0;
+            color: #d1fae5;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .freebet-empty-state {
+            margin-top: 6px;
+            padding: 16px;
+            border-radius: 18px;
+            border: 1px dashed rgba(255, 255, 255, 0.12);
+            color: #cbd5e1;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .freebet-loading-state {
+            min-height: 360px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff7cc;
+            text-align: center;
+            font-family: 'Rowdies', cursive;
+            font-size: 28px;
+            padding: 40px;
         }
 
         .regras-modal {
@@ -2088,7 +2376,12 @@
                             style="position: absolute; transform: rotate(-28deg) translateX(-62px) translateY(12px) scale(0.9); box-shadow: -8px 12px 20px rgba(0,0,0,0.6);">
                             <div class="freebet-card-inner">
                                 <div class="freebet-card-corner top"><span class="freebet-card-rank">A</span><span class="freebet-card-suit">♠</span></div>
-                                <div class="freebet-card-center">♠</div>
+                                <div class="freebet-card-stage">
+                                    <div class="freebet-card-panel" :class="freeBetCardPanelClass('A')">
+                                        <div v-for="(pip, pipIndex) in freeBetPipLayout('A')" :key="'cover-a-' + pipIndex"
+                                            class="freebet-card-pip" :class="pip.size || ''" :style="freeBetPipStyle(pip)">♠</div>
+                                    </div>
+                                </div>
                                 <div class="freebet-card-corner bottom"><span class="freebet-card-rank">A</span><span class="freebet-card-suit">♠</span></div>
                             </div>
                         </div>
@@ -2097,7 +2390,12 @@
                             style="position: absolute; transform: rotate(0deg) translateY(-6px) scale(1.05); box-shadow: 0 20px 35px rgba(0,0,0,0.72); border: 3px solid #fff; z-index: 10;">
                             <div class="freebet-card-inner">
                                 <div class="freebet-card-corner top"><span class="freebet-card-rank">10</span><span class="freebet-card-suit">♥</span></div>
-                                <div class="freebet-card-center">♥</div>
+                                <div class="freebet-card-stage">
+                                    <div class="freebet-card-panel" :class="freeBetCardPanelClass('10')">
+                                        <div v-for="(pip, pipIndex) in freeBetPipLayout('10')" :key="'cover-10-' + pipIndex"
+                                            class="freebet-card-pip" :class="pip.size || ''" :style="freeBetPipStyle(pip)">♥</div>
+                                    </div>
+                                </div>
                                 <div class="freebet-card-corner bottom"><span class="freebet-card-rank">10</span><span class="freebet-card-suit">♥</span></div>
                             </div>
                         </div>
@@ -2106,7 +2404,12 @@
                             style="position: absolute; transform: rotate(28deg) translateX(62px) translateY(12px) scale(0.9); box-shadow: 8px 12px 20px rgba(0,0,0,0.6);">
                             <div class="freebet-card-inner">
                                 <div class="freebet-card-corner top"><span class="freebet-card-rank">9</span><span class="freebet-card-suit">♦</span></div>
-                                <div class="freebet-card-center">♦</div>
+                                <div class="freebet-card-stage">
+                                    <div class="freebet-card-panel" :class="freeBetCardPanelClass('9')">
+                                        <div v-for="(pip, pipIndex) in freeBetPipLayout('9')" :key="'cover-9-' + pipIndex"
+                                            class="freebet-card-pip" :class="pip.size || ''" :style="freeBetPipStyle(pip)">♦</div>
+                                    </div>
+                                </div>
                                 <div class="freebet-card-corner bottom"><span class="freebet-card-rank">9</span><span class="freebet-card-suit">♦</span></div>
                             </div>
                         </div>
@@ -2199,88 +2502,198 @@
             </div>
         </div>
 
-        <div class="card-menu freebet-table" v-if="estado === 'FREEBET_JOGO' && freeBetState">
+        <div class="card-menu freebet-table" v-if="estado === 'FREEBET_JOGO'">
             <button class="btn-icon"
                 style="position: absolute; top: 15px; left: 15px; padding: 8px 15px; font-size: 14px; margin: 0; width: auto; background: #4a5568; color: white; border-radius: 6px; border: none; cursor: pointer; z-index: 3;"
-                @click="estado = 'MENU'">⬅️ Menu</button>
+                @click="sairMesaFreeBet()">⬅️ Menu</button>
 
-            <div class="freebet-dealer-area">
-                <h2 class="freebet-section-title">Dealer</h2>
-                <div class="freebet-cards-row">
-                    <div v-for="(card, idx) in freeBetState.dealer.cards" :key="'dealer-' + idx" class="freebet-card"
-                        :class="card.color">
-                        <div class="freebet-card-inner">
-                            <template v-if="card.color !== 'hidden'">
-                                <div class="freebet-card-corner top">
-                                    <span class="freebet-card-rank">{{ card.rank }}</span>
-                                    <span class="freebet-card-suit">{{ freeBetSuitSymbol(card.suit) }}</span>
-                                </div>
-                                <div class="freebet-card-center">{{ freeBetSuitSymbol(card.suit) }}</div>
-                                <div class="freebet-card-corner bottom">
-                                    <span class="freebet-card-rank">{{ card.rank }}</span>
-                                    <span class="freebet-card-suit">{{ freeBetSuitSymbol(card.suit) }}</span>
-                                </div>
-                            </template>
-                            <template v-else>
-                                <div class="freebet-card-center">NERO</div>
-                            </template>
+            <div v-if="freeBetState">
+                <div class="freebet-header">
+                    <div class="freebet-kicker">
+                        <span>Mesa compartilhada</span>
+                        <span>deck unico</span>
+                    </div>
+                    <h2 class="freebet-title">♠ Free Bet 21 Live</h2>
+                    <p class="freebet-subtitle">Todo mundo entra na mesma mesa, compartilha o mesmo deck, escolhe a jogada da propria mao e a contagem abre uma rodada nova a cada 10 segundos.</p>
+                    <div class="freebet-status-band">
+                        <div class="freebet-status-pill">Rodada {{ freeBetState.round_id }}</div>
+                        <div class="freebet-status-pill strong">{{ freeBetState.phase_label }}</div>
+                        <div class="freebet-status-pill">Deck: {{ freeBetState.deck_left }} cartas</div>
+                        <div class="freebet-status-pill">
+                            {{ freeBetState.phase === 'betting' ? 'Comeca em ' + freeBetState.betting_seconds_left + 's' : 'Tempo de decisao: ' + freeBetState.turn_seconds_left + 's' }}
                         </div>
                     </div>
                 </div>
-                <p class="freebet-hand-total">Total do dealer: {{ freeBetState.dealer.total }}</p>
-            </div>
 
-            <div class="freebet-player-area">
-                <h2 class="freebet-section-title">Suas maos</h2>
-                <div class="freebet-hand-grid">
-                    <div v-for="hand in freeBetState.hands" :key="'hand-' + hand.index" class="freebet-hand-card"
-                        :class="{ active: hand.active }">
-                        <div class="freebet-hand-top">
-                            <div class="freebet-hand-title">{{ hand.title }}</div>
-                            <div class="freebet-hand-badge">x{{ hand.bet_units }} aposta</div>
-                        </div>
-                        <div class="freebet-cards-row">
-                            <div v-for="(card, idx) in hand.cards" :key="'card-' + hand.index + '-' + idx" class="freebet-card"
-                                :class="card.color">
-                                <div class="freebet-card-inner">
+                <div class="freebet-dealer-area">
+                    <h2 class="freebet-section-title">Dealer</h2>
+                    <div class="freebet-cards-row">
+                        <div v-for="(card, idx) in freeBetState.dealer.cards" :key="'dealer-' + idx" class="freebet-card"
+                            :class="card.color">
+                            <div class="freebet-card-inner">
+                                <template v-if="card.color !== 'hidden'">
                                     <div class="freebet-card-corner top">
                                         <span class="freebet-card-rank">{{ card.rank }}</span>
                                         <span class="freebet-card-suit">{{ freeBetSuitSymbol(card.suit) }}</span>
                                     </div>
-                                    <div class="freebet-card-center">{{ freeBetSuitSymbol(card.suit) }}</div>
+                                    <div class="freebet-card-stage">
+                                        <div class="freebet-card-panel" :class="freeBetCardPanelClass(card.rank)">
+                                            <template v-if="freeBetIsCourtCard(card.rank)">
+                                                <div class="freebet-card-face">
+                                                    <div class="freebet-card-face-half">
+                                                        <div class="freebet-card-face-crown">♛</div>
+                                                        <div class="freebet-card-face-letter">{{ card.rank }}</div>
+                                                        <div class="freebet-card-face-suit">{{ freeBetSuitSymbol(card.suit) }}</div>
+                                                    </div>
+                                                    <div class="freebet-card-face-divider"></div>
+                                                    <div class="freebet-card-face-plaque">{{ card.rank }}{{ freeBetSuitSymbol(card.suit) }}</div>
+                                                    <div class="freebet-card-face-title">{{ freeBetCourtName(card.rank) }}</div>
+                                                    <div class="freebet-card-face-divider"></div>
+                                                    <div class="freebet-card-face-half bottom">
+                                                        <div class="freebet-card-face-crown">♛</div>
+                                                        <div class="freebet-card-face-letter">{{ card.rank }}</div>
+                                                        <div class="freebet-card-face-suit">{{ freeBetSuitSymbol(card.suit) }}</div>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                            <template v-else>
+                                                <div v-for="(pip, pipIndex) in freeBetPipLayout(card.rank)" :key="'dealer-pip-' + idx + '-' + pipIndex"
+                                                    class="freebet-card-pip" :class="pip.size || ''" :style="freeBetPipStyle(pip)">
+                                                    {{ freeBetSuitSymbol(card.suit) }}
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                    <div class="freebet-card-corner bottom">
+                                        <span class="freebet-card-rank">{{ card.rank }}</span>
+                                        <span class="freebet-card-suit">{{ freeBetSuitSymbol(card.suit) }}</span>
+                                    </div>
+                                </template>
+                                <template v-else>
+                                    <div class="freebet-card-center">NERO</div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="freebet-hand-total">Total do dealer: {{ freeBetState.dealer.total }}</p>
+                    <p class="freebet-table-note">{{ freeBetState.message }}</p>
+                </div>
+
+                <div class="freebet-footer-box" v-if="freeBetViewer">
+                    <p style="margin: 0; color: #fde68a; font-family: 'Rowdies', cursive; font-size: 24px;">Sua area de fichas</p>
+                    <p style="margin: 10px 0 0 0; color: #f8fafc; font-weight: 800;">Saldo: R$ {{ saldo.toFixed(2) }}</p>
+                    <p style="margin: 8px 0 0 0; color: #d1fae5; font-weight: 700;">Fichas da proxima rodada: R$ {{ freeBetViewer.pending_bet.toFixed(2) }} | Em jogo agora: R$ {{ freeBetViewer.current_bet.toFixed(2) }}</p>
+
+                    <div class="freebet-chip-row" v-if="freeBetState.can_place_bets">
+                        <button v-for="chip in freeBetState.chip_values" :key="'chip-' + chip" class="freebet-chip-btn"
+                            :disabled="freeBetLoading" @click="apostarFichaFreeBet(chip)">
+                            + R$ {{ chip.toFixed(2) }}
+                        </button>
+                        <button class="freebet-chip-btn clear" :disabled="freeBetLoading || freeBetViewer.pending_bet <= 0"
+                            @click="limparApostaFreeBet()">Limpar fichas</button>
+                    </div>
+
+                    <div class="freebet-actions" v-if="freeBetState.current_turn_player === usuarioId && freeBetActiveHand">
+                        <button class="freebet-action-btn" style="background: linear-gradient(145deg, #3b82f6, #1d4ed8); color: white;"
+                            :disabled="freeBetLoading" @click="executarAcaoFreeBet('hit')">Pedir Carta</button>
+                        <button class="freebet-action-btn" style="background: linear-gradient(145deg, #6b7280, #374151); color: white;"
+                            :disabled="freeBetLoading" @click="executarAcaoFreeBet('stand')">Parar</button>
+                        <button v-if="freeBetActiveHand.can_double" class="freebet-action-btn"
+                            style="background: linear-gradient(145deg, #f59e0b, #b45309); color: #fff7cc;"
+                            :disabled="freeBetLoading" @click="executarAcaoFreeBet('double')">Free Double</button>
+                        <button v-if="freeBetActiveHand.can_split" class="freebet-action-btn"
+                            style="background: linear-gradient(145deg, #22c55e, #15803d); color: white;"
+                            :disabled="freeBetLoading" @click="executarAcaoFreeBet('split')">Free Split</button>
+                    </div>
+                </div>
+
+                <div class="freebet-seat-grid">
+                    <div v-for="player in freeBetState.players" :key="player.usuarioId" class="freebet-seat-card"
+                        :class="{ viewer: player.is_viewer, turn: player.is_turn }">
+                        <div class="freebet-seat-top">
+                            <img class="freebet-seat-avatar" :src="getAvatarImage(player.avatarSeed, player.usuarioId)" alt="avatar">
+                            <div>
+                                <div class="freebet-seat-name">{{ player.usuarioId }}</div>
+                                <div class="freebet-seat-status">{{ player.status }}{{ player.connected ? '' : ' | offline' }}</div>
+                            </div>
+                        </div>
+
+                        <div class="freebet-seat-badges">
+                            <span class="freebet-result-chip push">Mesa: R$ {{ player.display_bet.toFixed(2) }}</span>
+                            <span class="freebet-result-chip" :class="player.round_net >= 0 ? 'vitoria' : 'derrota'" v-if="player.current_bet > 0">
+                                {{ player.round_net >= 0 ? 'Resultado +' : 'Resultado ' }}R$ {{ player.round_net.toFixed(2) }}
+                            </span>
+                        </div>
+
+                        <p class="freebet-seat-note" v-if="player.last_action">{{ player.last_action }}</p>
+
+                        <div class="freebet-hand-grid" v-if="player.hands && player.hands.length">
+                            <div v-for="hand in player.hands" :key="player.usuarioId + '-hand-' + hand.index" class="freebet-hand-card"
+                                :class="{ active: hand.active }">
+                                <div class="freebet-hand-top">
+                                    <div class="freebet-hand-title">{{ hand.title }}</div>
+                                    <div class="freebet-hand-badge">x{{ hand.bet_units }} aposta</div>
+                                </div>
+                                <div class="freebet-cards-row">
+                                    <div v-for="(card, idx) in hand.cards" :key="player.usuarioId + '-card-' + hand.index + '-' + idx" class="freebet-card"
+                                        :class="card.color">
+                                        <div class="freebet-card-inner">
+                                    <div class="freebet-card-corner top">
+                                        <span class="freebet-card-rank">{{ card.rank }}</span>
+                                        <span class="freebet-card-suit">{{ freeBetSuitSymbol(card.suit) }}</span>
+                                    </div>
+                                    <div class="freebet-card-stage">
+                                        <div class="freebet-card-panel" :class="freeBetCardPanelClass(card.rank)">
+                                            <template v-if="freeBetIsCourtCard(card.rank)">
+                                                <div class="freebet-card-face">
+                                                    <div class="freebet-card-face-half">
+                                                        <div class="freebet-card-face-crown">♛</div>
+                                                        <div class="freebet-card-face-letter">{{ card.rank }}</div>
+                                                        <div class="freebet-card-face-suit">{{ freeBetSuitSymbol(card.suit) }}</div>
+                                                    </div>
+                                                    <div class="freebet-card-face-divider"></div>
+                                                    <div class="freebet-card-face-plaque">{{ card.rank }}{{ freeBetSuitSymbol(card.suit) }}</div>
+                                                    <div class="freebet-card-face-title">{{ freeBetCourtName(card.rank) }}</div>
+                                                    <div class="freebet-card-face-divider"></div>
+                                                    <div class="freebet-card-face-half bottom">
+                                                        <div class="freebet-card-face-crown">♛</div>
+                                                        <div class="freebet-card-face-letter">{{ card.rank }}</div>
+                                                        <div class="freebet-card-face-suit">{{ freeBetSuitSymbol(card.suit) }}</div>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                            <template v-else>
+                                                <div v-for="(pip, pipIndex) in freeBetPipLayout(card.rank)" :key="'hand-pip-' + hand.index + '-' + idx + '-' + pipIndex"
+                                                    class="freebet-card-pip" :class="pip.size || ''" :style="freeBetPipStyle(pip)">
+                                                    {{ freeBetSuitSymbol(card.suit) }}
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
                                     <div class="freebet-card-corner bottom">
                                         <span class="freebet-card-rank">{{ card.rank }}</span>
                                         <span class="freebet-card-suit">{{ freeBetSuitSymbol(card.suit) }}</span>
                                     </div>
                                 </div>
+                                    </div>
+                                </div>
+                                <p class="freebet-hand-total">Total: {{ hand.total }}</p>
+                                <div v-if="hand.result" class="freebet-footer-box" style="text-align:center;">
+                                    <span class="freebet-result-chip" :class="hand.result">{{ hand.result_text }}</span>
+                                    <p style="margin: 10px 0 0 0; color: #e5e7eb; font-weight: 700;">Pagamento: R$ {{ hand.payout.toFixed(2) }}</p>
+                                </div>
                             </div>
                         </div>
-                        <p class="freebet-hand-total">Total: {{ hand.total }}</p>
-                        <div v-if="hand.result" class="freebet-footer-box" style="text-align:center;">
-                            <span class="freebet-result-chip" :class="hand.result">{{ hand.result_text }}</span>
-                            <p style="margin: 10px 0 0 0; color: #e5e7eb; font-weight: 700;">Pagamento: R$ {{ hand.payout.toFixed(2) }}</p>
+
+                        <div class="freebet-empty-state" v-else>
+                            {{ player.pending_bet > 0 ? 'Fichas posicionadas para a proxima rodada.' : 'Assistindo a mesa no momento.' }}
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="freebet-actions" v-if="freeBetState.status === 'player_turn' && freeBetActiveHand">
-                    <button class="freebet-action-btn" style="background: linear-gradient(145deg, #3b82f6, #1d4ed8); color: white;" @click="executarAcaoFreeBet('hit', freeBetActiveHand.index)">Pedir Carta</button>
-                    <button class="freebet-action-btn" style="background: linear-gradient(145deg, #6b7280, #374151); color: white;" @click="executarAcaoFreeBet('stand', freeBetActiveHand.index)">Parar</button>
-                    <button v-if="freeBetActiveHand.can_double" class="freebet-action-btn" style="background: linear-gradient(145deg, #f59e0b, #b45309); color: #fff7cc;" @click="executarAcaoFreeBet('double', freeBetActiveHand.index)">Duplo Gratis</button>
-                    <button v-if="freeBetActiveHand.can_split" class="freebet-action-btn" style="background: linear-gradient(145deg, #22c55e, #15803d); color: white;" @click="executarAcaoFreeBet('split', freeBetActiveHand.index)">Split Gratis</button>
-                </div>
-
-                <div class="freebet-footer-box">
-                    <p style="margin: 0 0 8px 0; color: #fde68a; font-family: 'Rowdies', cursive; font-size: 24px;">Mesa</p>
-                    <p style="margin: 0; color: #f8fafc; font-weight: 700;">{{ freeBetState.message }}</p>
-                    <p style="margin: 10px 0 0 0; color: #d1fae5; font-weight: 800;">Aposta base: R$ {{ freeBetState.bet_amount.toFixed(2) }}</p>
-                    <p v-if="freeBetState.status === 'finished'" style="margin: 10px 0 0 0; color: #fde68a; font-weight: 800;">Resultado final: R$ {{ freeBetState.net_result.toFixed(2) }}</p>
-                    <p v-if="freeBetState.status === 'finished' && freeBetState.summary.length" style="margin: 10px 0 0 0; color: #e5e7eb; font-weight: 700;">{{ freeBetState.summary.join(' | ') }}</p>
-                </div>
-
-                <div class="freebet-actions" v-if="freeBetState.status === 'finished'">
-                    <button class="freebet-action-btn" style="background: linear-gradient(145deg, #22c55e, #15803d); color: white;" @click="estado = 'FREEBET_APOSTA'; freeBetState = null;">Nova Rodada</button>
-                </div>
+            <div v-else class="freebet-loading-state">
+                Entrando na mesa compartilhada...
             </div>
         </div>
 
@@ -2667,7 +3080,6 @@
 
                 if (this.usuarioId) {
                     this.carregarBots();
-                    this.carregarEstadoFreeBet();
                 }
 
                 // Pegar mensagem do backend
@@ -2758,9 +3170,13 @@
                 }
             },
             computed: {
+                freeBetViewer() {
+                    if (!this.freeBetState || !this.freeBetState.players) return null;
+                    return this.freeBetState.players.find(player => player.is_viewer) || null;
+                },
                 freeBetActiveHand() {
-                    if (!this.freeBetState || !this.freeBetState.hands) return null;
-                    return this.freeBetState.hands.find(hand => hand.active) || null;
+                    if (!this.freeBetViewer || !this.freeBetViewer.hands) return null;
+                    return this.freeBetViewer.hands.find(hand => hand.active) || null;
                 }
             },
             methods: {
@@ -2944,76 +3360,114 @@
                     };
                     return simbolos[suit] || '?';
                 },
+                freeBetIsCourtCard(rank) {
+                    return ['J', 'Q', 'K'].includes(rank);
+                },
+                freeBetCourtName(rank) {
+                    const nomes = {
+                        J: 'Valete',
+                        Q: 'Dama',
+                        K: 'Rei'
+                    };
+                    return nomes[rank] || rank;
+                },
+                freeBetCardPanelClass(rank) {
+                    return {
+                        court: this.freeBetIsCourtCard(rank),
+                        ace: rank === 'A'
+                    };
+                },
+                freeBetPipLayout(rank) {
+                    const layouts = {
+                        A: [{ top: 50, left: 50, size: 'big' }],
+                        '2': [{ top: 24, left: 50 }, { top: 76, left: 50 }],
+                        '3': [{ top: 20, left: 50 }, { top: 50, left: 50 }, { top: 80, left: 50 }],
+                        '4': [{ top: 24, left: 34 }, { top: 24, left: 66 }, { top: 76, left: 34 }, { top: 76, left: 66 }],
+                        '5': [{ top: 24, left: 34 }, { top: 24, left: 66 }, { top: 50, left: 50 }, { top: 76, left: 34 }, { top: 76, left: 66 }],
+                        '6': [{ top: 20, left: 34 }, { top: 20, left: 66 }, { top: 50, left: 34 }, { top: 50, left: 66 }, { top: 80, left: 34 }, { top: 80, left: 66 }],
+                        '7': [{ top: 16, left: 50 }, { top: 28, left: 34 }, { top: 28, left: 66 }, { top: 52, left: 34 }, { top: 52, left: 66 }, { top: 78, left: 34 }, { top: 78, left: 66 }],
+                        '8': [{ top: 16, left: 34 }, { top: 16, left: 66 }, { top: 36, left: 34 }, { top: 36, left: 66 }, { top: 64, left: 34 }, { top: 64, left: 66 }, { top: 84, left: 34 }, { top: 84, left: 66 }],
+                        '9': [{ top: 16, left: 50 }, { top: 26, left: 34 }, { top: 26, left: 66 }, { top: 48, left: 34 }, { top: 48, left: 66 }, { top: 70, left: 34 }, { top: 70, left: 66 }, { top: 84, left: 34 }, { top: 84, left: 66 }],
+                        '10': [{ top: 16, left: 34, size: 'small' }, { top: 16, left: 66, size: 'small' }, { top: 34, left: 50, size: 'small' }, { top: 42, left: 34 }, { top: 42, left: 66 }, { top: 58, left: 34 }, { top: 58, left: 66 }, { top: 66, left: 50, size: 'small' }, { top: 84, left: 34, size: 'small' }, { top: 84, left: 66, size: 'small' }]
+                    };
+                    return layouts[rank] || [];
+                },
+                freeBetPipStyle(pip) {
+                    const rot = pip.top > 55 ? ' rotate(180deg)' : '';
+                    return {
+                        top: pip.top + '%',
+                        left: pip.left + '%',
+                        transform: 'translate(-50%, -50%)' + rot
+                    };
+                },
+                getAvatarImage(seed, fallback) {
+                    const valorBase = (seed && typeof seed === 'string') ? seed : '';
+                    const path = valorBase && valorBase.includes('/')
+                        ? valorBase
+                        : `adventurer/svg?${valorBase && valorBase.includes('=') ? valorBase : 'seed=' + encodeURIComponent(valorBase || fallback || 'default')}`;
+                    return `https://api.dicebear.com/7.x/${path}&backgroundColor=b6e3f4`;
+                },
                 abrirFreeBetLobby() {
-                    this.estado = 'FREEBET_APOSTA';
-                    this.carregarEstadoFreeBet();
+                    if (!this.usuarioId) {
+                        alert('Faça login antes de entrar na mesa.');
+                        return;
+                    }
+                    this.estado = 'FREEBET_JOGO';
+                    this.freeBetState = null;
+                    this.freeBetLoading = true;
+                    this.conectarSocket(() => {
+                        this.socket.emit('entrarMesaBlackjack', {
+                            usuarioId: this.usuarioId,
+                            avatarSeed: this.avatarSeed
+                        });
+                    });
                 },
                 async carregarEstadoFreeBet() {
-                    if (!this.usuarioId) return;
-                    try {
-                        const res = await this.apiFetch('/api/freebet/state?usuario_email=' + encodeURIComponent(this.usuarioId));
-                        const data = await res.json();
-                        if (data.success) {
-                            this.freeBetState = data.state;
-                            if (typeof data.saldo === 'number') this.saldo = data.saldo;
-                        }
-                    } catch (e) {
-                        console.error('Erro ao carregar estado do Free Bet 21:', e);
+                    if (this.estado === 'FREEBET_JOGO' && this.socket && this.usuarioId) {
+                        this.socket.emit('entrarMesaBlackjack', {
+                            usuarioId: this.usuarioId,
+                            avatarSeed: this.avatarSeed
+                        });
                     }
                 },
                 async iniciarFreeBet(valorAposta) {
-                    if (!this.usuarioId) {
-                        alert('Faça login antes de abrir a mesa.');
+                    return this.apostarFichaFreeBet(valorAposta);
+                },
+                apostarFichaFreeBet(valorAposta) {
+                    if (!this.socket || !this.usuarioId) {
+                        alert('Conecte-se a mesa antes de apostar.');
                         return;
                     }
                     this.freeBetLoading = true;
-                    try {
-                        const res = await this.apiFetch('/api/freebet/start', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ usuario_email: this.usuarioId, aposta: valorAposta })
-                        });
-                        const data = await res.json();
-                        if (!res.ok || !data.success) {
-                            alert(data.detail || 'Nao foi possivel iniciar a mesa de Free Bet 21.');
-                            if (typeof data.saldo === 'number') this.saldo = data.saldo;
-                            if (data.state) this.freeBetState = data.state;
-                            return;
-                        }
-                        this.freeBetState = data.state;
-                        if (typeof data.saldo === 'number') this.saldo = data.saldo;
-                        this.estado = 'FREEBET_JOGO';
-                    } catch (e) {
-                        console.error('Erro ao iniciar Free Bet 21:', e);
-                        alert('Erro de conexao ao iniciar o Free Bet 21.');
-                    } finally {
-                        this.freeBetLoading = false;
-                    }
+                    this.socket.emit('apostarFichaBlackjack', {
+                        usuarioId: this.usuarioId,
+                        valor: valorAposta
+                    });
                 },
-                async executarAcaoFreeBet(action, handIndex) {
-                    if (!this.usuarioId || !this.freeBetState) return;
+                limparApostaFreeBet() {
+                    if (!this.socket || !this.usuarioId) return;
                     this.freeBetLoading = true;
-                    try {
-                        const res = await this.apiFetch('/api/freebet/action', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ usuario_email: this.usuarioId, action: action, hand_index: handIndex })
+                    this.socket.emit('limparApostaBlackjack', {
+                        usuarioId: this.usuarioId
+                    });
+                },
+                async executarAcaoFreeBet(action) {
+                    if (!this.usuarioId || !this.freeBetState || !this.socket) return;
+                    this.freeBetLoading = true;
+                    this.socket.emit('acaoBlackjack', {
+                        usuarioId: this.usuarioId,
+                        action: action
+                    });
+                },
+                sairMesaFreeBet() {
+                    if (this.socket && this.usuarioId) {
+                        this.socket.emit('sairMesaBlackjack', {
+                            usuarioId: this.usuarioId
                         });
-                        const data = await res.json();
-                        if (!res.ok || !data.success) {
-                            alert(data.detail || 'Acao nao permitida nessa rodada.');
-                            if (data.state) this.freeBetState = data.state;
-                            if (typeof data.saldo === 'number') this.saldo = data.saldo;
-                            return;
-                        }
-                        this.freeBetState = data.state;
-                        if (typeof data.saldo === 'number') this.saldo = data.saldo;
-                    } catch (e) {
-                        console.error('Erro ao executar acao no Free Bet 21:', e);
-                        alert('Erro de conexao na mesa de Free Bet 21.');
-                    } finally {
-                        this.freeBetLoading = false;
                     }
+                    this.freeBetState = null;
+                    this.freeBetLoading = false;
+                    this.estado = 'MENU';
                 },
                 abrirAbaPerfil(aba) {
                     this.abaPerfilAtiva = aba;
@@ -3217,7 +3671,13 @@
                             reconnectionAttempts: 10,
                             timeout: 10000
                         });
-                        this.socket.on("connect", () => { this.addLog("✅ Conectado com sucesso!"); if (callback) callback(); });
+                        this.socket.on("connect", () => {
+                            this.addLog("✅ Conectado com sucesso!");
+                            if (callback) callback();
+                            if (this.estado === 'FREEBET_JOGO' && this.usuarioId) {
+                                this.socket.emit("entrarMesaBlackjack", { usuarioId: this.usuarioId, avatarSeed: this.avatarSeed });
+                            }
+                        });
                         this.socket.on("partidaIniciada", (data) => {
                             this.addLog("🔥 A PARTIDA COMEÇOU!"); this.estado = "JOGO"; this.partidaId = data.partidaId;
                             this.mao = data.suaMao; this.cartaMesa = data.cartaMesa; this.turnoAtual = data.turnoAtual; this.oponentes = data.oponentes;
@@ -3241,6 +3701,23 @@
                         });
                         this.socket.on("suaNovaCarta", (data) => { this.esperandoResposta = false; this.mao.push(data.carta); this.addLog(`🎴 Você comprou um ${data.carta.valor}`); });
                         this.socket.on("mensagem_jogo", (data) => { this.addLog(data.msg); });
+                        this.socket.on("blackjackMesaEstado", (data) => {
+                            this.freeBetState = data;
+                            this.freeBetLoading = false;
+                            if (typeof data.viewer_balance === 'number') {
+                                this.saldo = data.viewer_balance;
+                            }
+                        });
+                        this.socket.on("blackjackMensagem", (data) => {
+                            if (data && data.msg) this.addLog("♠ " + data.msg);
+                        });
+                        this.socket.on("blackjackErro", (data) => {
+                            this.freeBetLoading = false;
+                            if (data && data.mensagem) {
+                                this.addLog("❌ " + data.mensagem);
+                                alert(data.mensagem);
+                            }
+                        });
                         this.socket.on("fimDeJogo", (data) => {
                             this.addLog(`🏆 Vencedor: ${data.vencedor}`); this.vencedor = data.vencedor; this.premio = data.premio_total; this.estado = "FIM";
 
@@ -3256,8 +3733,14 @@
 
                             this.partidaId = null;
                         });
-                        this.socket.on("disconnect", () => { this.addLog("⚠️ Conexão com servidor foi perdida."); });
-                        this.socket.on("connect_error", (err) => { this.addLog("❌ Erro de conexão com servidor!"); });
+                        this.socket.on("disconnect", () => {
+                            this.freeBetLoading = false;
+                            this.addLog("⚠️ Conexão com servidor foi perdida.");
+                        });
+                        this.socket.on("connect_error", (err) => {
+                            this.freeBetLoading = false;
+                            this.addLog("❌ Erro de conexão com servidor!");
+                        });
                     } else { if (callback) callback(); }
                 },
                 pagarEEntrarNaFila(valorAposta) {
