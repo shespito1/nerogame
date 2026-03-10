@@ -2775,8 +2775,9 @@
                 </div>
 
                 <div class="freebet-seat-grid">
-                    <div v-for="player in freeBetState.players" :key="player.usuarioId" class="freebet-seat-card"
-                        :class="{ viewer: player.is_viewer, turn: player.is_turn }">
+                    <template v-for="player in freeBetState.players">
+                        <div v-if="!player.is_viewer" :key="player.usuarioId" class="freebet-seat-card"
+                            :class="{ turn: player.is_turn }">
                         <div class="freebet-seat-top">
                             <img class="freebet-seat-avatar" :src="getAvatarImage(player.avatarSeed, player.usuarioId)" alt="avatar">
                             <div>
@@ -2856,6 +2857,7 @@
                             {{ player.pending_bet > 0 ? 'Fichas posicionadas para a proxima rodada.' : 'Assistindo a mesa no momento.' }}
                         </div>
                     </div>
+                    </template>
                 </div>
             </div>
 
