@@ -626,15 +626,20 @@
             box-shadow: 0 28px 42px rgba(0, 0, 0, 0.34);
         }
 
-        /* Free Bet 21: keep dealer + your hand in-view (no page scroll). */
-        .container.freebet-mode {
-            height: 100dvh;
-            max-height: 100dvh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            padding: 10px;
-        }
+	        /* Free Bet 21: keep dealer + your hand in-view (no page scroll). */
+	        .container.freebet-mode {
+	            height: 100dvh;
+	            max-height: 100dvh;
+	            position: fixed;
+	            inset: 0;
+	            width: 100%;
+	            max-width: none;
+	            margin: 0;
+	            overflow: hidden;
+	            display: flex;
+	            flex-direction: column;
+	            padding: 10px;
+	        }
 
         .container.freebet-mode .stats {
             display: none;
@@ -673,9 +678,26 @@
             display: none;
         }
 
-        .container.freebet-mode .freebet-status-band {
-            margin: 12px auto 0 auto;
-        }
+	        .container.freebet-mode .freebet-status-band {
+	            flex-wrap: nowrap;
+	            justify-content: flex-start;
+	            overflow-x: auto;
+	            gap: 8px;
+	            margin: 10px auto 0 auto;
+	            padding: 0 6px 6px 6px;
+	            max-width: 100%;
+	        }
+
+	        .container.freebet-mode .freebet-status-band::-webkit-scrollbar {
+	            height: 0px;
+	            background: transparent;
+	        }
+
+	        .container.freebet-mode .freebet-status-pill {
+	            padding: 8px 12px;
+	            font-size: 12px;
+	            white-space: nowrap;
+	        }
 
         .container.freebet-mode .freebet-card {
             width: 82px;
@@ -699,9 +721,10 @@
             background: transparent;
         }
 
-        .container.freebet-mode .freebet-footer-box {
-            margin-top: 12px;
-        }
+	        .container.freebet-mode .freebet-footer-box {
+	            margin-top: 10px;
+	            padding: 10px 12px;
+	        }
 
         .container.freebet-mode .freebet-seat-grid {
             flex: 1 1 auto;
@@ -711,14 +734,70 @@
             margin-top: 12px;
         }
 
-        .container.freebet-mode .freebet-seat-grid::-webkit-scrollbar {
-            width: 0px;
-            background: transparent;
-        }
+	        .container.freebet-mode .freebet-seat-grid::-webkit-scrollbar {
+	            width: 0px;
+	            background: transparent;
+	        }
 
-        .freebet-table {
-            position: relative;
-            overflow: hidden;
+	        .container.freebet-mode .freebet-dealer-area,
+	        .container.freebet-mode .freebet-player-area {
+	            padding: 10px 8px;
+	        }
+
+	        .container.freebet-mode .freebet-section-title {
+	            font-size: 18px;
+	            margin: 0 0 10px 0;
+	        }
+
+	        .container.freebet-mode .freebet-hand-total {
+	            margin-top: 8px;
+	            font-size: 14px;
+	        }
+
+	        .container.freebet-mode .freebet-chip-row {
+	            flex-wrap: nowrap;
+	            overflow-x: auto;
+	            justify-content: flex-start;
+	            gap: 10px;
+	            margin-top: 10px;
+	            padding-bottom: 6px;
+	        }
+
+	        .container.freebet-mode .freebet-chip-row::-webkit-scrollbar {
+	            height: 0px;
+	            background: transparent;
+	        }
+
+	        .container.freebet-mode .freebet-chip-btn {
+	            min-width: 0;
+	            padding: 10px 14px !important;
+	            font-size: 13px !important;
+	        }
+
+	        .container.freebet-mode .freebet-actions {
+	            flex-wrap: nowrap;
+	            overflow-x: auto;
+	            justify-content: flex-start;
+	            gap: 10px;
+	            margin-top: 12px;
+	            padding-bottom: 6px;
+	        }
+
+	        .container.freebet-mode .freebet-actions::-webkit-scrollbar {
+	            height: 0px;
+	            background: transparent;
+	        }
+
+	        .container.freebet-mode .freebet-action-btn {
+	            min-width: 120px;
+	            padding: 10px 14px !important;
+	            font-size: 14px !important;
+	            border-radius: 14px;
+	        }
+
+	        .freebet-table {
+	            position: relative;
+	            overflow: hidden;
             background:
                 radial-gradient(circle at center, rgba(36, 96, 64, 0.82) 0%, rgba(10, 32, 21, 0.95) 70%),
                 linear-gradient(180deg, rgba(7, 18, 12, 0.95), rgba(6, 10, 8, 0.98));
@@ -1049,19 +1128,78 @@
             font-size: 16px !important;
         }
 
-        .freebet-footer-box {
-            margin-top: 18px;
-            padding: 16px 18px;
-            border-radius: 18px;
-            background: rgba(0, 0, 0, 0.28);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            color: #f8fafc;
-        }
+	        .freebet-footer-box {
+	            margin-top: 18px;
+	            padding: 16px 18px;
+	            border-radius: 18px;
+	            background: rgba(0, 0, 0, 0.28);
+	            border: 1px solid rgba(255, 255, 255, 0.08);
+	            color: #f8fafc;
+	        }
 
-        .freebet-result-chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
+	        .freebet-footer-top {
+	            display: flex;
+	            align-items: center;
+	            justify-content: space-between;
+	            gap: 12px;
+	            flex-wrap: wrap;
+	        }
+
+	        .freebet-footer-title {
+	            margin: 0;
+	            color: #fde68a;
+	            font-family: 'Rowdies', cursive;
+	            font-size: 22px;
+	        }
+
+	        .freebet-footer-line {
+	            margin: 10px 0 0 0;
+	            color: #f8fafc;
+	            font-weight: 800;
+	            font-size: 14px;
+	        }
+
+	        .freebet-footer-line.secondary {
+	            margin-top: 8px;
+	            color: #d1fae5;
+	            font-weight: 700;
+	        }
+
+	        .freebet-seat-toggle {
+	            width: auto !important;
+	            padding: 8px 12px !important;
+	            border-radius: 999px;
+	            border: 1px solid rgba(253, 230, 138, 0.24);
+	            background: rgba(15, 23, 42, 0.55);
+	            color: #e2e8f0;
+	            font-weight: 800;
+	            font-size: 12px !important;
+	            cursor: pointer;
+	            box-shadow: 0 10px 18px rgba(0, 0, 0, 0.22);
+	        }
+
+	        .container.freebet-mode .freebet-footer-title {
+	            font-size: 18px;
+	        }
+
+	        .container.freebet-mode .freebet-footer-line {
+	            margin-top: 6px;
+	            font-size: 13px;
+	        }
+
+	        .container.freebet-mode .freebet-footer-line.secondary {
+	            margin-top: 6px;
+	            font-size: 12px;
+	        }
+
+	        .container.freebet-mode .freebet-seat-toggle {
+	            padding: 6px 10px !important;
+	        }
+
+	        .freebet-result-chip {
+	            display: inline-flex;
+	            align-items: center;
+	            gap: 8px;
             padding: 7px 12px;
             border-radius: 999px;
             font-size: 12px;
@@ -2746,14 +2884,20 @@
                     </div>
                 </div>
 
-                <div class="freebet-footer-box" v-if="freeBetViewer">
-                    <p style="margin: 0; color: #fde68a; font-family: 'Rowdies', cursive; font-size: 24px;">Sua area de fichas</p>
-                    <p style="margin: 10px 0 0 0; color: #f8fafc; font-weight: 800;">Saldo: R$ {{ saldo.toFixed(2) }}</p>
-                    <p style="margin: 8px 0 0 0; color: #d1fae5; font-weight: 700;">Fichas da proxima rodada: R$ {{ freeBetViewer.pending_bet.toFixed(2) }} | Em jogo agora: R$ {{ freeBetViewer.current_bet.toFixed(2) }}</p>
-
-                    <div class="freebet-chip-row" v-if="freeBetState.can_place_bets">
-                        <button v-for="chip in freeBetState.chip_values" :key="'chip-' + chip" class="freebet-chip-btn"
-                            :disabled="freeBetLoading" @click="apostarFichaFreeBet(chip)">
+	                <div class="freebet-footer-box" v-if="freeBetViewer">
+	                    <div class="freebet-footer-top">
+	                        <p class="freebet-footer-title">Sua area de fichas</p>
+	                        <button class="freebet-seat-toggle" v-if="freeBetState && freeBetState.players"
+	                            @click="freeBetShowSeats = !freeBetShowSeats">
+	                            {{ freeBetShowSeats ? 'Ocultar jogadores' : ('Ver jogadores (' + freeBetState.players.length + ')') }}
+	                        </button>
+	                    </div>
+	                    <p class="freebet-footer-line">Saldo: R$ {{ saldo.toFixed(2) }}</p>
+	                    <p class="freebet-footer-line secondary">Fichas da proxima rodada: R$ {{ freeBetViewer.pending_bet.toFixed(2) }} | Em jogo agora: R$ {{ freeBetViewer.current_bet.toFixed(2) }}</p>
+	
+	                    <div class="freebet-chip-row" v-if="freeBetState.can_place_bets">
+	                        <button v-for="chip in freeBetState.chip_values" :key="'chip-' + chip" class="freebet-chip-btn"
+	                            :disabled="freeBetLoading" @click="apostarFichaFreeBet(chip)">
                             + R$ {{ chip.toFixed(2) }}
                         </button>
                         <button class="freebet-chip-btn clear compact" :disabled="freeBetLoading || freeBetViewer.pending_bet <= 0"
@@ -2774,10 +2918,10 @@
                     </div>
                 </div>
 
-                <div class="freebet-seat-grid">
-                    <template v-for="player in freeBetState.players">
-                        <div v-if="!player.is_viewer" :key="player.usuarioId" class="freebet-seat-card"
-                            :class="{ turn: player.is_turn }">
+	                <div class="freebet-seat-grid" v-if="freeBetShowSeats">
+	                    <template v-for="player in freeBetState.players">
+	                        <div v-if="!player.is_viewer" :key="player.usuarioId" class="freebet-seat-card"
+	                            :class="{ turn: player.is_turn }">
                         <div class="freebet-seat-top">
                             <img class="freebet-seat-avatar" :src="getAvatarImage(player.avatarSeed, player.usuarioId)" alt="avatar">
                             <div>
@@ -3179,12 +3323,13 @@
                 autoPlay: false,
                 penalidadeAcumulada: 0,
                 ultimosGanhadores: [],
-                mostrandoRegras: false,
-                freeBetState: null,
-                freeBetLoading: false,
-                mostrandoOpcoesAvatar: false,
-                mostrandoCriadorAvatar: false,
-                listaAvatares: [], // Lista de 50 sementes fixas para escolha
+	                mostrandoRegras: false,
+	                freeBetState: null,
+	                freeBetLoading: false,
+	                freeBetShowSeats: false,
+	                mostrandoOpcoesAvatar: false,
+	                mostrandoCriadorAvatar: false,
+	                listaAvatares: [], // Lista de 50 sementes fixas para escolha
                 usuariosFakesDB: [],
                 ultimoUsoDB: {},
                 opcoesAposta: (() => {
@@ -3832,14 +3977,14 @@
                         if (this.socket) {
                             try { this.socket.disconnect(); } catch (e) {}
                         }
-                        this.addLog("Conectando ao servidor...");
-                        this.socketUrl = serverUrl;
-                        this.socket = io(serverUrl, {
-                            transports: ["websocket"],
-                            reconnection: true,
-                            reconnectionAttempts: 10,
-                            timeout: 10000
-                        });
+	                        this.addLog("Conectando ao servidor...");
+	                        this.socketUrl = serverUrl;
+	                        this.socket = io(serverUrl, {
+	                            transports: ["polling", "websocket"],
+	                            reconnection: true,
+	                            reconnectionAttempts: 10,
+	                            timeout: 20000
+	                        });
                         this.socket.on("connect", () => {
                             this.addLog("✅ Conectado com sucesso!");
                             if (callback) callback();
