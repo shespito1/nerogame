@@ -38,4 +38,5 @@ if __name__ == "__main__":
     print("Servidor do Jogo iniciando em http://localhost:8000")
     import os
     os.environ["UVICORN_APP"] = "main:main_app"
-    uvicorn.run("main:main_app", host="0.0.0.0", port=8000, reload=True)
+    # Use IPv6 wildcard so 'localhost' (often ::1 on Windows) works and ngrok can reach the upstream.
+    uvicorn.run("main:main_app", host="::", port=8000, reload=True)
