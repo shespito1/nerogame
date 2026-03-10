@@ -626,6 +626,77 @@
             box-shadow: 0 28px 42px rgba(0, 0, 0, 0.34);
         }
 
+        /* Free Bet 21: keep dealer + your hand in-view (no page scroll). */
+        .container.freebet-mode {
+            height: 100dvh;
+            max-height: 100dvh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            padding: 12px;
+        }
+
+        .container.freebet-mode .stats {
+            flex: 0 0 auto;
+            margin-bottom: 12px;
+        }
+
+        .container.freebet-mode .freebet-table {
+            flex: 1 1 auto;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .freebet-stage {
+            flex: 1 1 auto;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container.freebet-mode .freebet-header {
+            padding-top: 46px;
+            padding-bottom: 6px;
+        }
+
+        .container.freebet-mode .freebet-subtitle {
+            display: none;
+        }
+
+        .container.freebet-mode .freebet-status-band {
+            margin: 12px auto 0 auto;
+        }
+
+        .container.freebet-mode .freebet-dealer-area .freebet-cards-row,
+        .container.freebet-mode .freebet-player-area .freebet-cards-row {
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            padding-bottom: 6px;
+        }
+
+        .container.freebet-mode .freebet-dealer-area .freebet-cards-row::-webkit-scrollbar,
+        .container.freebet-mode .freebet-player-area .freebet-cards-row::-webkit-scrollbar {
+            height: 0px;
+            background: transparent;
+        }
+
+        .container.freebet-mode .freebet-footer-box {
+            margin-top: 12px;
+        }
+
+        .container.freebet-mode .freebet-seat-grid {
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow-y: auto;
+            padding-right: 6px;
+        }
+
+        .container.freebet-mode .freebet-seat-grid::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+
         .freebet-table {
             position: relative;
             overflow: hidden;
@@ -1948,7 +2019,7 @@
 </head>
 
 <body>
-    <div id="app" class="container">
+    <div id="app" class="container" :class="{ 'freebet-mode': estado === 'FREEBET_JOGO' }">
 
         <!-- Top Right Profile -->
         <div style="position: absolute; top: 15px; right: 20px; z-index: 10000; text-align: right;">
@@ -2522,7 +2593,7 @@
                 style="position: absolute; top: 15px; left: 15px; padding: 8px 15px; font-size: 14px; margin: 0; width: auto; background: #4a5568; color: white; border-radius: 6px; border: none; cursor: pointer; z-index: 3;"
                 @click="sairMesaFreeBet()">⬅️ Menu</button>
 
-            <div v-if="freeBetState">
+            <div v-if="freeBetState" class="freebet-stage">
                 <div class="freebet-header">
                     <div class="freebet-kicker">
                         <span>Mesa compartilhada</span>
@@ -2592,6 +2663,68 @@
                     </div>
                     <p class="freebet-hand-total">Total do dealer: {{ freeBetState.dealer.total }}</p>
                     <p class="freebet-table-note">{{ freeBetState.message }}</p>
+                </div>
+
+                <div class="freebet-player-area" v-if="freeBetViewer && freeBetViewer.hands && freeBetViewer.hands.length">
+                    <h2 class="freebet-section-title">Sua mao</h2>
+                    <div class="freebet-hand-grid">
+                        <div v-for="hand in freeBetViewer.hands" :key="'viewer-hand-' + hand.index" class="freebet-hand-card"
+                            :class="{ active: hand.active }">
+                            <div class="freebet-hand-top">
+                                <div class="freebet-hand-title">{{ hand.title }}</div>
+                                <div class="freebet-hand-badge">x{{ hand.bet_units }} aposta</div>
+                            </div>
+                            <div class="freebet-cards-row">
+                                <div v-for="(card, idx) in hand.cards" :key="'viewer-card-' + hand.index + '-' + idx" class="freebet-card"
+                                    :class="card.color">
+                                    <div class="freebet-card-inner">
+                                        <template v-if="card.color !== 'hidden'">
+                                            <div class="freebet-card-corner top">
+                                                <span class="freebet-card-rank">{{ card.rank }}</span>
+                                                <span class="freebet-card-suit">{{ freeBetSuitSymbol(card.suit) }}</span>
+                                            </div>
+                                            <div class="freebet-card-stage">
+                                                <div class="freebet-card-panel" :class="freeBetCardPanelClass(card.rank)">
+                                                    <template v-if="freeBetIsCourtCard(card.rank)">
+                                                        <div class="freebet-card-face">
+                                                            <div class="freebet-card-face-half">
+                                                                <div class="freebet-card-face-crown">♛</div>
+                                                                <div class="freebet-card-face-letter">{{ card.rank }}</div>
+                                                                <div class="freebet-card-face-suit">{{ freeBetSuitSymbol(card.suit) }}</div>
+                                                            </div>
+                                                            <div class="freebet-card-face-divider"></div>
+                                                            <div class="freebet-card-face-plaque">{{ card.rank }}{{ freeBetSuitSymbol(card.suit) }}</div>
+                                                            <div class="freebet-card-face-title">{{ freeBetCourtName(card.rank) }}</div>
+                                                            <div class="freebet-card-face-divider"></div>
+                                                            <div class="freebet-card-face-half bottom">
+                                                                <div class="freebet-card-face-crown">♛</div>
+                                                                <div class="freebet-card-face-letter">{{ card.rank }}</div>
+                                                                <div class="freebet-card-face-suit">{{ freeBetSuitSymbol(card.suit) }}</div>
+                                                            </div>
+                                                        </div>
+                                                    </template>
+                                                    <template v-else>
+                                                        <div v-for="(pip, pipIndex) in freeBetPipLayout(card.rank)" :key="'viewer-pip-' + hand.index + '-' + idx + '-' + pipIndex"
+                                                            class="freebet-card-pip" :class="pip.size || ''" :style="freeBetPipStyle(pip)">
+                                                            {{ freeBetSuitSymbol(card.suit) }}
+                                                        </div>
+                                                    </template>
+                                                </div>
+                                            </div>
+                                            <div class="freebet-card-corner bottom">
+                                                <span class="freebet-card-rank">{{ card.rank }}</span>
+                                                <span class="freebet-card-suit">{{ freeBetSuitSymbol(card.suit) }}</span>
+                                            </div>
+                                        </template>
+                                        <template v-else>
+                                            <div class="freebet-card-center">NERO</div>
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="freebet-hand-total">Total: {{ hand.total }}</p>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="freebet-footer-box" v-if="freeBetViewer">
