@@ -652,61 +652,66 @@
             flex-direction: column;
         }
 
-        .freebet-stage {
-            flex: 1 1 auto;
-            min-height: 0;
-            display: flex;
-            flex-direction: column;
-        }
+	        .freebet-stage {
+	            flex: 1 1 auto;
+	            min-height: 0;
+	            display: flex;
+	            flex-direction: column;
+	        }
 
-        .container.freebet-mode .freebet-header {
-            padding-top: 46px;
-            padding-bottom: 6px;
-            margin: 0 auto 12px auto;
-        }
+	        .container.freebet-mode .freebet-stage {
+	            position: relative;
+	            padding-bottom: 150px;
+	        }
+
+	        .container.freebet-mode .freebet-header {
+	            padding-top: 30px;
+	            padding-bottom: 4px;
+	            margin: 0 auto 6px auto;
+	        }
 
         .container.freebet-mode .freebet-kicker {
             display: none;
         }
 
-        .container.freebet-mode .freebet-title {
-            font-size: clamp(24px, 4vw, 34px);
-            margin: 0 0 8px 0;
-        }
+	        .container.freebet-mode .freebet-title {
+	            font-size: clamp(20px, 3vw, 28px);
+	            margin: 0 0 6px 0;
+	        }
 
         .container.freebet-mode .freebet-subtitle {
             display: none;
         }
 
-	        .container.freebet-mode .freebet-status-band {
-	            flex-wrap: nowrap;
-	            justify-content: flex-start;
-	            overflow-x: auto;
-	            gap: 8px;
-	            margin: 10px auto 0 auto;
-	            padding: 0 6px 6px 6px;
-	            max-width: 100%;
-	        }
+		        .container.freebet-mode .freebet-status-band {
+		            flex-wrap: nowrap;
+		            justify-content: flex-start;
+		            overflow-x: auto;
+		            gap: 8px;
+		            margin: 8px auto 0 auto;
+		            padding: 0 6px 4px 6px;
+		            max-width: 100%;
+		        }
 
 	        .container.freebet-mode .freebet-status-band::-webkit-scrollbar {
 	            height: 0px;
 	            background: transparent;
 	        }
 
-	        .container.freebet-mode .freebet-status-pill {
-	            padding: 8px 12px;
-	            font-size: 12px;
-	            white-space: nowrap;
+		        .container.freebet-mode .freebet-status-pill {
+		            padding: 7px 10px;
+		            font-size: 11px;
+		            white-space: nowrap;
+		        }
+
+	        .container.freebet-mode .freebet-card {
+	            width: 72px;
+	            height: 104px;
 	        }
 
-        .container.freebet-mode .freebet-card {
-            width: 82px;
-            height: 118px;
-        }
-
-        .container.freebet-mode .freebet-card-stage {
-            inset: 18px 10px;
-        }
+	        .container.freebet-mode .freebet-card-stage {
+	            inset: 16px 9px;
+	        }
 
         .container.freebet-mode .freebet-dealer-area .freebet-cards-row,
         .container.freebet-mode .freebet-player-area .freebet-cards-row {
@@ -726,9 +731,19 @@
 	            padding: 10px 12px;
 	        }
 
-        .container.freebet-mode .freebet-seat-grid {
-            flex: 1 1 auto;
-            min-height: 0;
+	        .container.freebet-mode .freebet-bottombar {
+	            position: absolute;
+	            left: 18px;
+	            right: 18px;
+	            bottom: 18px;
+	            margin-top: 0;
+	            z-index: 3;
+	            backdrop-filter: blur(10px);
+	        }
+
+	        .container.freebet-mode .freebet-seat-grid {
+	            flex: 1 1 auto;
+	            min-height: 0;
             overflow-y: auto;
             padding-right: 6px;
             margin-top: 12px;
@@ -741,17 +756,22 @@
 
 	        .container.freebet-mode .freebet-dealer-area,
 	        .container.freebet-mode .freebet-player-area {
-	            padding: 10px 8px;
+	            padding: 8px 8px;
 	        }
 
 	        .container.freebet-mode .freebet-section-title {
-	            font-size: 18px;
-	            margin: 0 0 10px 0;
+	            font-size: 17px;
+	            margin: 0 0 8px 0;
 	        }
 
 	        .container.freebet-mode .freebet-hand-total {
 	            margin-top: 8px;
 	            font-size: 14px;
+	        }
+
+	        .container.freebet-mode .freebet-table-note {
+	            margin-top: 8px;
+	            font-size: 12px;
 	        }
 
 	        .container.freebet-mode .freebet-chip-row {
@@ -793,6 +813,29 @@
 	            padding: 10px 14px !important;
 	            font-size: 14px !important;
 	            border-radius: 14px;
+	        }
+
+	        .container.freebet-mode .freebet-hand-grid {
+	            gap: 8px;
+	            margin-top: 8px;
+	        }
+
+	        .container.freebet-mode .freebet-hand-card {
+	            padding: 8px;
+	            border-radius: 16px;
+	        }
+
+	        .container.freebet-mode .freebet-hand-top {
+	            margin-bottom: 6px;
+	        }
+
+	        .container.freebet-mode .freebet-hand-title {
+	            font-size: 15px;
+	        }
+
+	        .container.freebet-mode .freebet-hand-badge {
+	            padding: 4px 8px;
+	            font-size: 10px;
 	        }
 
 	        .freebet-table {
@@ -1145,6 +1188,19 @@
 	            flex-wrap: wrap;
 	        }
 
+	        .freebet-footer-summary {
+	            display: flex;
+	            flex-wrap: wrap;
+	            gap: 8px 14px;
+	            font-weight: 800;
+	            font-size: 13px;
+	            color: #f8fafc;
+	        }
+
+	        .freebet-footer-summary span {
+	            white-space: nowrap;
+	        }
+
 	        .freebet-footer-title {
 	            margin: 0;
 	            color: #fde68a;
@@ -1180,6 +1236,23 @@
 
 	        .container.freebet-mode .freebet-footer-title {
 	            font-size: 18px;
+	        }
+
+	        .container.freebet-mode .freebet-footer-top {
+	            flex-wrap: nowrap;
+	        }
+
+	        .container.freebet-mode .freebet-footer-summary {
+	            flex-wrap: nowrap;
+	            overflow-x: auto;
+	            gap: 10px;
+	            font-size: 12px;
+	            padding-bottom: 4px;
+	        }
+
+	        .container.freebet-mode .freebet-footer-summary::-webkit-scrollbar {
+	            height: 0px;
+	            background: transparent;
 	        }
 
 	        .container.freebet-mode .freebet-footer-line {
@@ -2884,18 +2957,20 @@
                     </div>
                 </div>
 
-	                <div class="freebet-footer-box" v-if="freeBetViewer">
-	                    <div class="freebet-footer-top">
-	                        <p class="freebet-footer-title">Sua area de fichas</p>
-	                        <button class="freebet-seat-toggle" v-if="freeBetState && freeBetState.players"
-	                            @click="freeBetShowSeats = !freeBetShowSeats">
-	                            {{ freeBetShowSeats ? 'Ocultar jogadores' : ('Ver jogadores (' + freeBetState.players.length + ')') }}
-	                        </button>
-	                    </div>
-	                    <p class="freebet-footer-line">Saldo: R$ {{ saldo.toFixed(2) }}</p>
-	                    <p class="freebet-footer-line secondary">Fichas da proxima rodada: R$ {{ freeBetViewer.pending_bet.toFixed(2) }} | Em jogo agora: R$ {{ freeBetViewer.current_bet.toFixed(2) }}</p>
-	
-	                    <div class="freebet-chip-row" v-if="freeBetState.can_place_bets">
+		                <div class="freebet-footer-box freebet-bottombar" v-if="freeBetViewer">
+		                    <div class="freebet-footer-top">
+		                        <div class="freebet-footer-summary">
+		                            <span>Saldo: R$ {{ saldo.toFixed(2) }}</span>
+		                            <span>Prox: R$ {{ freeBetViewer.pending_bet.toFixed(2) }}</span>
+		                            <span>Em jogo: R$ {{ freeBetViewer.current_bet.toFixed(2) }}</span>
+		                        </div>
+		                        <button class="freebet-seat-toggle" v-if="freeBetState && freeBetState.players"
+		                            @click="freeBetShowSeats = !freeBetShowSeats">
+		                            {{ freeBetShowSeats ? 'Ocultar jogadores' : ('Ver jogadores (' + freeBetState.players.length + ')') }}
+		                        </button>
+		                    </div>
+		
+		                    <div class="freebet-chip-row" v-if="freeBetState.can_place_bets">
 	                        <button v-for="chip in freeBetState.chip_values" :key="'chip-' + chip" class="freebet-chip-btn"
 	                            :disabled="freeBetLoading" @click="apostarFichaFreeBet(chip)">
                             + R$ {{ chip.toFixed(2) }}
