@@ -4,13 +4,27 @@ import random
 import asyncio
 from database import get_db
 
+
+def log(*args, **kwargs):
+    try:
+        print(*args, **kwargs)
+    except UnicodeEncodeError:
+        safe_args = []
+        for arg in args:
+            if isinstance(arg, str):
+                safe_args.append(arg.encode("ascii", errors="ignore").decode("ascii"))
+            else:
+                safe_args.append(arg)
+        print(*safe_args, **kwargs)
+
+
 # Criação do servidor Socket.IO (Assíncrono para aguentar muitos jogadores)
 sio = socketio.AsyncServer(async_mode='asgi', cors_allowed_origins='*')
 socket_app = socketio.ASGIApp(sio)
 
 @sio.event
 async def connect(sid, environ):
-    print(f"🎮 Novo jogador conectou na fazenda! ID da sessão: {sid}")
+    log(f"🎮 Novo jogador conectou na fazenda! ID da sessão: {sid}")
     # Inicia o monitor de bots se ainda não estiver rodando (usamos uma flag global)
     if not hasattr(sio, 'bot_monitor_started'):
         sio.bot_monitor_started = True
@@ -20,15 +34,15 @@ async def connect(sid, environ):
         asyncio.create_task(blackjack_table_loop())
 
 @sio.event
-async def disconnect(sid):
-    print(f"❌ Jogador desconectou: {sid}")
+async def disconnect(sid, reason=None):
+    log(f"❌ Jogador desconectou: {sid}")
     
     # Se o jogador estiver em uma partida, transforma ele em BOT
     for partida_id, partida in partidas.items():
         for jogador in partida["jogadores"]:
             if jogador.get("socketId") == sid and not jogador.get("is_bot", False):
                 jogador["is_bot"] = True
-                print(f"🤖 Jogador {jogador['usuarioId']} ({sid}) caiu. Auto-play ativado na partida {partida_id}!")
+                log(f"🤖 Jogador {jogador['usuarioId']} ({sid}) caiu. Auto-play ativado na partida {partida_id}!")
                 # Avise os outros na sala e comece a tarefa de bot para ele
                 asyncio.create_task(sio.emit("mensagem_jogo", {"msg": f"🔌 {jogador['usuarioId']} caiu da partida e agora está no modo automático!"}, room=partida_id))
                 asyncio.create_task(bot_play_task(partida_id, jogador))
@@ -706,7 +720,7 @@ async def blackjack_table_loop():
                 if state_changed:
                     await blackjack_broadcast_state()
         except Exception as e:
-            print(f"Erro no loop da mesa de blackjack: {e}")
+            log(f"Erro no loop da mesa de blackjack: {e}")
 
 
 @sio.on("entrarMesaBlackjack")
@@ -856,7 +870,7 @@ async def start_farming(sid, data):
         current_time = int(time.time())
         cursor.execute("UPDATE farmers SET is_working = 1, last_harvest_time = ? WHERE farmer_id = ?", (current_time, farmer_id))
         conn.commit()
-        print(f"🌾 Fazendeiro {farmer_id} começou a trabalhar para {email}!")
+        log(f"🌾 Fazendeiro {farmer_id} começou a trabalhar para {email}!")
         
         await sio.emit("farm_started", {"farmer_id": farmer_id, "start_time": current_time, "duration": 86400}, to=sid) # 86400 = 24hrs em segundos
 
@@ -939,7 +953,7 @@ async def claim_nero(sid, data):
     
     conn.close()
     
-    print(f"🎒 {email} colheu múltiplos itens: {itens_ganhos}")
+    log(f"🎒 {email} colheu múltiplos itens: {itens_ganhos}")
     await sio.emit("claim_success", {
         "farmer_id": farmer_id, 
         "rewards": itens_ganhos, 
@@ -1013,11 +1027,11 @@ async def bot_play_task(partida_id, bot_jogador):
         if jogador_da_vez["socketId"] != bot_jogador["socketId"]:
             continue
         else:
-            print(f"[{partida_id}] Bot loop check confirmou o turno: {bot_jogador['usuarioId']}")
+            log(f"[{partida_id}] Bot loop check confirmou o turno: {bot_jogador['usuarioId']}")
 
             # Se o jogador recuperou o controle (is_bot = False), o bot para de jogar por ele
             if not bot_jogador.get("is_bot", False):
-                print(f"[{partida_id}] Bot {bot_jogador['usuarioId']} finalizou pq is_bot=False")
+                log(f"[{partida_id}] Bot {bot_jogador['usuarioId']} finalizou pq is_bot=False")
                 break
         if partida_id not in partidas: break
 
@@ -1027,7 +1041,7 @@ async def bot_play_task(partida_id, bot_jogador):
 
         if len(mao) == 0: break
         
-        print(f"[{partida_id}] Turno do Mebot {bot_jogador['usuarioId']} - mesa: {carta_mesa} (Penalidade: {penalidade})")
+        log(f"[{partida_id}] Turno do Mebot {bot_jogador['usuarioId']} - mesa: {carta_mesa} (Penalidade: {penalidade})")
 
         try:
             cartas_validas = [i for i, c in enumerate(mao) if validar_jogada(c, carta_mesa, penalidade)]
@@ -1077,7 +1091,7 @@ async def bot_play_task(partida_id, bot_jogador):
                     }, room=partida_id)
         except Exception as bot_err:
             import traceback
-            print(f"ERRO NO BOT {bot_jogador['usuarioId']}: {bot_err}")
+            log(f"ERRO NO BOT {bot_jogador['usuarioId']}: {bot_err}")
             traceback.print_exc()
 
 async def check_matchmaking_timeout(aposta):
@@ -1092,7 +1106,7 @@ async def check_matchmaking_timeout(aposta):
 
         fila = filas_espera.get(aposta, [])
         if 0 < len(fila) < 4:
-            print(f"⏳ Tempo limite da fila R$ {aposta:.2f} atingido. Adicionando {4 - len(fila)} BOTS...")
+            log(f"⏳ Tempo limite da fila R$ {aposta:.2f} atingido. Adicionando {4 - len(fila)} BOTS...")
             falta = 4 - len(fila)
 
             prefixos = ["Alex", "Dani", "Gabi", "Mari", "Luiz", "Feli", "Brun", "Carl", "Vito", "Pedr", "Rafa", "Thia", "Guil", "Fern", "Leti", "Cami", "Juli", "Arth", "Bern", "Mich", "Davi", "Heit", "Math", "Luca", "Nico", "Enzo", "Yuri", "Kaua", "Igor", "Caio", "Kevi", "Will", "Ruan", "Vini", "Levi", "Theo", "Gael", "Migu", "Roge", "Dieg", "Andr", "Bata", "Silv", "Sant", "Melo", "Cost", "Lima", "Mora", "Gome", "Pere", "Ribe", "Mart", "Carv", "Alme", "Lope", "Soar", "Viei", "Mont", "Rodr", "Cunh", "Mede", "Nune", "Roch", "Frei", "Corr", "Mour", "Nasc", "Amar", "Card", "Teix", "Mach", "Tava", "Pint", "Agui", "Xavi", "Ramo", "Fari", "Borg", "Pinh", "Dias", "Brit", "Neve", "Maci", "Mati", "Vare", "Leal", "Vale", "Bast", "Texe", "Camp", "Mell", "Blan", "Garc", "Duar", "Figu", "Font", "Pess", "Fons", "Sale", "Band"]
@@ -1116,7 +1130,7 @@ async def check_matchmaking_timeout(aposta):
 
             await iniciar_partida_pronta(aposta)
     except Exception as e:
-        print("💥 ERRO no matchmaking:", e)
+        log("💥 ERRO no matchmaking:", e)
         traceback.print_exc()
 
 
@@ -1226,7 +1240,7 @@ async def iniciar_partida_pronta(aposta):
     # para não travar a partida.
     if len(jogadores_da_vez) < 4:
         falta = 4 - len(jogadores_da_vez)
-        print(f"Matchmaking: Filtrado por dono, faltam {falta} jogadores. Completando com bots do sistema...")
+        log(f"Matchmaking: Filtrado por dono, faltam {falta} jogadores. Completando com bots do sistema...")
         # (Reutilizando a lógica de nomes de bots do timeout se possível, mas aqui faremos direto)
         for _ in range(falta):
             bot_id = f"SYS_BOT_{random.randint(1000, 9999)}"
@@ -1301,10 +1315,10 @@ async def verificar_reconexao(sid, data):
                 
                 await sio.enter_room(sid, partida_id)
                 status_jogadores = [{"id": j["usuarioId"], "cartas": len(j["mao"]), "avatar_seed": j.get("avatar_seed")} for j in partida["jogadores"]]
-                print(f"📡 Enviando estado da partida {partida_id} para {usuario_id}. Oponentes: {[s['id'] for s in status_jogadores]}")
+                log(f"📡 Enviando estado da partida {partida_id} para {usuario_id}. Oponentes: {[s['id'] for s in status_jogadores]}")
                 
                 # Manda o estado atualizado pro jogador
-                print(f"🔄 Jogador {usuario_id} reconectado/assumiu partida {partida_id}")
+                log(f"🔄 Jogador {usuario_id} reconectado/assumiu partida {partida_id}")
                 await sio.emit("partidaIniciada", {
                     "partidaId": partida_id,
                     "suaMao": jogador["mao"],
@@ -1330,7 +1344,7 @@ async def deixar_background(sid, data):
         for jogador in partida["jogadores"]:
             if jogador["usuarioId"] == usuario_id:
                 jogador["is_bot"] = True
-                print(f"🤖 {usuario_id} minimizou a partida! Bot assumiu.")
+                log(f"🤖 {usuario_id} minimizou a partida! Bot assumiu.")
                 await sio.emit("mensagem_jogo", {"msg": f"🏃 {usuario_id} deixou o jogo rodando em 2º plano. Bot assumiu!"}, room=partida_id)
                 import asyncio
                 asyncio.create_task(bot_play_task(partida_id, jogador))
@@ -1349,12 +1363,12 @@ async def entrar_fila(sid, data):
         for j in v[:]:
             if j["usuarioId"] == usuario_id:
                 v.remove(j)
-                print(f"🔄 {usuario_id} removido de outra fila antes de entrar na de R$ {aposta:.2f}")
+                log(f"🔄 {usuario_id} removido de outra fila antes de entrar na de R$ {aposta:.2f}")
 
     # Impede entrar na fila se já estiver em partida
     for pid, p in partidas.items():
         if any(jog["usuarioId"] == usuario_id for jog in p["jogadores"]):
-            print(f"⚠️ {usuario_id} já está em uma partida ativa ({pid}). Impedindo nova fila.")
+            log(f"⚠️ {usuario_id} já está em uma partida ativa ({pid}). Impedindo nova fila.")
             await sio.emit("mensagem_jogo", {"msg": "Você já tem uma partida em andamento!"}, to=sid)
             return
 
@@ -1371,7 +1385,7 @@ async def entrar_fila(sid, data):
     
     if aposta not in filas_espera: filas_espera[aposta] = []
     filas_espera[aposta].append(jogador)
-    print(f"➡️ {usuario_id} entrou na fila de R$ {aposta:.2f} (Total: {len(filas_espera[aposta])})")
+    log(f"➡️ {usuario_id} entrou na fila de R$ {aposta:.2f} (Total: {len(filas_espera[aposta])})")
 
     # Inicia timer se for o primeiro
     if len(filas_espera[aposta]) == 1:
@@ -1455,7 +1469,7 @@ async def processar_jogada(partida_id, socket_id, carta_index, cor_escolhida=Non
             proximo_jogador = partida["jogadores"][partida["turno_index"]]["usuarioId"]
             status_jogadores = [{"id": j["usuarioId"], "cartas": len(j["mao"])} for j in partida["jogadores"]]
             
-            print(f"[{partida_id}] Emitindo jogadaAceita para o jogador {jogador['usuarioId']} e proximo é {proximo_jogador}")
+            log(f"[{partida_id}] Emitindo jogadaAceita para o jogador {jogador['usuarioId']} e proximo é {proximo_jogador}")
             await sio.emit("mensagem_jogo", {"msg": f"🃏 {jogador['usuarioId']} jogou {carta_removida['valor']} {carta_removida['cor']}"}, room=partida_id)
             await sio.emit("jogadaAceita", {
                 "jogador": jogador["usuarioId"],
@@ -1473,7 +1487,7 @@ async def processar_jogada(partida_id, socket_id, carta_index, cor_escolhida=Non
                 
             return {"valida": True}
         except Exception as e:
-            print(f"!!! ERRO FATAL AO EMITIR JOGADA ACEITA: {e}")
+            log(f"!!! ERRO FATAL AO EMITIR JOGADA ACEITA: {e}")
             import traceback
             traceback.print_exc()
             return {"valida": False, "erro": "Erro interno no servidor ao processar jogada."}
@@ -1482,19 +1496,19 @@ async def processar_jogada(partida_id, socket_id, carta_index, cor_escolhida=Non
 
 @sio.on("jogarCarta")
 async def jogar_carta(sid, data):
-    print(f"[{sid}] Recebeu tentar jogar carta: {data}")
+    log(f"[{sid}] Recebeu tentar jogar carta: {data}")
     partida_id = data.get("partidaId")
     carta_index = data.get("cartaIndex")
     cor_escolhida = data.get("corEscolhida")
     
     try:
         resultado = await processar_jogada(partida_id, sid, carta_index, cor_escolhida)
-        print(f"[{sid}] Resultado da jogada: {resultado}")
+        log(f"[{sid}] Resultado da jogada: {resultado}")
         if resultado and not resultado.get("valida"):
-            print(f"[{sid}] Jogada inválida, enviando resposta erro: {resultado.get('erro')}")
+            log(f"[{sid}] Jogada inválida, enviando resposta erro: {resultado.get('erro')}")
             await sio.emit("jogadaInvalida", {"mensagem": resultado.get("erro", "Erro na jogada")}, to=sid)
     except Exception as e:
-        print(f"!!! ERRO em jogar_carta: {e}")
+        log(f"!!! ERRO em jogar_carta: {e}")
         import traceback
         traceback.print_exc()
         await sio.emit("jogadaInvalida", {"mensagem": "Erro interno do servidor!"}, to=sid)
@@ -1553,7 +1567,7 @@ async def finalizar_partida(partida, jogador_vencedor):
     vencedor_id = jogador_vencedor["usuarioId"]
     partida_id = partida["id"]
 
-    print(f"🏆 Partida {partida_id} Vencida por: {vencedor_id} | Prêmio: R$ {premio:.2f}")
+    log(f"🏆 Partida {partida_id} Vencida por: {vencedor_id} | Prêmio: R$ {premio:.2f}")
 
     # Só tenta creditar no banco se não for Bot do Sistema
     if jogador_vencedor.get("is_real", False):
@@ -1571,14 +1585,14 @@ async def finalizar_partida(partida, jogador_vencedor):
         # Crédito para o dono do bot
         bot_owner_email = jogador_vencedor.get("owner_email")
         bot_id = jogador_vencedor.get("bot_id")
-        print(f"🤖 Bot do Usuário {vencedor_id} (Dono: {bot_owner_email}) venceu! Creditando...")
+        log(f"🤖 Bot do Usuário {vencedor_id} (Dono: {bot_owner_email}) venceu! Creditando...")
         conn = get_db()
         cursor = conn.cursor()
         cursor.execute("UPDATE bots SET saldo = saldo + ? WHERE id = ?", (premio, bot_id))
         conn.commit()
         conn.close()
     else:
-        print(f"🤖 O BOT do Sistema {vencedor_id} venceu! O dinheiro ficará para a plataforma.")
+        log(f"🤖 O BOT do Sistema {vencedor_id} venceu! O dinheiro ficará para a plataforma.")
 
     await sio.emit("fimDeJogo", {
         "vencedor": vencedor_id,
@@ -1609,7 +1623,7 @@ async def force_autoplay(sid, data):
         await forcar_jogada_bot(partida_id, jogador)
 
 async def monitorar_bots_usuarios():
-    print("🤖 Monitor de Bots de Usuários Iniciado!")
+    log("🤖 Monitor de Bots de Usuários Iniciado!")
     while True:
         await asyncio.sleep(5)
         try:
@@ -1639,7 +1653,7 @@ async def monitorar_bots_usuarios():
                 # Verifica Stop Loss / Stop Win
                 if bot['saldo'] <= bot['stop_loss'] or bot['saldo'] >= bot['stop_win']:
                     motivo = "Stop Loss atingido" if bot['saldo'] <= bot['stop_loss'] else "Stop Win atingido"
-                    print(f"🛑 Bot {bot['nome']} atingiu limites (Saldo: {bot['saldo']}). Motivo: {motivo}")
+                    log(f"🛑 Bot {bot['nome']} atingiu limites (Saldo: {bot['saldo']}). Motivo: {motivo}")
                     conn = get_db()
                     cursor = conn.cursor()
                     cursor.execute("UPDATE bots SET status = 'Parado', motivo_status = ? WHERE id = ?", (motivo, bot['id']))
@@ -1673,7 +1687,7 @@ async def monitorar_bots_usuarios():
                     
                     if custo_aposta not in filas_espera: filas_espera[custo_aposta] = []
                     filas_espera[custo_aposta].append(jogador_bot)
-                    print(f"🤖 Bot '{bot['nome']}' do usuário {bot['usuario_email']} entrou na fila de R$ {custo_aposta}")
+                    log(f"🤖 Bot '{bot['nome']}' do usuário {bot['usuario_email']} entrou na fila de R$ {custo_aposta}")
 
                     # Se for o primeiro, inicia o timer
                     if len(filas_espera[custo_aposta]) == 1:
@@ -1688,7 +1702,7 @@ async def monitorar_bots_usuarios():
                         await iniciar_partida_pronta(custo_aposta)
 
         except Exception as e:
-            print(f"❌ Erro no monitor de bots: {e}")
+            log(f"❌ Erro no monitor de bots: {e}")
             import traceback
             traceback.print_exc()
 
