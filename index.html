@@ -1038,6 +1038,15 @@
             margin-top: 16px;
         }
 
+        .freebet-bet-ready {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
         .freebet-chip-btn {
             width: auto !important;
             min-width: 108px;
@@ -1055,6 +1064,12 @@
             background: linear-gradient(145deg, #475569, #0f172a);
             color: #e2e8f0;
             border-color: rgba(148, 163, 184, 0.28);
+        }
+
+        .freebet-chip-btn.compact {
+            min-width: 0;
+            padding: 10px 14px !important;
+            font-size: 13px !important;
         }
 
         .freebet-chip-btn:disabled,
@@ -2584,13 +2599,17 @@
                     <p style="margin: 10px 0 0 0; color: #f8fafc; font-weight: 800;">Saldo: R$ {{ saldo.toFixed(2) }}</p>
                     <p style="margin: 8px 0 0 0; color: #d1fae5; font-weight: 700;">Fichas da proxima rodada: R$ {{ freeBetViewer.pending_bet.toFixed(2) }} | Em jogo agora: R$ {{ freeBetViewer.current_bet.toFixed(2) }}</p>
 
-                    <div class="freebet-chip-row" v-if="freeBetState.can_place_bets">
+                    <div class="freebet-chip-row" v-if="freeBetState.can_place_bets && freeBetViewer.pending_bet <= 0">
                         <button v-for="chip in freeBetState.chip_values" :key="'chip-' + chip" class="freebet-chip-btn"
                             :disabled="freeBetLoading" @click="apostarFichaFreeBet(chip)">
                             + R$ {{ chip.toFixed(2) }}
                         </button>
-                        <button class="freebet-chip-btn clear" :disabled="freeBetLoading || freeBetViewer.pending_bet <= 0"
-                            @click="limparApostaFreeBet()">Limpar fichas</button>
+                    </div>
+
+                    <div class="freebet-bet-ready" v-if="freeBetState.can_place_bets && freeBetViewer.pending_bet > 0">
+                        <span class="freebet-result-chip vitoria">Aposta confirmada: R$ {{ freeBetViewer.pending_bet.toFixed(2) }}</span>
+                        <button class="freebet-chip-btn clear compact" :disabled="freeBetLoading"
+                            @click="limparApostaFreeBet()">Trocar aposta</button>
                     </div>
 
                     <div class="freebet-actions" v-if="freeBetState.current_turn_player === usuarioId && freeBetActiveHand">
