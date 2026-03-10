@@ -633,12 +633,11 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            padding: 12px;
+            padding: 10px;
         }
 
         .container.freebet-mode .stats {
-            flex: 0 0 auto;
-            margin-bottom: 12px;
+            display: none;
         }
 
         .container.freebet-mode .freebet-table {
@@ -658,6 +657,16 @@
         .container.freebet-mode .freebet-header {
             padding-top: 46px;
             padding-bottom: 6px;
+            margin: 0 auto 12px auto;
+        }
+
+        .container.freebet-mode .freebet-kicker {
+            display: none;
+        }
+
+        .container.freebet-mode .freebet-title {
+            font-size: clamp(24px, 4vw, 34px);
+            margin: 0 0 8px 0;
         }
 
         .container.freebet-mode .freebet-subtitle {
@@ -666,6 +675,15 @@
 
         .container.freebet-mode .freebet-status-band {
             margin: 12px auto 0 auto;
+        }
+
+        .container.freebet-mode .freebet-card {
+            width: 82px;
+            height: 118px;
+        }
+
+        .container.freebet-mode .freebet-card-stage {
+            inset: 18px 10px;
         }
 
         .container.freebet-mode .freebet-dealer-area .freebet-cards-row,
@@ -690,6 +708,7 @@
             min-height: 0;
             overflow-y: auto;
             padding-right: 6px;
+            margin-top: 12px;
         }
 
         .container.freebet-mode .freebet-seat-grid::-webkit-scrollbar {
